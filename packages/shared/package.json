@@ -1,0 +1,20 @@
+{
+  "name": "@blog/shared",
+  "version": "0.1.0",
+  "description": "공유 타입 정의 및 유틸리티 함수",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup src/index.ts --watch --format esm --dts",
+    "build": "tsup src/index.ts --format esm --dts --minify",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.0"
+  }
+}
