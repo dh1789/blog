@@ -69,3 +69,43 @@ export interface Template {
   content: string;
   variables: string[];
 }
+
+/**
+ * Claude Code 실행 옵션
+ */
+export interface ClaudeOptions {
+  prompt: string;
+  timeout?: number;
+  model?: string;
+}
+
+/**
+ * Claude Code 응답
+ */
+export interface ClaudeResponse {
+  success: boolean;
+  content: string;
+  error?: string;
+  executionTime?: number;
+}
+
+/**
+ * 초안 생성 옵션
+ */
+export interface DraftCreateOptions {
+  topic: string;
+  keywords: string;
+  words?: number;
+  template?: string;
+  language?: 'ko' | 'en';
+  style?: string;
+}
+
+/**
+ * 초안 수정 옵션
+ */
+export interface DraftRefineOptions {
+  file: string;
+  instruction: string;
+  timeout?: number;
+}

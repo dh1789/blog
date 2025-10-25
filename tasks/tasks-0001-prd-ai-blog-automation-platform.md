@@ -113,7 +113,7 @@
 - [ ] 1.0 Core MVP - AI 초안 생성 및 WordPress 발행 시스템
   - [x] 1.1 프로젝트 환경 설정 및 의존성 설치
   - [x] 1.2 프롬프트 템플릿 시스템 구현 (`packages/core/src/templates.ts`)
-  - [ ] 1.3 Claude Code headless 통합 구현 (`packages/core/src/claude.ts`)
+  - [x] 1.3 Claude Code headless 통합 구현 (`packages/core/src/claude.ts`)
   - [ ] 1.4 `blog draft create` CLI 명령어 구현 (`packages/cli/src/commands/draft/create.ts`)
   - [ ] 1.5 `blog draft refine` CLI 명령어 구현 (`packages/cli/src/commands/draft/refine.ts`)
   - [ ] 1.6 기본 프롬프트 템플릿 파일 작성 (`prompts/blog-post.txt`, `prompts/tutorial.txt`, `prompts/review.txt`)

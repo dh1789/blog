@@ -7,3 +7,4 @@ export * from './wordpress';
 export * from './markdown';
 export * from './ads';
 export * from './templates';
+export * from './claude';
