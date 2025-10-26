@@ -10,7 +10,7 @@ import { publishCommand } from './commands/publish';
 import { listCommand } from './commands/list';
 import { deleteCommand } from './commands/delete';
 import { configCommand } from './commands/config';
-import { createCommand } from './commands/draft';
+import { createCommand, refineCommand } from './commands/draft';
 
 const program = new Command();
 
@@ -53,5 +53,11 @@ program
   .option('-l, --language <lang>', '언어 설정 (ko|en)', 'ko')
   .option('-s, --style <style>', '작성 스타일')
   .action(createCommand);
+
+program
+  .command('draft refine <file> <instruction>')
+  .description('AI를 사용하여 기존 블로그 포스트 초안 수정')
+  .option('-t, --timeout <ms>', '타임아웃 (밀리초)', '120000')
+  .action(refineCommand);
 
 program.parse();

@@ -3,3 +3,4 @@
  */
 
 export { createCommand } from './create';
+export { refineCommand } from './refine';
