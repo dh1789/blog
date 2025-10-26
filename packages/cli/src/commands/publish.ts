@@ -22,8 +22,42 @@ export async function publishCommand(file: string, options: PublishOptions) {
     const filePath = path.resolve(process.cwd(), file);
     const fileContent = await fs.readFile(filePath, 'utf-8');
 
-    spinner.text = '파일 파싱 중...';
-    const { metadata, htmlContent } = await parseMarkdownFile(fileContent);
+    spinner.text = '파일 파싱 및 검증 중...';
+    let metadata, htmlContent;
+
+    try {
+      const parsed = await parseMarkdownFile(fileContent);
+      metadata = parsed.metadata;
+      htmlContent = parsed.htmlContent;
+    } catch (error) {
+      spinner.fail(chalk.red('Frontmatter 검증 실패'));
+
+      if (error instanceof Error) {
+        console.error(chalk.red('\n검증 오류:'));
+
+        // Zod validation error handling
+        if ('issues' in error && Array.isArray((error as any).issues)) {
+          (error as any).issues.forEach((issue: any) => {
+            const field = issue.path.join('.');
+            console.error(chalk.yellow(`  - ${field}: ${issue.message}`));
+          });
+        } else {
+          console.error(chalk.yellow(`  ${error.message}`));
+        }
+
+        console.error(chalk.cyan('\n필수 frontmatter 형식:'));
+        console.error(chalk.gray('---'));
+        console.error(chalk.gray('title: "포스트 제목" (필수, 최대 200자)'));
+        console.error(chalk.gray('excerpt: "요약 설명" (필수, 10-300자)'));
+        console.error(chalk.gray('categories: ["카테고리1", "카테고리2"] (필수, 1-5개)'));
+        console.error(chalk.gray('tags: ["태그1", "태그2", "태그3"] (필수, 3-10개)'));
+        console.error(chalk.gray('status: "draft" 또는 "publish" (선택, 기본값: draft)'));
+        console.error(chalk.gray('language: "ko" 또는 "en" (선택, 기본값: ko)'));
+        console.error(chalk.gray('---'));
+      }
+
+      process.exit(1);
+    }
 
     const finalStatus = options.draft ? 'draft' : metadata.status;
 
@@ -31,13 +65,19 @@ export async function publishCommand(file: string, options: PublishOptions) {
     const config = await loadConfig();
     const wpClient = new WordPressClient(config.wordpress);
 
+    // 발행 전 검증 요약 표시
+    spinner.info(chalk.blue('발행 준비 완료'));
+    console.log(chalk.cyan('\n=== 포스트 정보 ==='));
+    console.log(chalk.white('제목:'), chalk.green(metadata.title));
+    console.log(chalk.white('요약:'), chalk.gray(metadata.excerpt.substring(0, 80) + (metadata.excerpt.length > 80 ? '...' : '')));
+    console.log(chalk.white('상태:'), finalStatus === 'publish' ? chalk.green(finalStatus) : chalk.yellow(finalStatus));
+    console.log(chalk.white('언어:'), metadata.language);
+    console.log(chalk.white('카테고리:'), chalk.cyan(metadata.categories.join(', ')));
+    console.log(chalk.white('태그:'), chalk.cyan(metadata.tags.join(', ')));
+    console.log(chalk.cyan('==================\n'));
+
     if (options.dryRun) {
-      spinner.succeed(chalk.green('시뮬레이션 모드 (실제 업로드하지 않음)'));
-      console.log(chalk.cyan('\n제목:'), metadata.title);
-      console.log(chalk.cyan('상태:'), finalStatus);
-      console.log(chalk.cyan('언어:'), metadata.language);
-      console.log(chalk.cyan('카테고리:'), metadata.categories?.join(', ') || '없음');
-      console.log(chalk.cyan('태그:'), metadata.tags?.join(', ') || '없음');
+      spinner.succeed(chalk.green('시뮬레이션 모드 완료 (실제 업로드하지 않음)'));
       return;
     }
 

@@ -118,7 +118,7 @@
   - [x] 1.5 `blog draft refine` CLI 명령어 구현 (`packages/cli/src/commands/draft/refine.ts`)
   - [x] 1.6 기본 프롬프트 템플릿 파일 작성 (`prompts/blog-post.txt`, `prompts/tutorial.txt`, `prompts/review.txt`)
   - [x] 1.7 content/drafts 디렉토리 생성 및 .gitignore 설정
-  - [ ] 1.8 기존 `publish` 명령어 개선 (frontmatter 검증 강화)
+  - [x] 1.8 기존 `publish` 명령어 개선 (frontmatter 검증 강화)
   - [ ] 1.9 Core MVP 통합 테스트 (초안 생성 → 발행 워크플로우)
 
 - [ ] 2.0 프리뷰 시스템 구현
