@@ -44,5 +44,7 @@ temp/
 # WordPress uploads cache
 .wp-cache/
 
-# Content drafts (AI generated, not for version control)
-content/drafts/
+# Content drafts (AI generated markdown files, not for version control)
+# Keep directory structure and documentation
+content/drafts/*.md
+!content/drafts/README.md
