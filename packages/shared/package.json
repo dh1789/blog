@@ -2,7 +2,8 @@
   "name": "@blog/shared",
   "version": "0.1.0",
   "description": "공유 타입 정의 및 유틸리티 함수",
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsup src/index.ts --watch --format esm --dts",

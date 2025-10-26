@@ -19,7 +19,12 @@
     "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "paths": {
+      "@blog/shared": ["./packages/shared/src"],
+      "@blog/core": ["./packages/core/src"],
+      "@blog/cli": ["./packages/cli/src"]
+    }
   },
   "exclude": [
     "node_modules",

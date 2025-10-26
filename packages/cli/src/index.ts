@@ -10,6 +10,7 @@ import { publishCommand } from './commands/publish';
 import { listCommand } from './commands/list';
 import { deleteCommand } from './commands/delete';
 import { configCommand } from './commands/config';
+import { createCommand } from './commands/draft';
 
 const program = new Command();
 
@@ -43,5 +44,14 @@ program
   .command('config')
   .description('WordPress 연결 설정')
   .action(configCommand);
+
+program
+  .command('draft create <topic> <keywords>')
+  .description('AI를 사용하여 블로그 포스트 초안 생성')
+  .option('-w, --words <number>', '타겟 단어 수', '2000')
+  .option('-t, --template <name>', '템플릿 이름', 'blog-post')
+  .option('-l, --language <lang>', '언어 설정 (ko|en)', 'ko')
+  .option('-s, --style <style>', '작성 스타일')
+  .action(createCommand);
 
 program.parse();
