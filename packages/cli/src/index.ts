@@ -11,6 +11,7 @@ import { listCommand } from './commands/list';
 import { deleteCommand } from './commands/delete';
 import { configCommand } from './commands/config';
 import { createCommand, refineCommand } from './commands/draft';
+import { previewCommand } from './commands/preview';
 
 const program = new Command();
 
@@ -59,5 +60,13 @@ program
   .description('AI를 사용하여 기존 블로그 포스트 초안 수정')
   .option('-t, --timeout <ms>', '타임아웃 (밀리초)', '120000')
   .action(refineCommand);
+
+program
+  .command('preview <file>')
+  .description('마크다운 파일을 브라우저에서 실시간 프리뷰')
+  .option('-p, --port <number>', '시작 포트 번호', '3000')
+  .option('--no-browser', '브라우저 자동 열기 비활성화')
+  .option('--show-ads', '광고 삽입 위치 표시')
+  .action(previewCommand);
 
 program.parse();
