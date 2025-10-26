@@ -122,15 +122,15 @@
   - [x] 1.9 Core MVP 통합 테스트 (초안 생성 → 발행 워크플로우)
 
 - [ ] 2.0 프리뷰 시스템 구현
-  - [ ] 2.1 프리뷰 서버 코어 구현 (`packages/core/src/preview.ts` - Express + Socket.io)
-  - [ ] 2.2 마크다운 → HTML 렌더링 엔진 (WordPress 스타일 CSS 적용)
-  - [ ] 2.3 광고 삽입 위치 시각화 (빨간 점선 박스 표시)
-  - [ ] 2.4 파일 감시 및 Live Reload 구현 (chokidar)
+  - [x] 2.1 프리뷰 서버 코어 구현 (`packages/core/src/preview.ts` - Express + Socket.io)
+  - [x] 2.2 마크다운 → HTML 렌더링 엔진 (WordPress 스타일 CSS 적용)
+  - [x] 2.3 광고 삽입 위치 시각화 (빨간 점선 박스 표시)
+  - [x] 2.4 파일 감시 및 Live Reload 구현 (chokidar)
   - [ ] 2.5 `blog preview` CLI 명령어 구현 (`packages/cli/src/commands/preview.ts`)
-  - [ ] 2.6 프리뷰 HTML 템플릿 작성 (반응형 디자인)
-  - [ ] 2.7 자동 브라우저 열기 기능 (open 패키지)
-  - [ ] 2.8 포트 충돌 처리 로직 (3000 → 3001 → 3002...)
-  - [ ] 2.9 프리뷰 서버 단위 테스트 작성
+  - [x] 2.6 프리뷰 HTML 템플릿 작성 (반응형 디자인)
+  - [x] 2.7 자동 브라우저 열기 기능 (open 패키지)
+  - [x] 2.8 포트 충돌 처리 로직 (3000 → 3001 → 3002...)
+  - [x] 2.9 프리뷰 서버 단위 테스트 작성
 
 - [ ] 3.0 SEO 자동화 시스템
   - [ ] 3.1 SEO 메타 태그 생성 모듈 구현 (`packages/core/src/seo.ts`)
