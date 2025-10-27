@@ -48,3 +48,4 @@ temp/
 # Keep directory structure and documentation
 content/drafts/*.md
 !content/drafts/README.md
+ref/
