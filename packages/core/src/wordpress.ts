@@ -117,12 +117,39 @@ export class WordPressClient {
     }
   }
 
-  async uploadMedia(filePath: string): Promise<string> {
+  async uploadMedia(filePath: string, title?: string, alt?: string): Promise<{
+    id: number;
+    url: string;
+  }> {
     try {
-      const media = await this.wp.media().file(filePath).create();
-      return media.source_url;
+      const mediaData: Record<string, unknown> = {};
+
+      if (title) {
+        mediaData.title = title;
+      }
+
+      if (alt) {
+        mediaData.alt_text = alt;
+      }
+
+      const media = await this.wp.media().file(filePath).create(mediaData);
+
+      return {
+        id: media.id,
+        url: media.source_url,
+      };
     } catch (error) {
       throw new Error(`Failed to upload media: ${error}`);
+    }
+  }
+
+  async setFeaturedImage(postId: number, mediaId: number): Promise<void> {
+    try {
+      await this.wp.posts().id(postId).update({
+        featured_media: mediaId,
+      });
+    } catch (error) {
+      throw new Error(`Failed to set featured image: ${error}`);
     }
   }
 

@@ -179,3 +179,22 @@ export interface SeoOptions {
   siteName?: string;
   language?: 'ko' | 'en';
 }
+
+/**
+ * 이미지 생성 옵션
+ */
+export interface ImageGenerationOptions {
+  prompt: string;
+  size?: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792';
+  quality?: 'standard' | 'hd';
+  style?: 'vivid' | 'natural';
+  model?: 'dall-e-2' | 'dall-e-3';
+}
+
+/**
+ * 이미지 생성 결과
+ */
+export interface ImageGenerationResult {
+  url: string;
+  revisedPrompt?: string;
+}

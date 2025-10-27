@@ -12,6 +12,7 @@ import { deleteCommand } from './commands/delete';
 import { configCommand } from './commands/config';
 import { createCommand, refineCommand } from './commands/draft';
 import { previewCommand } from './commands/preview';
+import { imageGenerateCommand } from './commands/image';
 
 const program = new Command();
 
@@ -68,5 +69,15 @@ program
   .option('--no-browser', '브라우저 자동 열기 비활성화')
   .option('--show-ads', '광고 삽입 위치 표시')
   .action(previewCommand);
+
+program
+  .command('image generate <prompt>')
+  .description('DALL-E를 사용하여 블로그 이미지 생성')
+  .option('-s, --size <size>', '이미지 크기 (1024x1024, 1792x1024, 1024x1792)', '1024x1024')
+  .option('-q, --quality <quality>', '이미지 품질 (standard|hd)', 'standard')
+  .option('--style <style>', '이미지 스타일 (vivid|natural)', 'vivid')
+  .option('-o, --output <dir>', '출력 디렉토리', './images')
+  .option('-u, --upload', 'WordPress에 자동 업로드 (미구현)')
+  .action(imageGenerateCommand);
 
 program.parse();

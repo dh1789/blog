@@ -10,3 +10,4 @@ export * from './templates';
 export * from './claude';
 export * from './preview';
 export * from './seo';
+export * from './image';
