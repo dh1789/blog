@@ -147,8 +147,8 @@
   - [x] 4.1 DALL-E 이미지 생성 모듈 구현 (`packages/core/src/image.ts`)
   - [x] 4.2 WordPress 미디어 라이브러리 업로드 기능 (`wordpress.ts` 확장)
   - [x] 4.3 `blog image generate` CLI 명령어 구현 (`packages/cli/src/commands/image.ts`)
-  - [ ] 4.4 트렌드 모니터링 모듈 구현 (`packages/core/src/trending.ts` - Reddit, HN, Twitter API)
-  - [ ] 4.5 트렌드 점수 계산 및 정렬 로직
+  - [x] 4.4 트렌드 모니터링 모듈 구현 (`packages/core/src/trending.ts` - Reddit, HN, Twitter API)
+  - [x] 4.5 트렌드 점수 계산 및 정렬 로직
   - [ ] 4.6 `blog trending` CLI 명령어 구현 (`packages/cli/src/commands/trending.ts`)
   - [ ] 4.7 분석 대시보드 모듈 구현 (`packages/core/src/analytics.ts` - WordPress API + AdSense API)
   - [ ] 4.8 터미널 UI 구현 (blessed 또는 ink)

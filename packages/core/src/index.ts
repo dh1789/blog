@@ -11,3 +11,4 @@ export * from './claude';
 export * from './preview';
 export * from './seo';
 export * from './image';
+export * from './trending';

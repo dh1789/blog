@@ -198,3 +198,49 @@ export interface ImageGenerationResult {
   url: string;
   revisedPrompt?: string;
 }
+
+/**
+ * 트렌드 소스
+ */
+export type TrendSource = 'reddit' | 'hackernews' | 'twitter';
+
+/**
+ * 트렌딩 토픽
+ */
+export interface TrendingTopic {
+  id: string;
+  title: string;
+  url: string;
+  source: TrendSource;
+  score: number;
+  comments: number;
+  author?: string;
+  createdAt: Date;
+  subreddit?: string; // Reddit 전용
+  hashtags?: string[]; // Twitter 전용
+}
+
+/**
+ * 트렌딩 옵션
+ */
+export interface TrendingOptions {
+  sources?: TrendSource[];
+  limit?: number;
+  minScore?: number;
+  keywords?: string[];
+  language?: 'ko' | 'en';
+}
+
+/**
+ * 트렌드 점수
+ */
+export interface TrendScore {
+  topic: TrendingTopic;
+  finalScore: number;
+  scoreBreakdown: {
+    upvotes: number;
+    comments: number;
+    recency: number;
+    keywordMatch: number;
+  };
+}
