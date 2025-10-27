@@ -149,7 +149,7 @@
   - [x] 4.3 `blog image generate` CLI 명령어 구현 (`packages/cli/src/commands/image.ts`)
   - [x] 4.4 트렌드 모니터링 모듈 구현 (`packages/core/src/trending.ts` - Reddit, HN, Twitter API)
   - [x] 4.5 트렌드 점수 계산 및 정렬 로직
-  - [ ] 4.6 `blog trending` CLI 명령어 구현 (`packages/cli/src/commands/trending.ts`)
+  - [x] 4.6 `blog trending` CLI 명령어 구현 (`packages/cli/src/commands/trending.ts`)
   - [ ] 4.7 분석 대시보드 모듈 구현 (`packages/core/src/analytics.ts` - WordPress API + AdSense API)
   - [ ] 4.8 터미널 UI 구현 (blessed 또는 ink)
   - [ ] 4.9 `blog analytics` CLI 명령어 구현 (`packages/cli/src/commands/analytics.ts`)

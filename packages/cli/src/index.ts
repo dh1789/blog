@@ -13,6 +13,7 @@ import { configCommand } from './commands/config';
 import { createCommand, refineCommand } from './commands/draft';
 import { previewCommand } from './commands/preview';
 import { imageGenerateCommand } from './commands/image';
+import { trendingCommand } from './commands/trending';
 
 const program = new Command();
 
@@ -79,5 +80,15 @@ program
   .option('-o, --output <dir>', '출력 디렉토리', './images')
   .option('-u, --upload', 'WordPress에 자동 업로드 (미구현)')
   .action(imageGenerateCommand);
+
+program
+  .command('trending')
+  .description('인기 트렌드 토픽 모니터링')
+  .option('-s, --sources <sources>', '트렌드 소스 (reddit,hackernews,twitter)', 'reddit,hackernews')
+  .option('-l, --limit <number>', '결과 개수 제한', '10')
+  .option('-k, --keywords <keywords>', '키워드 필터 (쉼표 구분)')
+  .option('-m, --min-score <score>', '최소 점수 필터', '0')
+  .option('--language <lang>', '언어 설정 (ko|en)', 'ko')
+  .action(trendingCommand);
 
 program.parse();
