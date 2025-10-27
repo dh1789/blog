@@ -133,15 +133,15 @@
   - [x] 2.9 프리뷰 서버 단위 테스트 작성
 
 - [ ] 3.0 SEO 자동화 시스템
-  - [ ] 3.1 SEO 메타 태그 생성 모듈 구현 (`packages/core/src/seo.ts`)
-  - [ ] 3.2 Open Graph 태그 생성 로직 (og:title, og:description, og:image, og:url, og:type)
-  - [ ] 3.3 Twitter Card 태그 생성 로직
-  - [ ] 3.4 키워드 밀도 체크 기능 (0.5-2.5% 경고)
-  - [ ] 3.5 한글 slug 자동 영문 변환 (transliteration)
+  - [x] 3.1 SEO 메타 태그 생성 모듈 구현 (`packages/core/src/seo.ts`)
+  - [x] 3.2 Open Graph 태그 생성 로직 (og:title, og:description, og:image, og:url, og:type)
+  - [x] 3.3 Twitter Card 태그 생성 로직
+  - [x] 3.4 키워드 밀도 체크 기능 (0.5-2.5% 경고)
+  - [x] 3.5 한글 slug 자동 영문 변환 (transliteration)
   - [ ] 3.6 기존 `markdown.ts` 개선 (SEO 메타데이터 추출)
   - [ ] 3.7 기존 `wordpress.ts` 개선 (메타 태그를 WordPress에 전송)
   - [ ] 3.8 `publish` 명령어에 SEO 자동화 통합
-  - [ ] 3.9 SEO 모듈 단위 테스트 작성
+  - [x] 3.9 SEO 모듈 단위 테스트 작성
 
 - [ ] 4.0 확장 MVP - 이미지, 트렌드, 분석 기능
   - [ ] 4.1 DALL-E 이미지 생성 모듈 구현 (`packages/core/src/image.ts`)

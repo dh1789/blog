@@ -109,3 +109,73 @@ export interface DraftRefineOptions {
   instruction: string;
   timeout?: number;
 }
+
+/**
+ * SEO 메타 태그
+ */
+export interface SeoMetaTags {
+  title: string;
+  description: string;
+  keywords: string[];
+  canonical?: string;
+  robots?: string;
+}
+
+/**
+ * Open Graph 태그
+ */
+export interface OpenGraphTags {
+  'og:title': string;
+  'og:description': string;
+  'og:type': string;
+  'og:url'?: string;
+  'og:image'?: string;
+  'og:locale': string;
+  'og:site_name'?: string;
+}
+
+/**
+ * Twitter Card 태그
+ */
+export interface TwitterCardTags {
+  'twitter:card': 'summary' | 'summary_large_image' | 'app' | 'player';
+  'twitter:title': string;
+  'twitter:description': string;
+  'twitter:image'?: string;
+  'twitter:site'?: string;
+  'twitter:creator'?: string;
+}
+
+/**
+ * SEO 데이터
+ */
+export interface SeoData {
+  meta: SeoMetaTags;
+  openGraph: OpenGraphTags;
+  twitterCard: TwitterCardTags;
+  slug: string;
+}
+
+/**
+ * 키워드 밀도 분석 결과
+ */
+export interface KeywordDensity {
+  keyword: string;
+  count: number;
+  density: number;
+  isOptimal: boolean;
+}
+
+/**
+ * SEO 생성 옵션
+ */
+export interface SeoOptions {
+  title: string;
+  excerpt: string;
+  content: string;
+  keywords: string[];
+  url?: string;
+  imageUrl?: string;
+  siteName?: string;
+  language?: 'ko' | 'en';
+}
