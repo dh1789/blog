@@ -153,7 +153,7 @@
   - [ ] 4.7 분석 대시보드 모듈 구현 (`packages/core/src/analytics.ts` - WordPress API + AdSense API)
   - [ ] 4.8 터미널 UI 구현 (blessed 또는 ink)
   - [ ] 4.9 `blog analytics` CLI 명령어 구현 (`packages/cli/src/commands/analytics.ts`)
-  - [ ] 4.10 .env.example 업데이트 (OPENAI_API_KEY, REDDIT_*, TWITTER_*, 등)
+  - [x] 4.10 .env.example 업데이트 (OPENAI_API_KEY, REDDIT_*, TWITTER_*, 등)
   - [ ] 4.11 확장 기능 단위 테스트 작성
 
 - [ ] 5.0 테스팅 및 문서화
