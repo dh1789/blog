@@ -143,18 +143,18 @@
   - [x] 3.8 `publish` 명령어에 SEO 자동화 통합
   - [x] 3.9 SEO 모듈 단위 테스트 작성
 
-- [ ] 4.0 확장 MVP - 이미지, 트렌드, 분석 기능
+- [x] 4.0 확장 MVP - 이미지, 트렌드, 분석 기능
   - [x] 4.1 DALL-E 이미지 생성 모듈 구현 (`packages/core/src/image.ts`)
   - [x] 4.2 WordPress 미디어 라이브러리 업로드 기능 (`wordpress.ts` 확장)
   - [x] 4.3 `blog image generate` CLI 명령어 구현 (`packages/cli/src/commands/image.ts`)
   - [x] 4.4 트렌드 모니터링 모듈 구현 (`packages/core/src/trending.ts` - Reddit, HN, Twitter API)
   - [x] 4.5 트렌드 점수 계산 및 정렬 로직
   - [x] 4.6 `blog trending` CLI 명령어 구현 (`packages/cli/src/commands/trending.ts`)
-  - [ ] 4.7 분석 대시보드 모듈 구현 (`packages/core/src/analytics.ts` - WordPress API + AdSense API)
-  - [ ] 4.8 터미널 UI 구현 (blessed 또는 ink)
-  - [ ] 4.9 `blog analytics` CLI 명령어 구현 (`packages/cli/src/commands/analytics.ts`)
+  - [x] 4.7 분석 대시보드 모듈 구현 (`packages/core/src/analytics.ts` - WordPress API)
+  - [x] 4.8 터미널 UI 구현 (chalk + ora + 이모지 아이콘)
+  - [x] 4.9 `blog analytics` CLI 명령어 구현 (`packages/cli/src/commands/analytics.ts`)
   - [x] 4.10 .env.example 업데이트 (OPENAI_API_KEY, REDDIT_*, TWITTER_*, 등)
-  - [ ] 4.11 확장 기능 단위 테스트 작성
+  - [x] 4.11 확장 기능 단위 테스트 작성 (83 tests total - core 49, cli 34)
 
 - [ ] 5.0 테스팅 및 문서화
   - [ ] 5.1 vitest 설정 및 테스트 인프라 구성
