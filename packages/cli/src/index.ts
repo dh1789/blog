@@ -14,6 +14,7 @@ import { createCommand, refineCommand } from './commands/draft';
 import { previewCommand } from './commands/preview';
 import { imageGenerateCommand } from './commands/image';
 import { trendingCommand } from './commands/trending';
+import { analyticsCommand } from './commands/analytics';
 
 const program = new Command();
 
@@ -90,5 +91,13 @@ program
   .option('-m, --min-score <score>', '최소 점수 필터', '0')
   .option('--language <lang>', '언어 설정 (ko|en)', 'ko')
   .action(trendingCommand);
+
+program
+  .command('analytics')
+  .description('블로그 분석 대시보드')
+  .option('-p, --period <period>', '분석 기간 (day|week|month|year)', 'month')
+  .option('-l, --limit <number>', '결과 개수 제한', '10')
+  .option('-s, --sort-by <sort>', '정렬 기준 (views|comments|date)', 'views')
+  .action(analyticsCommand);
 
 program.parse();

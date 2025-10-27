@@ -244,3 +244,52 @@ export interface TrendScore {
     keywordMatch: number;
   };
 }
+
+/**
+ * 블로그 포스트 통계
+ */
+export interface PostStats {
+  id: number;
+  title: string;
+  url: string;
+  publishedDate: Date;
+  views: number;
+  likes?: number;
+  comments: number;
+  shares?: number;
+}
+
+/**
+ * 기간별 통계
+ */
+export interface PeriodStats {
+  period: 'day' | 'week' | 'month' | 'year';
+  totalViews: number;
+  totalPosts: number;
+  totalComments: number;
+  averageViewsPerPost: number;
+}
+
+/**
+ * 분석 대시보드 데이터
+ */
+export interface AnalyticsDashboard {
+  summary: {
+    totalPosts: number;
+    totalViews: number;
+    totalComments: number;
+    averageViewsPerPost: number;
+  };
+  topPosts: PostStats[];
+  recentPosts: PostStats[];
+  periodStats: PeriodStats;
+}
+
+/**
+ * 분석 옵션
+ */
+export interface AnalyticsOptions {
+  period?: 'day' | 'week' | 'month' | 'year';
+  limit?: number;
+  sortBy?: 'views' | 'comments' | 'date';
+}
