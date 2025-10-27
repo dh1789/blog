@@ -1,23 +1,43 @@
-# WordPress Content Automation CLI
+# @blog/cli - AI-Powered WordPress Blog Automation Platform
 
-WordPress + Avada 테마 기반 블로그의 콘텐츠 작성/관리/광고 수익 최적화 자동화 도구
+WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최적화까지 완전 자동화하는 CLI 도구
 
-## 특징
+## ✨ 주요 기능
 
-- ✍️ **마크다운 작성**: 로컬에서 마크다운으로 편하게 글 작성
-- 🚀 **자동 업로드**: WordPress에 자동으로 발행
-- 💰 **광고 자동 삽입**: Google AdSense 코드 자동 삽입으로 수익 최적화
-- 🌏 **다국어 지원**: 한국어/영어 콘텐츠 관리
-- ⚡ **빠른 워크플로우**: 반복 작업 자동화로 콘텐츠 생산에 집중
+### 📝 AI 콘텐츠 생성
+- **AI 초안 생성**: Claude를 활용한 고품질 블로그 포스트 자동 생성
+- **초안 수정**: AI 기반 콘텐츠 개선 및 리파인
+- **템플릿 시스템**: 다양한 콘텐츠 유형별 맞춤 템플릿
 
-## 기술 스택
+### 🖼️ 이미지 생성 (DALL-E 3)
+- **AI 이미지 생성**: DALL-E 3를 사용한 블로그 이미지 생성
+- **다양한 크기 지원**: 1024x1024, 1792x1024, 1024x1792
+- **품질 옵션**: Standard / HD
+- **자동 다운로드**: 로컬 저장 및 WordPress 업로드 준비
 
-- Node.js 20+ + TypeScript
-- pnpm workspace (Monorepo)
-- WordPress REST API
-- Google AdSense
+### 🚀 WordPress 자동화
+- **원클릭 발행**: 마크다운 → WordPress 자동 변환 및 업로드
+- **SEO 자동화**: 메타 태그, Open Graph, Twitter Card 자동 생성
+- **광고 자동 삽입**: Google AdSense 코드 최적 위치 자동 삽입
+- **포스트 관리**: 목록 조회, 삭제, 상태 변경
 
-## 설치
+### 📊 분석 & 모니터링
+- **분석 대시보드**: 조회수, 댓글, 인기 포스트 통계
+- **트렌드 모니터링**: Reddit, Hacker News, Twitter 실시간 트렌드 추적
+- **키워드 점수**: 트렌드 토픽의 영향력 자동 계산
+
+### 👁️ 실시간 프리뷰
+- **Live Reload**: 파일 변경 시 브라우저 자동 새로고침
+- **WordPress 스타일**: 실제 블로그와 동일한 스타일 프리뷰
+- **광고 위치 표시**: AdSense 삽입 위치 시각화
+
+## 📦 설치
+
+### 필요 사항
+- Node.js 20 이상
+- pnpm 9 이상
+- WordPress 사이트 (REST API 활성화)
+- OpenAI API 키 (이미지 생성 기능 사용 시)
 
 ### 1. 저장소 클론
 ```bash
@@ -35,14 +55,22 @@ pnpm install
 cp .env.example .env
 ```
 
-`.env` 파일을 편집하여 WordPress 연결 정보 입력:
+`.env` 파일 편집:
 ```env
+# WordPress 연결
 WORDPRESS_URL=https://your-blog.com
 WORDPRESS_USERNAME=your-username
 WORDPRESS_APP_PASSWORD=your-application-password
 
+# Google AdSense
 ADSENSE_CLIENT_ID=ca-pub-xxxxxxxxxx
 ADSENSE_SLOT_ID=xxxxxxxxxx
+
+# OpenAI (이미지 생성)
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxx
+
+# Twitter API (선택사항 - 트렌드 모니터링)
+TWITTER_BEARER_TOKEN=AAAAAAAAAxxxxxxxxxx
 ```
 
 ### 4. 빌드
@@ -50,60 +78,223 @@ ADSENSE_SLOT_ID=xxxxxxxxxx
 pnpm build
 ```
 
-## 사용법
-
-### WordPress 연결 설정
+### 5. CLI 설치 (선택사항)
 ```bash
-pnpm dev config
+cd packages/cli
+pnpm link --global
 ```
 
-### 포스트 발행
+이제 `blog` 명령어를 전역에서 사용할 수 있습니다.
+
+## 🎯 사용법
+
+### AI 초안 생성
 ```bash
-# 발행
-pnpm dev publish content/posts/ko/my-post.md
+# 기본 초안 생성
+blog draft create "Next.js 14 완벽 가이드" "Next.js, React, SSR" --words 2000
+
+# 한국어로 생성
+blog draft create "Next.js 14 가이드" "Next.js, 리액트" --language ko
+
+# 커스텀 템플릿 사용
+blog draft create "제품 리뷰" "리뷰, 평가" --template review
+
+# 초안 수정
+blog draft refine content/drafts/my-post.md "SEO 키워드 추가 및 더 전문적인 톤으로 수정"
+```
+
+### DALL-E 이미지 생성
+```bash
+# 기본 이미지 생성
+blog image generate "Modern minimalist blog header with tech theme"
+
+# HD 품질, 가로 이미지
+blog image generate "Beautiful landscape for blog header" \
+  --size 1792x1024 \
+  --quality hd \
+  --style natural \
+  --output ./images
+```
+
+### 실시간 프리뷰
+```bash
+# 기본 프리뷰 (포트 3000)
+blog preview content/posts/my-post.md
+
+# 커스텀 포트, 광고 위치 표시
+blog preview content/posts/my-post.md --port 8080 --show-ads
+
+# 브라우저 자동 열기 비활성화
+blog preview content/posts/my-post.md --no-browser
+```
+
+### WordPress 발행
+```bash
+# 즉시 발행
+blog publish content/posts/my-post.md
 
 # 초안으로 저장
-pnpm dev publish content/posts/ko/my-post.md --draft
+blog publish content/posts/my-post.md --draft
 
 # 시뮬레이션 (업로드 안 함)
-pnpm dev publish content/posts/ko/my-post.md --dry-run
+blog publish content/posts/my-post.md --dry-run
+
+# 영어 콘텐츠 발행
+blog publish content/posts/en/guide.md --language en
 ```
 
-### 마크다운 파일 형식
+### 포스트 관리
+```bash
+# 포스트 목록 조회
+blog list
+
+# 발행된 포스트만
+blog list --status publish
+
+# 최근 20개
+blog list --limit 20
+
+# 포스트 삭제
+blog delete 123
+
+# 강제 삭제 (확인 없이)
+blog delete 123 --force
+```
+
+### 트렌드 모니터링
+```bash
+# Reddit과 Hacker News 트렌드
+blog trending
+
+# Twitter 포함
+blog trending --sources reddit,hackernews,twitter
+
+# 키워드 필터링
+blog trending --keywords "AI,Machine Learning" --limit 20
+
+# 최소 점수 필터
+blog trending --min-score 50
+```
+
+### 분석 대시보드
+```bash
+# 월간 분석 (기본)
+blog analytics
+
+# 주간 분석
+blog analytics --period week
+
+# 인기 포스트 20개, 댓글순 정렬
+blog analytics --limit 20 --sort-by comments
+```
+
+### 설정
+```bash
+# WordPress 연결 설정
+blog config
+```
+
+## 📁 마크다운 파일 형식
+
 ```markdown
 ---
-title: "포스트 제목"
-slug: "post-slug"
-excerpt: "포스트 요약"
-status: "publish"
-categories:
-  - "카테고리1"
-tags:
-  - "태그1"
+title: "포스트 제목 (SEO 최적화)"
+description: "메타 설명 (150-160자)"
+keywords: ["키워드1", "키워드2", "키워드3"]
+tags: ["태그1", "태그2"]
+categories: ["카테고리1"]
+slug: "custom-url-slug"
 language: "ko"
 ---
 
-# 본문
+# 메인 제목
 
-여기에 내용 작성...
+소개 내용...
+
+## 첫 번째 섹션
+
+내용...
+
+## 두 번째 섹션
+
+내용...
 ```
 
-## 프로젝트 구조
+**자동 처리되는 기능:**
+- ✅ SEO 메타 태그 자동 생성
+- ✅ Open Graph 태그 (소셜 미디어 공유)
+- ✅ Twitter Card 태그
+- ✅ Google AdSense 코드 삽입 (첫 H2 뒤, 중간 위치)
+- ✅ 키워드 밀도 체크 (0.5-2.5%)
+- ✅ 한글 slug → 영문 자동 변환
+
+## 🏗️ 프로젝트 구조
 
 ```
 blog/
 ├── packages/
-│   ├── cli/      # CLI 도구
-│   ├── core/     # WordPress API, 마크다운 처리
-│   └── shared/   # 공유 타입 및 유틸리티
-├── content/      # 마크다운 콘텐츠
-│   └── posts/
-│       ├── ko/   # 한국어 포스트
-│       └── en/   # 영어 포스트
-└── ref/          # Avada 테마 참고 자료
+│   ├── cli/                 # CLI 명령어
+│   │   ├── src/
+│   │   │   ├── commands/    # 각 명령어 구현
+│   │   │   │   ├── draft/   # AI 초안 생성
+│   │   │   │   ├── analytics.ts
+│   │   │   │   ├── image.ts
+│   │   │   │   ├── trending.ts
+│   │   │   │   ├── preview.ts
+│   │   │   │   └── publish.ts
+│   │   │   └── index.ts     # CLI 진입점
+│   │   └── package.json
+│   ├── core/                # 핵심 로직
+│   │   ├── src/
+│   │   │   ├── wordpress.ts # WordPress API
+│   │   │   ├── markdown.ts  # 마크다운 처리
+│   │   │   ├── claude.ts    # AI 초안 생성
+│   │   │   ├── seo.ts       # SEO 자동화
+│   │   │   ├── image.ts     # DALL-E 이미지
+│   │   │   ├── trending.ts  # 트렌드 모니터링
+│   │   │   ├── analytics.ts # 분석 대시보드
+│   │   │   ├── preview.ts   # 프리뷰 서버
+│   │   │   ├── ads.ts       # 광고 삽입
+│   │   │   └── templates.ts # 템플릿 시스템
+│   │   └── package.json
+│   └── shared/              # 공유 타입
+│       ├── src/
+│       │   ├── types.ts     # TypeScript 타입
+│       │   └── schemas.ts   # Zod 스키마
+│       └── package.json
+├── content/
+│   ├── drafts/              # AI 생성 초안
+│   └── posts/               # 발행 준비된 포스트
+│       ├── ko/              # 한국어
+│       └── en/              # 영어
+├── prompts/                 # AI 프롬프트 템플릿
+│   ├── blog-post.txt
+│   ├── review.txt
+│   └── tutorial.txt
+├── .env.example
+└── package.json
 ```
 
-## 개발
+## 🧪 테스팅
+
+```bash
+# 전체 테스트
+pnpm test
+
+# 커버리지 측정
+pnpm test --coverage
+
+# 특정 패키지 테스트
+cd packages/core
+pnpm test
+```
+
+**테스트 현황:**
+- ✅ Core: 112 tests, 82% coverage
+- ✅ CLI: 55 tests, 67% coverage
+- ✅ Total: 167 tests
+
+## 🔧 개발
 
 ```bash
 # 개발 모드 (watch)
@@ -122,20 +313,67 @@ pnpm lint
 pnpm format
 ```
 
-## 로드맵
+## 📚 기술 스택
 
-- [x] 기본 포스트 발행 기능
-- [x] 광고 코드 자동 삽입
-- [ ] 이미지 자동 업로드
+- **Runtime**: Node.js 20+
+- **Language**: TypeScript 5.3+
+- **Package Manager**: pnpm (workspace)
+- **Testing**: Vitest
+- **WordPress**: WordPress REST API, WPAPI
+- **AI**: Claude (초안 생성), DALL-E 3 (이미지)
+- **Framework**: Commander.js (CLI)
+- **Preview**: Express, Socket.io, Chokidar
+- **SEO**: Marked, transliteration
+- **Trending**: Reddit API, Hacker News API, Twitter API
+- **Terminal UI**: Chalk, Ora
+
+## 🗺️ 로드맵
+
+### ✅ Epic 1.0 - Core MVP
+- [x] AI 초안 생성 (draft create, draft refine)
+- [x] WordPress 발행 (publish)
+- [x] 기본 CLI 구조
+
+### ✅ Epic 2.0 - Preview System
+- [x] 실시간 프리뷰 서버
+- [x] Live Reload
+- [x] 광고 위치 시각화
+
+### ✅ Epic 3.0 - SEO Automation
+- [x] SEO 메타 태그 자동 생성
+- [x] Open Graph & Twitter Card
+- [x] 키워드 밀도 체크
+- [x] Slug 자동 변환
+
+### ✅ Epic 4.0 - Extended MVP
+- [x] DALL-E 이미지 생성
+- [x] 트렌드 모니터링 (Reddit, HN, Twitter)
+- [x] 분석 대시보드
+
+### 🚧 Epic 5.0 - Testing & Documentation
+- [x] Vitest 설정
+- [x] 단위 테스트 (167 tests)
+- [x] 커버리지 측정 (82% core, 67% CLI)
+- [ ] 통합 테스트 개선
+- [ ] 수동 테스트
+- [ ] 사용자 가이드
+
+### 📋 Future Enhancements
+- [ ] WordPress 미디어 라이브러리 통합
 - [ ] 일괄 업로드/업데이트
 - [ ] 스케줄 발행
-- [ ] SEO 최적화
-- [ ] 성과 분석 대시보드
+- [ ] 성능 분석 (Core Web Vitals)
+- [ ] 다국어 콘텐츠 자동 번역
+- [ ] GitHub Actions CI/CD
 
-## 라이선스
+## 📄 라이선스
 
 MIT
 
-## 기여
+## 🤝 기여
 
 이슈와 PR을 환영합니다!
+
+## 📮 문의
+
+이슈를 통해 문의해주세요.

@@ -12,6 +12,8 @@ export default defineConfig({
         'dist/',
         '**/*.test.ts',
         '**/*.spec.ts',
+        '**/utils/**',
+        'src/index.ts',
       ],
     },
     testTimeout: 600000, // 10 minutes for AI operations
