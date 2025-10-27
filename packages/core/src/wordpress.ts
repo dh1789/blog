@@ -3,7 +3,7 @@
  */
 
 import WPAPI from 'wpapi';
-import type { WordPressConfig, PostMetadata } from '@blog/shared';
+import type { WordPressConfig, PostMetadata, SeoData } from '@blog/shared';
 
 export class WordPressClient {
   private wp: WPAPI;
@@ -16,17 +16,47 @@ export class WordPressClient {
     });
   }
 
-  async createPost(metadata: PostMetadata, content: string): Promise<number> {
+  async createPost(
+    metadata: PostMetadata,
+    content: string,
+    seoData?: SeoData
+  ): Promise<number> {
     try {
-      const post = await this.wp.posts().create({
+      const postData: Record<string, unknown> = {
         title: metadata.title,
         content,
-        slug: metadata.slug,
+        slug: seoData?.slug || metadata.slug,
         excerpt: metadata.excerpt,
         status: metadata.status,
         categories: await this.getCategoryIds(metadata.categories || []),
         tags: await this.getTagIds(metadata.tags || []),
-      });
+      };
+
+      // SEO 메타 데이터 추가
+      if (seoData) {
+        postData.meta = {
+          _seo_title: seoData.meta.title,
+          _seo_description: seoData.meta.description,
+          _seo_keywords: seoData.meta.keywords.join(', '),
+          _seo_canonical: seoData.meta.canonical,
+          _seo_robots: seoData.meta.robots,
+          _og_title: seoData.openGraph['og:title'],
+          _og_description: seoData.openGraph['og:description'],
+          _og_type: seoData.openGraph['og:type'],
+          _og_url: seoData.openGraph['og:url'],
+          _og_image: seoData.openGraph['og:image'],
+          _og_locale: seoData.openGraph['og:locale'],
+          _og_site_name: seoData.openGraph['og:site_name'],
+          _twitter_card: seoData.twitterCard['twitter:card'],
+          _twitter_title: seoData.twitterCard['twitter:title'],
+          _twitter_description: seoData.twitterCard['twitter:description'],
+          _twitter_image: seoData.twitterCard['twitter:image'],
+          _twitter_site: seoData.twitterCard['twitter:site'],
+          _twitter_creator: seoData.twitterCard['twitter:creator'],
+        };
+      }
+
+      const post = await this.wp.posts().create(postData);
 
       return post.id;
     } catch (error) {
@@ -34,15 +64,46 @@ export class WordPressClient {
     }
   }
 
-  async updatePost(postId: number, metadata: PostMetadata, content: string): Promise<void> {
+  async updatePost(
+    postId: number,
+    metadata: PostMetadata,
+    content: string,
+    seoData?: SeoData
+  ): Promise<void> {
     try {
-      await this.wp.posts().id(postId).update({
+      const postData: Record<string, unknown> = {
         title: metadata.title,
         content,
-        slug: metadata.slug,
+        slug: seoData?.slug || metadata.slug,
         excerpt: metadata.excerpt,
         status: metadata.status,
-      });
+      };
+
+      // SEO 메타 데이터 추가
+      if (seoData) {
+        postData.meta = {
+          _seo_title: seoData.meta.title,
+          _seo_description: seoData.meta.description,
+          _seo_keywords: seoData.meta.keywords.join(', '),
+          _seo_canonical: seoData.meta.canonical,
+          _seo_robots: seoData.meta.robots,
+          _og_title: seoData.openGraph['og:title'],
+          _og_description: seoData.openGraph['og:description'],
+          _og_type: seoData.openGraph['og:type'],
+          _og_url: seoData.openGraph['og:url'],
+          _og_image: seoData.openGraph['og:image'],
+          _og_locale: seoData.openGraph['og:locale'],
+          _og_site_name: seoData.openGraph['og:site_name'],
+          _twitter_card: seoData.twitterCard['twitter:card'],
+          _twitter_title: seoData.twitterCard['twitter:title'],
+          _twitter_description: seoData.twitterCard['twitter:description'],
+          _twitter_image: seoData.twitterCard['twitter:image'],
+          _twitter_site: seoData.twitterCard['twitter:site'],
+          _twitter_creator: seoData.twitterCard['twitter:creator'],
+        };
+      }
+
+      await this.wp.posts().id(postId).update(postData);
     } catch (error) {
       throw new Error(`Failed to update post ${postId}: ${error}`);
     }

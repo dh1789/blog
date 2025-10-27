@@ -8,13 +8,15 @@ import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
-import type { PostMetadata } from '@blog/shared';
+import type { PostMetadata, SeoData } from '@blog/shared';
 import { PostMetadataSchema } from '@blog/shared';
+import { generateSeoData } from './seo.js';
 
 export interface ParsedPost {
   metadata: PostMetadata;
   content: string;
   htmlContent: string;
+  seoData: SeoData;
 }
 
 export async function parseMarkdownFile(fileContent: string): Promise<ParsedPost> {
@@ -24,10 +26,20 @@ export async function parseMarkdownFile(fileContent: string): Promise<ParsedPost
 
   const htmlContent = await convertMarkdownToHtml(content);
 
+  // SEO 데이터 생성
+  const seoData = generateSeoData({
+    title: metadata.title,
+    excerpt: metadata.excerpt || '',
+    content: htmlContent,
+    keywords: metadata.tags || [],
+    language: metadata.language,
+  });
+
   return {
     metadata,
     content,
     htmlContent,
+    seoData,
   };
 }
 

@@ -6,7 +6,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import ora from 'ora';
 import chalk from 'chalk';
-import { WordPressClient, parseMarkdownFile, injectAds } from '@blog/core';
+import {
+  WordPressClient,
+  parseMarkdownFile,
+  injectAds,
+  calculateSeoScore,
+  validateKeywordDensity,
+} from '@blog/core';
 import { loadConfig } from '../utils/config';
 
 interface PublishOptions {
@@ -23,12 +29,13 @@ export async function publishCommand(file: string, options: PublishOptions) {
     const fileContent = await fs.readFile(filePath, 'utf-8');
 
     spinner.text = '파일 파싱 및 검증 중...';
-    let metadata, htmlContent;
+    let metadata, htmlContent, seoData;
 
     try {
       const parsed = await parseMarkdownFile(fileContent);
       metadata = parsed.metadata;
       htmlContent = parsed.htmlContent;
+      seoData = parsed.seoData;
     } catch (error) {
       spinner.fail(chalk.red('Frontmatter 검증 실패'));
 
@@ -65,15 +72,57 @@ export async function publishCommand(file: string, options: PublishOptions) {
     const config = await loadConfig();
     const wpClient = new WordPressClient(config.wordpress);
 
+    // SEO 점수 계산
+    const seoScore = calculateSeoScore({
+      title: metadata.title,
+      excerpt: metadata.excerpt,
+      content: htmlContent,
+      keywords: metadata.tags,
+    });
+
+    // 키워드 밀도 검증
+    const densityValidation = validateKeywordDensity(htmlContent, metadata.tags);
+
     // 발행 전 검증 요약 표시
     spinner.info(chalk.blue('발행 준비 완료'));
     console.log(chalk.cyan('\n=== 포스트 정보 ==='));
     console.log(chalk.white('제목:'), chalk.green(metadata.title));
-    console.log(chalk.white('요약:'), chalk.gray(metadata.excerpt.substring(0, 80) + (metadata.excerpt.length > 80 ? '...' : '')));
-    console.log(chalk.white('상태:'), finalStatus === 'publish' ? chalk.green(finalStatus) : chalk.yellow(finalStatus));
+    console.log(chalk.white('Slug:'), chalk.gray(seoData.slug));
+    console.log(
+      chalk.white('요약:'),
+      chalk.gray(
+        metadata.excerpt.substring(0, 80) +
+          (metadata.excerpt.length > 80 ? '...' : '')
+      )
+    );
+    console.log(
+      chalk.white('상태:'),
+      finalStatus === 'publish' ? chalk.green(finalStatus) : chalk.yellow(finalStatus)
+    );
     console.log(chalk.white('언어:'), metadata.language);
     console.log(chalk.white('카테고리:'), chalk.cyan(metadata.categories.join(', ')));
     console.log(chalk.white('태그:'), chalk.cyan(metadata.tags.join(', ')));
+
+    console.log(chalk.cyan('\n=== SEO 점수 ==='));
+    const scoreColor =
+      seoScore.score >= 80
+        ? chalk.green
+        : seoScore.score >= 60
+        ? chalk.yellow
+        : chalk.red;
+    console.log(
+      chalk.white('총점:'),
+      scoreColor(`${seoScore.score}/${seoScore.maxScore}`)
+    );
+
+    // 키워드 밀도 경고
+    if (!densityValidation.valid) {
+      console.log(chalk.yellow('\n⚠️  키워드 밀도 경고:'));
+      densityValidation.warnings.forEach((warning) => {
+        console.log(chalk.yellow(`  - ${warning}`));
+      });
+    }
+
     console.log(chalk.cyan('==================\n'));
 
     if (options.dryRun) {
@@ -84,10 +133,11 @@ export async function publishCommand(file: string, options: PublishOptions) {
     spinner.text = '광고 코드 삽입 중...';
     const contentWithAds = injectAds(htmlContent, config.ads);
 
-    spinner.text = 'WordPress에 업로드 중...';
+    spinner.text = 'WordPress에 업로드 중 (SEO 메타데이터 포함)...';
     const postId = await wpClient.createPost(
       { ...metadata, status: finalStatus },
-      contentWithAds
+      contentWithAds,
+      seoData
     );
 
     spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
