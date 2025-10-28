@@ -129,6 +129,41 @@ export class WordPressClient {
     }
   }
 
+  async listPosts(options: {
+    status?: 'publish' | 'draft' | 'all';
+    limit?: number;
+  } = {}): Promise<Array<{
+    id: number;
+    title: string;
+    slug: string;
+    status: string;
+    date: string;
+  }>> {
+    try {
+      const { status = 'all', limit = 10 } = options;
+
+      let query = this.wp.posts().perPage(limit);
+
+      if (status !== 'all') {
+        query = query.param('status', status);
+      } else {
+        query = query.param('status', ['publish', 'draft', 'pending', 'private']);
+      }
+
+      const posts = await query;
+
+      return posts.map((post: any) => ({
+        id: post.id,
+        title: post.title.rendered,
+        slug: post.slug,
+        status: post.status,
+        date: post.date,
+      }));
+    } catch (error) {
+      throw new Error(`Failed to list posts: ${error}`);
+    }
+  }
+
   async uploadMedia(filePath: string, title?: string, alt?: string): Promise<{
     id: number;
     url: string;
