@@ -181,34 +181,120 @@ AI-Powered WordPress Blog Automation Platform 개발 작업 목록
 - 실제 발행: 2개 포스트 발행 및 검증 완료
 - 문서화: README.md, CHANGELOG.md, 사용자 가이드 완료
 
-## Epic 6.0 - Future Enhancements 📋
+## Epic 6.0 - Production Deployment 🚀
 
-- [ ] 6.1 WordPress 미디어 라이브러리 통합
+### 준비 단계
+
+- [ ] 6.1 호스팅 연구 및 선택
+  - [ ] WordPress 호스팅 옵션 조사 (Bluehost, SiteGround, WP Engine, DigitalOcean)
+  - [ ] 성능, 가격, 확장성 비교 분석
+  - [ ] 최종 호스팅 선택 및 계정 생성
+  - [ ] 도메인 선택 및 등록 (필요 시)
+
+- [ ] 6.2 기본 페이지 콘텐츠 작성
+  - [ ] About 페이지 작성
+  - [ ] Contact 페이지 작성
+  - [ ] Privacy Policy 작성
+  - [ ] Terms of Service 작성
+
+- [ ] 6.3 추가 블로그 포스트 작성 (로컬 테스트)
+  - [ ] 기술 블로그 포스트 3개
+  - [ ] 튜토리얼 포스트 2개
+  - [ ] 다양한 주제와 형식 실험
+
+### 배포 단계
+
+- [ ] 6.4 프로덕션 환경 설정
+  - [ ] WordPress 설치 및 초기 설정
+  - [ ] SSL 인증서 설정 (Let's Encrypt)
+  - [ ] PHP 및 서버 환경 최적화
+  - [ ] 백업 시스템 구축
+
+- [ ] 6.5 테마 및 플러그인 설치
+  - [ ] Avada 라이선스 구매 및 등록
+  - [ ] Avada 테마 설치 및 활성화
+  - [ ] Rank Math SEO 플러그인 설치
+  - [ ] 필수 플러그인 설치 (보안, 캐싱, 백업)
+
+- [ ] 6.6 @blog/cli 프로덕션 연동
+  - [ ] .env 파일 프로덕션 설정
+  - [ ] REST API 연결 테스트
+  - [ ] Application Password 생성
+  - [ ] 첫 프로덕션 포스트 발행 테스트
+
+### SEO 및 수익화
+
+- [ ] 6.7 SEO 기반 구축
+  - [ ] Google Search Console 등록
+  - [ ] Google Analytics 설정
+  - [ ] Sitemap 생성 및 제출
+  - [ ] robots.txt 설정
+
+- [ ] 6.8 초기 콘텐츠 발행
+  - [ ] 10개 블로그 포스트 발행 (AdSense 승인 준비)
+  - [ ] 기본 페이지 발행 (About, Contact, Privacy, Terms)
+  - [ ] 카테고리 및 태그 체계 구축
+
+- [ ] 6.9 Google AdSense 신청
+  - [ ] AdSense 계정 생성
+  - [ ] 사이트 등록 및 승인 대기
+  - [ ] 승인 후 실제 광고 코드로 교체
+  - [ ] 광고 배치 최적화
+
+**Status**: 📋 계획됨 (Planned)
+
+## Epic 7.0 - Advanced Features 🎯
+
+### 자동화 및 확장
+
+- [ ] 7.1 WordPress 미디어 라이브러리 통합
   - [ ] 이미지 자동 업로드
   - [ ] 미디어 관리 기능
   - [ ] 이미지 최적화
 
-- [ ] 6.2 일괄 업로드/업데이트
+- [ ] 7.2 일괄 업로드/업데이트
   - [ ] 여러 포스트 동시 발행
   - [ ] 기존 포스트 일괄 업데이트
   - [ ] CSV/JSON 임포트
 
-- [ ] 6.3 스케줄 발행
+- [ ] 7.3 스케줄 발행
   - [ ] 예약 발행 기능
   - [ ] cron 통합
   - [ ] 발행 일정 관리
 
-- [ ] 6.4 성능 분석
+### AI 및 다국어
+
+- [ ] 7.4 AI 기반 콘텐츠 개선
+  - [ ] Claude API 연동 강화
+  - [ ] 자동 콘텐츠 품질 개선 제안
+  - [ ] SEO 최적화 자동 제안
+
+- [ ] 7.5 다국어 콘텐츠 자동 번역
+  - [ ] DeepL API 연동
+  - [ ] 다국어 포스트 관리
+  - [ ] 언어별 SEO 최적화
+  - [ ] WPML 또는 Polylang 플러그인 연동
+
+### 성과 분석 및 최적화
+
+- [ ] 7.6 성능 분석
   - [ ] Core Web Vitals 측정
   - [ ] Lighthouse 통합
   - [ ] 성능 최적화 제안
 
-- [ ] 6.5 다국어 콘텐츠 자동 번역
-  - [ ] DeepL API 연동
-  - [ ] 다국어 포스트 관리
-  - [ ] 언어별 SEO 최적화
+- [ ] 7.7 광고 수익 최적화
+  - [ ] 광고 위치 A/B 테스팅
+  - [ ] 성과 분석 대시보드
+  - [ ] 자동 광고 배치 최적화
 
-- [ ] 6.6 GitHub Actions CI/CD
+- [ ] 7.8 분석 대시보드 강화
+  - [ ] WordPress 통계 심화 분석
+  - [ ] 트렌드 예측 기능
+  - [ ] 콘텐츠 성과 리포트
+
+### DevOps
+
+- [ ] 7.9 GitHub Actions CI/CD
   - [ ] 자동 테스트 실행
   - [ ] 자동 배포
   - [ ] 릴리스 자동화
