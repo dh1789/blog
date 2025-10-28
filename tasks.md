@@ -193,7 +193,7 @@ AI-Powered WordPress Blog Automation Platform 개발 작업 목록
 
 - [ ] 6.2 기본 페이지 콘텐츠 작성
   - [x] About 페이지 작성 (한국어 + 영어)
-  - [ ] Contact 페이지 작성
+  - [x] Contact 페이지 작성 (한국어 + 영어)
   - [ ] Privacy Policy 작성
   - [ ] Terms of Service 작성
 
