@@ -188,8 +188,8 @@ AI-Powered WordPress Blog Automation Platform 개발 작업 목록
 - [ ] 6.1 호스팅 연구 및 선택
   - [x] WordPress 호스팅 옵션 조사 (Bluehost, SiteGround, WP Engine, DigitalOcean, ScalaHosting)
   - [x] 성능, 가격, 확장성 비교 분석 (tasks/wordpress-hosting-research.md)
-  - [ ] 최종 호스팅 선택 및 계정 생성
-  - [ ] 도메인 선택 및 등록 (필요 시)
+  - [ ] 최종 호스팅 선택 및 계정 생성 (보류 - 콘텐츠 작성 후 진행)
+  - [ ] 도메인 선택 및 등록 (보류 - 계정 생성 시 진행)
 
 - [ ] 6.2 기본 페이지 콘텐츠 작성
   - [ ] About 페이지 작성
