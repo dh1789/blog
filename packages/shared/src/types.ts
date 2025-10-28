@@ -99,6 +99,12 @@ export interface DraftCreateOptions {
   template?: string;
   language?: 'ko' | 'en';
   style?: string;
+  /**
+   * 가이드라인 파일 경로 (선택)
+   * 예: 'prompts/blog-post-guidelines.md'
+   * 기본값: prompts/blog-post-guidelines.md
+   */
+  guidelines?: string;
 }
 
 /**

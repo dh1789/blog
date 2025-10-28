@@ -11,6 +11,8 @@ interface CreateCommandOptions {
   template?: string;
   language?: 'ko' | 'en';
   style?: string;
+  guidelines?: string;
+  noGuidelines?: boolean;
 }
 
 /**
@@ -37,6 +39,19 @@ export async function createCommand(
     console.log(`주제: ${topic}`);
     console.log(`키워드: ${keywords}`);
 
+    // 가이드라인 처리
+    let guidelinesPath: string | undefined;
+    if (options.noGuidelines) {
+      console.log('ℹ️  가이드라인 비활성화');
+      guidelinesPath = undefined;
+    } else if (options.guidelines) {
+      console.log(`📋 가이드라인: ${options.guidelines}`);
+      guidelinesPath = options.guidelines;
+    } else {
+      // 기본값: prompts/blog-post-guidelines.md
+      guidelinesPath = 'prompts/blog-post-guidelines.md';
+    }
+
     // 옵션 파싱
     const draftOptions: DraftCreateOptions = {
       topic,
@@ -45,6 +60,7 @@ export async function createCommand(
       template: options.template,
       language: options.language,
       style: options.style,
+      guidelines: guidelinesPath,
     };
 
     // 타임아웃 안내

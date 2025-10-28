@@ -18,8 +18,9 @@ import { renderTemplate, applyDefaults } from './templates';
 
 /**
  * Claude Code 실행 파일 경로
+ * which claude로 확인한 절대 경로 사용
  */
-const CLAUDE_COMMAND = 'claude';
+const CLAUDE_COMMAND = '/opt/homebrew/bin/claude';
 
 /**
  * 기본 타임아웃 (밀리초)
@@ -28,9 +29,9 @@ const DEFAULT_TIMEOUT = 120000; // 2분
 
 /**
  * 단어당 타임아웃 계산 (밀리초)
- * 1000 단어당 약 60초 = 단어당 60ms
+ * 1000 단어당 약 240초 = 단어당 240ms (Claude Code가 더 느릴 수 있음)
  */
-const TIMEOUT_PER_WORD = 60;
+const TIMEOUT_PER_WORD = 240;
 
 /**
  * content/drafts 디렉토리
@@ -76,11 +77,17 @@ export async function executeClaude(options: ClaudeOptions): Promise<ClaudeRespo
   const timeout = options.timeout || DEFAULT_TIMEOUT;
 
   return new Promise((resolve) => {
-    const args = ['-p', options.prompt];
-
-    const claudeProcess = spawn(CLAUDE_COMMAND, args, {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      shell: true,
+    // stdin으로 프롬프트 전달 (특수 문자 이스케이프 문제 회피)
+    // -p: headless 모드 (필수)
+    // --permission-mode acceptEdits: 권한 프롬프트 자동 승인
+    const claudeProcess = spawn(CLAUDE_COMMAND, [
+      '-p',
+      '--permission-mode', 'acceptEdits'
+    ], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: false,
+      env: process.env,   // 환경 변수 전달 (macOS Keychain 접근 등)
+      cwd: process.cwd(), // 현재 작업 디렉토리
     });
 
     let stdout = '';
@@ -155,7 +162,38 @@ export async function executeClaude(options: ClaudeOptions): Promise<ClaudeRespo
         });
       }
     });
+
+    // stdin으로 프롬프트 전달
+    claudeProcess.stdin.write(options.prompt);
+    claudeProcess.stdin.end();
   });
+}
+
+/**
+ * 가이드라인 파일 로드
+ *
+ * @param guidelinesPath 가이드라인 파일 경로
+ * @returns 가이드라인 내용 또는 null
+ */
+function loadGuidelines(guidelinesPath?: string): string | null {
+  if (!guidelinesPath) {
+    return null;
+  }
+
+  try {
+    const fullPath = resolve(process.cwd(), guidelinesPath);
+    if (!existsSync(fullPath)) {
+      console.warn(`⚠️  가이드라인 파일을 찾을 수 없습니다: ${guidelinesPath}`);
+      return null;
+    }
+
+    const guidelines = readFileSync(fullPath, 'utf-8');
+    console.log(`✓ 가이드라인 로드 완료: ${guidelinesPath}`);
+    return guidelines;
+  } catch (error) {
+    console.warn(`⚠️  가이드라인 파일 로드 실패: ${(error as Error).message}`);
+    return null;
+  }
 }
 
 /**
@@ -169,6 +207,7 @@ export async function createDraft(options: DraftCreateOptions): Promise<string> 
   const words = options.words || 2000;
   const template = options.template || 'blog-post';
   const language = options.language || 'ko';
+  const guidelinesPath = options.guidelines || 'prompts/blog-post-guidelines.md';
 
   // 템플릿 변수 준비
   const variables = applyDefaults({
@@ -179,12 +218,30 @@ export async function createDraft(options: DraftCreateOptions): Promise<string> 
   });
 
   // 템플릿 렌더링
-  const prompt = renderTemplate({
+  let prompt = renderTemplate({
     name: template,
     variables,
   });
 
-  // 타임아웃 계산
+  // 가이드라인 주입
+  const guidelines = loadGuidelines(guidelinesPath);
+  if (guidelines) {
+    prompt = `${prompt}
+
+---
+
+## 📋 Blog Post Guidelines
+
+다음 가이드라인을 반드시 준수하여 포스트를 작성하세요:
+
+${guidelines}
+
+---
+
+위 가이드라인을 모두 적용하여 고품질 블로그 포스트를 작성해주세요.`;
+  }
+
+  // 타임아웃 계산 (중요: 단어 수에 비례)
   const timeout = calculateTimeout(words);
 
   // Claude Code 실행

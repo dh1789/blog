@@ -50,16 +50,18 @@ program
   .action(configCommand);
 
 program
-  .command('draft create <topic> <keywords>')
+  .command('draft-create <topic> <keywords>')
   .description('AI를 사용하여 블로그 포스트 초안 생성')
   .option('-w, --words <number>', '타겟 단어 수', '2000')
   .option('-t, --template <name>', '템플릿 이름', 'blog-post')
   .option('-l, --language <lang>', '언어 설정 (ko|en)', 'ko')
   .option('-s, --style <style>', '작성 스타일')
+  .option('-g, --guidelines <path>', '가이드라인 파일 경로', 'prompts/blog-post-guidelines.md')
+  .option('--no-guidelines', '가이드라인 비활성화')
   .action(createCommand);
 
 program
-  .command('draft refine <file> <instruction>')
+  .command('draft-refine <file> <instruction>')
   .description('AI를 사용하여 기존 블로그 포스트 초안 수정')
   .option('-t, --timeout <ms>', '타임아웃 (밀리초)', '120000')
   .action(refineCommand);
