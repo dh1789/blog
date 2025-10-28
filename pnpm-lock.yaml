@@ -44,6 +44,9 @@ importers:
       commander:
         specifier: ^11.1.0
         version: 11.1.0
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
       inquirer:
         specifier: ^9.2.12
         version: 9.3.8(@types/node@20.19.23)

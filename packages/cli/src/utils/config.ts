@@ -28,3 +28,11 @@ export async function loadConfig(): Promise<AppConfig> {
 
   return { wordpress, ads };
 }
+
+export function loadWordPressConfig(): WordPressConfig {
+  return WordPressConfigSchema.parse({
+    url: process.env.WORDPRESS_URL,
+    username: process.env.WORDPRESS_USERNAME,
+    password: process.env.WORDPRESS_APP_PASSWORD,
+  });
+}

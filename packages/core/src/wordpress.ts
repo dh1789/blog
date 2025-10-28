@@ -35,6 +35,7 @@ export class WordPressClient {
       // SEO 메타 데이터 추가
       if (seoData) {
         postData.meta = {
+          // 커스텀 SEO 필드 (하위 호환성)
           _seo_title: seoData.meta.title,
           _seo_description: seoData.meta.description,
           _seo_keywords: seoData.meta.keywords.join(', '),
@@ -53,6 +54,11 @@ export class WordPressClient {
           _twitter_image: seoData.twitterCard['twitter:image'],
           _twitter_site: seoData.twitterCard['twitter:site'],
           _twitter_creator: seoData.twitterCard['twitter:creator'],
+          // Rank Math SEO 플러그인 필드
+          rank_math_title: seoData.meta.title,
+          rank_math_description: seoData.meta.description,
+          rank_math_focus_keyword: seoData.meta.keywords.join(', '),
+          rank_math_robots: [seoData.meta.robots],
         };
       }
 
@@ -82,6 +88,7 @@ export class WordPressClient {
       // SEO 메타 데이터 추가
       if (seoData) {
         postData.meta = {
+          // 커스텀 SEO 필드 (하위 호환성)
           _seo_title: seoData.meta.title,
           _seo_description: seoData.meta.description,
           _seo_keywords: seoData.meta.keywords.join(', '),
@@ -100,6 +107,11 @@ export class WordPressClient {
           _twitter_image: seoData.twitterCard['twitter:image'],
           _twitter_site: seoData.twitterCard['twitter:site'],
           _twitter_creator: seoData.twitterCard['twitter:creator'],
+          // Rank Math SEO 플러그인 필드
+          rank_math_title: seoData.meta.title,
+          rank_math_description: seoData.meta.description,
+          rank_math_focus_keyword: seoData.meta.keywords.join(', '),
+          rank_math_robots: [seoData.meta.robots],
         };
       }
 

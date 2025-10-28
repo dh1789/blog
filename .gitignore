@@ -35,6 +35,8 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+test-wp-connection.*
+verify-*.py
 
 # Temporary files
 tmp/
