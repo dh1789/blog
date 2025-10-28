@@ -191,11 +191,11 @@ AI-Powered WordPress Blog Automation Platform 개발 작업 목록
   - [ ] 최종 호스팅 선택 및 계정 생성 (보류 - 콘텐츠 작성 후 진행)
   - [ ] 도메인 선택 및 등록 (보류 - 계정 생성 시 진행)
 
-- [ ] 6.2 기본 페이지 콘텐츠 작성
+- [x] 6.2 기본 페이지 콘텐츠 작성
   - [x] About 페이지 작성 (한국어 + 영어)
   - [x] Contact 페이지 작성 (한국어 + 영어)
   - [x] Privacy Policy 작성 (한국어 + 영어)
-  - [ ] Terms of Service 작성
+  - [x] Terms of Service 작성 (한국어 + 영어)
 
 - [ ] 6.3 추가 블로그 포스트 작성 (로컬 테스트)
   - [ ] 기술 블로그 포스트 3개
