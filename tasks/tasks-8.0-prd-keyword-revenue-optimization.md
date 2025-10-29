@@ -77,26 +77,26 @@
 ### 2.0 타입 정의 및 데이터 모델
 
 #### 2.1 타입 정의
-- [ ] 2.1.1 `packages/shared/src/types.ts`에 새 타입 추가
+- [x] 2.1.1 `packages/shared/src/types.ts`에 새 타입 추가
   - `KeywordData`: 키워드, CPC, 검색량, 경쟁 강도
   - `RevenueScore`: 수익성 점수 및 세부 항목
   - `TopicSuggestion`: 추천 주제 및 예상 수익
   - `KeywordMetrics`: 정규화된 지표
   - `RevenueAnalysisOptions`: 분석 옵션
-- [ ] 2.1.2 기존 `TrendingOptions` 타입 확장
+- [x] 2.1.2 기존 `TrendingOptions` 타입 확장
   - `revenue?: boolean` 옵션 추가
   - `outputFile?: string` 옵션 추가
   - `format?: 'table' | 'json'` 옵션 추가
-- [ ] 2.1.3 `ScoredTrendingTopic` 타입 확장
+- [x] 2.1.3 `ScoredTrendingTopic` 타입 확장
   - `revenueData?: KeywordData` 필드 추가
   - `revenueScore?: RevenueScore` 필드 추가
 
 #### 2.2 Zod 스키마 정의
-- [ ] 2.2.1 `packages/shared/src/schemas.ts`에 Zod 스키마 추가
+- [x] 2.2.1 `packages/shared/src/schemas.ts`에 Zod 스키마 추가
   - `keywordDataSchema`: KeywordData 검증 스키마
   - `revenueScoreSchema`: RevenueScore 검증 스키마
   - `topicSuggestionSchema`: TopicSuggestion 검증 스키마
-- [ ] 2.2.2 타입 export 확인 및 `packages/shared/src/index.ts` 업데이트
+- [x] 2.2.2 타입 export 확인 및 `packages/shared/src/index.ts` 업데이트
 
 #### 2.3 타입 및 스키마 검증 테스트
 - [ ] 2.3.1 `packages/shared/src/schemas.test.ts` 파일 생성
