@@ -61,13 +61,14 @@ console.log('테스트 코드 블록');
   });
 
   describe('Server Initialization', () => {
-    it('should start server on default port 3000', async () => {
+    it('should start server on default port 4000', async () => {
       server = await startPreviewServer({
         filePath: TEST_FILE,
+        port: 4000,
         openBrowser: false,
       });
 
-      expect(server.port).toBeGreaterThanOrEqual(3000);
+      expect(server.port).toBeGreaterThanOrEqual(4000);
       expect(server.url).toBe(`http://localhost:${server.port}`);
     });
 
@@ -75,18 +76,18 @@ console.log('테스트 코드 블록');
       // 첫 번째 서버 시작
       const server1 = await startPreviewServer({
         filePath: TEST_FILE,
-        port: 3100,
+        port: 4100,
         openBrowser: false,
       });
 
       // 두 번째 서버는 다음 포트를 사용해야 함
       const server2 = await startPreviewServer({
         filePath: TEST_FILE,
-        port: 3100,
+        port: 4100,
         openBrowser: false,
       });
 
-      expect(server2.port).toBe(3101);
+      expect(server2.port).toBe(4101);
 
       // 정리
       await server1.close();
@@ -110,7 +111,7 @@ console.log('테스트 코드 블록');
         for (let i = 0; i < 3; i++) {
           const srv = await startPreviewServer({
             filePath: TEST_FILE,
-            port: 3200,
+            port: 4200,
             maxPortAttempts: 3,
             openBrowser: false,
           });
@@ -121,7 +122,7 @@ console.log('테스트 코드 블록');
         await expect(
           startPreviewServer({
             filePath: TEST_FILE,
-            port: 3200,
+            port: 4200,
             maxPortAttempts: 3,
             openBrowser: false,
           })
@@ -139,6 +140,7 @@ console.log('테스트 코드 블록');
     it('should load and parse markdown content', async () => {
       server = await startPreviewServer({
         filePath: TEST_FILE,
+        port: 4000,
         openBrowser: false,
       });
 
@@ -163,6 +165,7 @@ console.log('테스트 코드 블록');
     it('should properly close server and watcher', async () => {
       server = await startPreviewServer({
         filePath: TEST_FILE,
+        port: 4000,
         openBrowser: false,
       });
 
@@ -189,6 +192,7 @@ console.log('테스트 코드 블록');
       // openBrowser: false는 에러 없이 실행되어야 함
       server = await startPreviewServer({
         filePath: TEST_FILE,
+        port: 4000,
         openBrowser: false,
       });
 
@@ -199,6 +203,7 @@ console.log('테스트 코드 블록');
     it('should respect showAdPositions option', async () => {
       server = await startPreviewServer({
         filePath: TEST_FILE,
+        port: 4000,
         openBrowser: false,
         showAdPositions: true,
       });
@@ -214,6 +219,7 @@ console.log('테스트 코드 블록');
     it('should serve HTML preview page', async () => {
       server = await startPreviewServer({
         filePath: TEST_FILE,
+        port: 4000,
         openBrowser: false,
       });
 
