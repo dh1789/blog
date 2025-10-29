@@ -86,6 +86,7 @@ describe('draft create command', () => {
         template: 'custom-template',
         language: 'en',
         style: 'formal',
+        guidelines: 'prompts/blog-post-guidelines.md',
       });
     });
 
@@ -102,6 +103,7 @@ describe('draft create command', () => {
         template: undefined,
         language: undefined,
         style: undefined,
+        guidelines: 'prompts/blog-post-guidelines.md',
       });
     });
   });
