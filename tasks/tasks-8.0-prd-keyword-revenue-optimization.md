@@ -99,15 +99,15 @@
 - [x] 2.2.2 타입 export 확인 및 `packages/shared/src/index.ts` 업데이트
 
 #### 2.3 타입 및 스키마 검증 테스트
-- [ ] 2.3.1 `packages/shared/src/schemas.test.ts` 파일 생성
-- [ ] 2.3.2 `keywordDataSchema` 검증 테스트
+- [x] 2.3.1 `packages/shared/src/schemas.test.ts` 파일 생성
+- [x] 2.3.2 `keywordDataSchema` 검증 테스트
   - 유효한 데이터 검증
   - 필수 필드 누락 시 에러
   - 잘못된 타입 시 에러
-- [ ] 2.3.3 `revenueScoreSchema` 검증 테스트
+- [x] 2.3.3 `revenueScoreSchema` 검증 테스트
   - 점수 범위 검증 (0-100)
   - 가중치 합계 검증
-- [ ] 2.3.4 `topicSuggestionSchema` 검증 테스트
+- [x] 2.3.4 `topicSuggestionSchema` 검증 테스트
   - 필수 필드 검증
   - 수익 예측 값 검증
 
