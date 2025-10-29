@@ -1,6 +1,6 @@
 # 실전 운영 가이드 (Production Guide)
 
-**Epic 7.0 이후 업데이트됨** - SEO 분석 기능 포함
+**Epic 8.0 이후 업데이트됨** - 키워드 수익성 최적화 기능 포함
 
 이 가이드는 @blog/cli를 실제 블로그 운영에 활용하는 **검증된 워크플로우**를 제공합니다.
 
@@ -41,6 +41,13 @@ OPENAI_API_KEY=sk-proj-xxxxx
 
 # 선택: 트렌드 모니터링 (Twitter)
 TWITTER_BEARER_TOKEN=AAAAAAAAAxxxxxxxxxx
+
+# 선택: 키워드 수익성 분석 (Epic 8.0 - Google Ads API)
+GOOGLE_ADS_DEVELOPER_TOKEN=ABcdEFghIJklMNopQRst
+GOOGLE_ADS_CLIENT_ID=123456789-abc.apps.googleusercontent.com
+GOOGLE_ADS_CLIENT_SECRET=GOCSPX-Abc123...
+GOOGLE_ADS_REFRESH_TOKEN=1//0abcdefg...
+GOOGLE_ADS_CUSTOMER_ID=1234567890
 ```
 
 ### 1.2 시스템 테스트
@@ -107,19 +114,93 @@ blog trending --keywords "WordPress,AI,자동화" --limit 10
 blog trending --sources reddit,hackernews --min-score 50
 ```
 
-#### 1-2. 토픽 선정 기준
+#### 1-2. 수익성 기반 키워드 조사 (**Epic 8.0 신규 기능**)
+
+**Google Ads API를 활용한 데이터 기반 토픽 선정**:
+
+```bash
+# 수익성 데이터 포함 트렌드 분석
+blog trending --revenue --limit 10
+
+# 결과를 JSON 파일로 저장하여 상세 분석
+blog trending --revenue --limit 20 --output keyword-analysis.json
+
+# 테이블 형식으로 출력
+blog trending --revenue --format table --limit 15
+```
+
+**출력 예시**:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   트렌드 토픽 (수익성 분석 포함)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cache stats: 0 hits, 10 misses (0.0% hit rate)
+
+1. TypeScript 5.3: What's New (reddit)
+   📊 트렌드: 85.2 | 💰 수익성: 72.4 | 🎯 종합: 80.0
+
+   ├─ 검색량: 5,400/월
+   ├─ CPC: $2.35
+   ├─ 경쟁도: MEDIUM (50)
+   └─ 수익성 평가: 높은 검색량, 적정 CPC, 중간 경쟁도
+
+   https://reddit.com/r/programming/xyz
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**수익성 점수 해석**:
+
+| 점수 범위 | 평가 | 추천 |
+|----------|------|------|
+| 80-100 | 🟢 매우 높음 | 적극 권장 - 높은 수익 잠재력 |
+| 60-79 | 🟡 높음 | 권장 - 안정적 수익 예상 |
+| 40-59 | 🟠 중간 | 고려 가능 - 경쟁 분석 필요 |
+| 0-39 | 🔴 낮음 | 신중 검토 - 차별화 전략 필수 |
+
+**주요 지표 설명**:
+
+- **검색량 (Search Volume)**: 월간 검색 횟수 → 높을수록 트래픽 잠재력 큼
+- **CPC (Cost Per Click)**: 광고 클릭당 비용 → 높을수록 수익성 좋음
+- **경쟁도 (Competition)**: LOW/MEDIUM/HIGH → 낮을수록 진입 용이
+- **경쟁 지수 (Competition Index)**: 0-100 점수 → 50 이하 권장
+
+**활용 팁**:
+
+1. **고수익 토픽 선정**: 종합 점수 70+ 우선 선택
+2. **캐시 활용**: 두 번째 실행부터 즉시 결과 확인 (24시간 캐시)
+3. **JSON 저장**: `--output` 옵션으로 데이터 저장 후 스프레드시트 분석
+4. **장기 모니터링**: 주기적으로 실행하여 트렌드 변화 추적
+
+**사전 요구사항**:
+
+- Google Ads API 설정 필요 (자세한 내용은 [GOOGLE_ADS_SETUP.md](./GOOGLE_ADS_SETUP.md) 참고)
+- `.env` 파일에 다음 환경 변수 설정:
+  ```bash
+  GOOGLE_ADS_DEVELOPER_TOKEN=...
+  GOOGLE_ADS_CLIENT_ID=...
+  GOOGLE_ADS_CLIENT_SECRET=...
+  GOOGLE_ADS_REFRESH_TOKEN=...
+  GOOGLE_ADS_CUSTOMER_ID=...
+  ```
+
+#### 1-3. 토픽 선정 기준
 
 다음 질문에 답하세요:
 - [ ] **독자 가치**: 실용적인 정보를 제공하는가?
 - [ ] **경쟁 강도**: 경쟁이 과도하지 않은가?
 - [ ] **전문성**: 내가 제공할 수 있는 고유한 통찰이 있는가?
 - [ ] **키워드**: 3-5개의 명확한 키워드를 선정했는가?
+- [ ] **수익성** (Epic 8.0): 검색량·CPC·경쟁도가 적절한가?
 
-#### 1-3. 키워드 선정 팁
+#### 1-4. 키워드 선정 팁
 
 - **주요 키워드 1개**: 가장 중요한 검색어
 - **부가 키워드 2-4개**: 관련성 높은 검색어
 - **예시**: "WordPress 자동화" (주), "Node.js", "REST API", "블로그 관리" (부)
+- **수익성 고려** (Epic 8.0): `blog trending --revenue`로 데이터 기반 선정
 
 ---
 

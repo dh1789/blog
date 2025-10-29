@@ -332,24 +332,34 @@
 - 통합 테스트 파일: 9 tests (8 skipped for API requirement, 1 mocked test passed)
 
 #### 6.2 문서화
-- [ ] 6.2.1 `docs/GOOGLE_ADS_SETUP.md` 작성
-  - Google Ads 계정 생성 가이드
-  - 개발자 토큰 발급 방법
-  - OAuth 2.0 인증 설정
-  - 환경 변수 설정 예제
-  - 트러블슈팅 섹션
-- [ ] 6.2.2 `docs/PRODUCTION_GUIDE.md` 업데이트
-  - Step 1에 `blog trending --revenue` 추가
-  - 키워드 조사 워크플로우 설명
-  - 예제 명령어 추가
-- [ ] 6.2.3 `README.md` 업데이트
-  - Epic 8.0 기능 추가
-  - 사용 예제 추가
-  - Google Ads API 설정 링크
-- [ ] 6.2.4 `CHANGELOG.md` 업데이트
-  - Epic 8.0 항목 추가
-  - 주요 기능 나열
-  - Breaking changes 확인 (없음)
+- [x] 6.2.1 `docs/GOOGLE_ADS_SETUP.md` 작성
+  - ✅ Google Ads 계정 생성 가이드
+  - ✅ 개발자 토큰 발급 방법
+  - ✅ OAuth 2.0 인증 설정 (스크립트 포함)
+  - ✅ 환경 변수 설정 예제
+  - ✅ 트러블슈팅 섹션 (7가지 일반적 오류 및 해결법)
+  - ✅ 연결 테스트 및 캐시 동작 확인
+- [x] 6.2.2 `docs/PRODUCTION_GUIDE.md` 업데이트
+  - ✅ Step 1-2에 수익성 기반 키워드 조사 섹션 추가
+  - ✅ `blog trending --revenue` 사용법 및 예제
+  - ✅ 수익성 점수 해석 가이드 (표)
+  - ✅ 주요 지표 설명 (검색량, CPC, 경쟁도)
+  - ✅ 활용 팁 4가지
+  - ✅ 환경 변수 섹션에 Google Ads API 추가
+- [x] 6.2.3 `README.md` 업데이트
+  - ✅ 주요 기능 섹션에 Epic 8.0 추가
+  - ✅ 트렌드 모니터링 섹션에 --revenue 예제 추가
+  - ✅ 출력 예시 및 설정 방법 링크
+  - ✅ 환경 변수 섹션에 Google Ads API 5개 변수 추가
+- [x] 6.2.4 `CHANGELOG.md` 업데이트
+  - ✅ Epic 8.0 항목 추가 (v0.1.1)
+  - ✅ 5가지 주요 기능 그룹 상세 설명:
+    - Google Ads API Integration
+    - KeywordCache System
+    - Revenue Scoring Algorithm
+    - Topic Suggestion System
+    - CLI Extensions
+  - ✅ Breaking changes 확인: 없음 (하위 호환성 유지)
 
 #### 6.3 전체 시스템 테스트 및 검증
 - [ ] 6.3.1 전체 테스트 실행

@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Keyword Revenue Optimization (Epic 8.0)
+- **Google Ads API Integration**: Data-driven topic selection with revenue metrics
+  - `blog trending --revenue` command for profitability analysis
+  - Real-time keyword data: search volume, CPC, competition level
+  - Comprehensive revenue scoring (0-100) based on multiple factors
+  - Integration with trending topic monitoring for combined social + revenue insights
+
+- **KeywordCache System**: File-based caching for API optimization
+  - 24-hour TTL (Time-To-Live) for keyword data
+  - MD5 hash-based cache keys for safe file naming
+  - Automatic expiration checking with lazy cleanup
+  - Cache statistics logging (hit rate, API calls saved)
+  - 5x+ performance improvement on cached queries
+
+- **Revenue Scoring Algorithm**: Multi-factor profitability evaluation
+  - Search Volume Score (40%): Monthly search count normalized to 0-100
+  - CPC Score (30%): Cost-per-click value (higher = better revenue potential)
+  - Competition Score (20%): Inverted competition index (lower competition = higher score)
+  - Trend Boost (10%): Recent trend momentum bonus
+
+- **Topic Suggestion System**: AI-powered content recommendations
+  - Trending topics with revenue data analysis
+  - Priority classification (HIGH/MEDIUM/LOW) based on combined scores
+  - Detailed reasoning for each suggestion (trend score, revenue potential, SEO value, relevance)
+  - Multi-dimensional sorting (trend 40%, revenue 30%, SEO 20%, relevance 10%)
+
+- **CLI Extensions**: Revenue-focused commands
+  - `--revenue` flag for trending analysis with Google Ads data
+  - `--output <file>` flag for JSON export of analysis results
+  - `--format table` option for tabular display
+  - Colored, emoji-rich terminal output for better readability
+
+- **Documentation**: Comprehensive setup and usage guides
+  - [docs/GOOGLE_ADS_SETUP.md](docs/GOOGLE_ADS_SETUP.md) - Complete Google Ads API configuration guide
+  - Updated [docs/PRODUCTION_GUIDE.md](docs/PRODUCTION_GUIDE.md) with revenue-based workflows
+  - Updated README.md with Epic 8.0 features and examples
+
 #### SEO Optimization System Enhancement (Epic 7.0)
 - **Length-Adaptive SEO Analysis**: Dynamic SEO scoring based on post length
   - Automatic post length calculation with empty line filtering

@@ -27,6 +27,7 @@ WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최�
 - **트렌드 모니터링**: Reddit, Hacker News, Twitter 실시간 트렌드 추적
 - **키워드 점수**: 트렌드 토픽의 영향력 자동 계산
 - **길이별 가중치**: 포스트 길이에 따른 동적 SEO 목표 조정
+- **💰 키워드 수익성 분석 (Epic 8.0)**: Google Ads API를 통한 검색량·CPC·경쟁도 데이터 기반 주제 선정
 
 ### 👁️ 실시간 프리뷰
 - **Live Reload**: 파일 변경 시 브라우저 자동 새로고침
@@ -64,6 +65,9 @@ WORDPRESS_URL=https://your-blog.com
 WORDPRESS_USERNAME=your-username
 WORDPRESS_APP_PASSWORD=your-application-password
 
+# Claude AI (콘텐츠 생성)
+ANTHROPIC_API_KEY=sk-ant-xxxxx
+
 # Google AdSense
 ADSENSE_CLIENT_ID=ca-pub-xxxxxxxxxx
 ADSENSE_SLOT_ID=xxxxxxxxxx
@@ -73,6 +77,13 @@ OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxx
 
 # Twitter API (선택사항 - 트렌드 모니터링)
 TWITTER_BEARER_TOKEN=AAAAAAAAAxxxxxxxxxx
+
+# Google Ads API (선택사항 - Epic 8.0 키워드 수익성 분석)
+GOOGLE_ADS_DEVELOPER_TOKEN=ABcdEFghIJklMNopQRst
+GOOGLE_ADS_CLIENT_ID=123456789-abc.apps.googleusercontent.com
+GOOGLE_ADS_CLIENT_SECRET=GOCSPX-Abc123...
+GOOGLE_ADS_REFRESH_TOKEN=1//0abcdefg...
+GOOGLE_ADS_CUSTOMER_ID=1234567890
 ```
 
 ### 4. 빌드
@@ -176,7 +187,33 @@ blog trending --keywords "AI,Machine Learning" --limit 20
 
 # 최소 점수 필터
 blog trending --min-score 50
+
+# 🆕 수익성 데이터 포함 (Epic 8.0)
+blog trending --revenue --limit 10
+
+# 결과를 JSON으로 저장
+blog trending --revenue --output keyword-analysis.json
+
+# 테이블 형식으로 출력
+blog trending --revenue --format table
 ```
+
+**수익성 분석 출력 예시**:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   트렌드 토픽 (수익성 분석 포함)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. TypeScript 5.3: What's New (reddit)
+   📊 트렌드: 85.2 | 💰 수익성: 72.4 | 🎯 종합: 80.0
+
+   ├─ 검색량: 5,400/월
+   ├─ CPC: $2.35
+   ├─ 경쟁도: MEDIUM (50)
+   └─ 수익성 평가: 높은 검색량, 적정 CPC, 중간 경쟁도
+```
+
+**설정 방법**: [GOOGLE_ADS_SETUP.md](./docs/GOOGLE_ADS_SETUP.md) 참고
 
 ### 분석 대시보드
 ```bash
