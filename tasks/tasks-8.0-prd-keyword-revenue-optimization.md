@@ -126,22 +126,24 @@
   - 네트워크 에러, 타임아웃, 할당량 초과 시 자동 재시도
 
 #### 3.2 수익성 점수 계산 구현
-- [ ] 3.2.1 `packages/core/src/revenue-scoring.ts` 파일 생성
-- [ ] 3.2.2 데이터 정규화 함수 구현
+- [x] 3.2.1 `packages/core/src/revenue-scoring.ts` 파일 생성
+- [x] 3.2.2 데이터 정규화 함수 구현
   - `normalizeCPC(cpc: number): number` - $0.01~$10.00 → 0.0~1.0
   - `normalizeSearchVolume(volume: number): number` - 로그 스케일 정규화
   - `normalizeSEODifficulty(difficulty: number): number` - 0~100 → 1.0~0.0 (역순)
-- [ ] 3.2.3 수익성 점수 계산 함수 구현
+  - 추가 구현: `normalizeKeywordData()` 헬퍼 함수
+- [x] 3.2.3 수익성 점수 계산 함수 구현
   - `calculateRevenueScore(data: KeywordData): RevenueScore`
   - 가중치 적용: CPC 35%, 검색량 35%, SEO 난이도 30%
   - 0-100 점수 반환
-- [ ] 3.2.4 수익 예측 계산 함수 구현
+  - 추가 구현: `calculateRevenueScores()` 배치 계산 및 순위 매기기
+- [x] 3.2.4 수익 예측 계산 함수 구현
   - `estimateRevenue(data: KeywordData): { conservative: number, optimistic: number }`
   - 트래픽 예상 (검색량 × 랭크 팩터 × CTR)
   - 광고 수익 예상 (트래픽 × 광고 CTR × CPC)
 
 #### 3.3 키워드 데이터 수집 유닛 테스트
-- [ ] 3.3.1 `keyword-research.test.ts`에 `getKeywordMetrics()` 테스트 추가
+- [x] 3.3.1 `keyword-research.test.ts`에 `getKeywordData()` 테스트 (Task 3.1에서 완료)
   - Google Ads API 모킹
   - 정상 응답 파싱 검증
   - 배치 처리 검증 (100개 키워드 제한)
@@ -149,19 +151,26 @@
   - API 할당량 초과 에러 처리 검증
 
 #### 3.4 수익성 점수 계산 유닛 테스트
-- [ ] 3.4.1 `packages/core/src/revenue-scoring.test.ts` 파일 생성
-- [ ] 3.4.2 정규화 함수 테스트
+- [x] 3.4.1 `packages/core/src/revenue-scoring.test.ts` 파일 생성 (36 tests)
+- [x] 3.4.2 정규화 함수 테스트
   - `normalizeCPC()`: 경계값 ($0.01, $10.00), 중간값 ($5.00) 검증
   - `normalizeSearchVolume()`: 로그 스케일 변환 검증 (10, 100, 1000, 10000)
   - `normalizeSEODifficulty()`: 역순 변환 검증 (0 → 1.0, 100 → 0.0)
-- [ ] 3.4.3 `calculateRevenueScore()` 테스트
+  - `normalizeKeywordData()`: 전체 데이터 정규화 검증
+- [x] 3.4.3 `calculateRevenueScore()` 테스트
   - 가중치 적용 검증 (35%, 35%, 30%)
   - 점수 범위 검증 (0-100)
   - 다양한 입력 시나리오
-- [ ] 3.4.4 `estimateRevenue()` 테스트
-  - Conservative 시나리오 검증 (CTR 0.3, ad_ctr 0.01)
-  - Optimistic 시나리오 검증 (CTR 0.5, ad_ctr 0.03)
-  - 랭크 팩터 적용 검증 (top 3, 4-10, 11-20)
+  - metrics 및 expectedRevenue 포함 검증
+- [x] 3.4.4 `estimateRevenue()` 테스트
+  - Conservative 시나리오 검증 (Top 10, ad_ctr 0.01)
+  - Optimistic 시나리오 검증 (Top 3, ad_ctr 0.03)
+  - 검색량/CPC 스케일링 검증
+  - 소수점 2자리 반올림 검증
+- [x] 3.4.5 `calculateRevenueScores()` 테스트 (추가)
+  - 배치 점수 계산 검증
+  - 전체/검색량/수익 순위 매기기 검증
+  - 빈 배열 및 단일 키워드 처리 검증
 
 ### 4.0 trending 명령어 확장
 
