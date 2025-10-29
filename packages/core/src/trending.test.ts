@@ -559,4 +559,195 @@ describe('TrendingMonitor', () => {
       expect(scoredTopics[0].finalScore).toBeGreaterThan(0);
     });
   });
+
+  describe.skip('getTrendingTopicsWithRevenue', () => {
+    // Note: These tests require Google Ads API credentials to be set up
+    // They are skipped in CI/CD but can be run locally with proper .env configuration
+
+    it('should combine social trend scores with revenue data', async () => {
+      const mockRedditResponse = {
+        data: {
+          data: {
+            children: [
+              {
+                data: {
+                  id: 'high',
+                  title: 'High Engagement',
+                  permalink: '/r/programming/comments/high',
+                  ups: 500,
+                  num_comments: 200,
+                  author: 'user1',
+                  created_utc: Date.now() / 1000,
+                  subreddit: 'programming',
+                },
+              },
+              {
+                data: {
+                  id: 'low',
+                  title: 'Low Engagement',
+                  permalink: '/r/programming/comments/low',
+                  ups: 10,
+                  num_comments: 5,
+                  author: 'user2',
+                  created_utc: (Date.now() - 24 * 60 * 60 * 1000) / 1000,
+                  subreddit: 'programming',
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      vi.mocked(mockAxios.get).mockResolvedValue(mockRedditResponse);
+
+      const results = await monitor.getTrendingTopicsWithRevenue({
+        sources: ['reddit'],
+      });
+
+      expect(results).toBeDefined();
+      expect(results.length).toBe(2);
+      expect(results[0].revenueData).toBeDefined();
+      expect(results[0].revenueScore).toBeDefined();
+    });
+
+    it('should sort by combined score (trend 60% + revenue 40%)', async () => {
+      const mockRedditResponse = {
+        data: {
+          data: {
+            children: [
+              {
+                data: {
+                  id: 'topic-1',
+                  title: 'Topic 1',
+                  permalink: '/r/programming/comments/1',
+                  ups: 100,
+                  num_comments: 50,
+                  author: 'user1',
+                  created_utc: Date.now() / 1000,
+                  subreddit: 'programming',
+                },
+              },
+              {
+                data: {
+                  id: 'topic-2',
+                  title: 'Topic 2',
+                  permalink: '/r/programming/comments/2',
+                  ups: 500,
+                  num_comments: 200,
+                  author: 'user2',
+                  created_utc: Date.now() / 1000,
+                  subreddit: 'programming',
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      vi.mocked(mockAxios.get).mockResolvedValue(mockRedditResponse);
+
+      const results = await monitor.getTrendingTopicsWithRevenue({
+        sources: ['reddit'],
+      });
+
+      // 결과가 종합 점수로 정렬되어야 함
+      for (let i = 0; i < results.length - 1; i++) {
+        const scoreA =
+          results[i].finalScore * 0.6 +
+          (results[i].revenueScore?.totalScore || 0) * 0.4;
+        const scoreB =
+          results[i + 1].finalScore * 0.6 +
+          (results[i + 1].revenueScore?.totalScore || 0) * 0.4;
+        expect(scoreA).toBeGreaterThanOrEqual(scoreB);
+      }
+    });
+
+    it('should include revenue estimates in results', async () => {
+      const mockRedditResponse = {
+        data: {
+          data: {
+            children: [
+              {
+                data: {
+                  id: 'test',
+                  title: 'Test Topic',
+                  permalink: '/r/programming/comments/test',
+                  ups: 100,
+                  num_comments: 50,
+                  author: 'user',
+                  created_utc: Date.now() / 1000,
+                  subreddit: 'programming',
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      vi.mocked(mockAxios.get).mockResolvedValue(mockRedditResponse);
+
+      const results = await monitor.getTrendingTopicsWithRevenue({
+        sources: ['reddit'],
+      });
+
+      expect(results[0].revenueScore?.expectedRevenue).toBeDefined();
+      expect(results[0].revenueScore?.expectedRevenue.conservative).toBeGreaterThan(0);
+      expect(results[0].revenueScore?.expectedRevenue.optimistic).toBeGreaterThan(0);
+      expect(results[0].revenueScore?.expectedRevenue.optimistic).toBeGreaterThan(
+        results[0].revenueScore?.expectedRevenue.conservative
+      );
+    });
+
+    it('should preserve original topic and score data', async () => {
+      const mockRedditResponse = {
+        data: {
+          data: {
+            children: [
+              {
+                data: {
+                  id: 'test-1',
+                  title: 'Test Topic',
+                  permalink: '/r/programming/comments/test',
+                  ups: 100,
+                  num_comments: 50,
+                  author: 'testuser',
+                  created_utc: Date.now() / 1000,
+                  subreddit: 'programming',
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      vi.mocked(mockAxios.get).mockResolvedValue(mockRedditResponse);
+
+      const results = await monitor.getTrendingTopicsWithRevenue({
+        sources: ['reddit'],
+      });
+
+      expect(results[0].topic.id).toBe('test-1');
+      expect(results[0].topic.title).toBe('Test Topic');
+      expect(results[0].finalScore).toBeGreaterThan(0);
+      expect(results[0].scoreBreakdown).toBeDefined();
+    });
+
+    it('should handle empty results', async () => {
+      const mockEmptyResponse = {
+        data: {
+          data: {
+            children: [],
+          },
+        },
+      };
+
+      vi.mocked(mockAxios.get).mockResolvedValue(mockEmptyResponse);
+
+      const results = await monitor.getTrendingTopicsWithRevenue({
+        sources: ['reddit'],
+      });
+
+      expect(results).toEqual([]);
+    });
+  });
 });

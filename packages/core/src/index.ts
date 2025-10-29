@@ -16,3 +16,4 @@ export * from './analytics';
 export * from './keyword-research';
 export * from './revenue-scoring';
 export * from './topic-suggestion';
+export * from './cache';

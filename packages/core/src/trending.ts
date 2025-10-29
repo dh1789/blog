@@ -16,12 +16,18 @@ import type {
 } from '@blog/shared';
 import { GoogleAdsClient } from './keyword-research';
 import { calculateRevenueScores } from './revenue-scoring';
+import { KeywordCache } from './cache';
 
 /**
  * 트렌드 모니터링 클라이언트
  */
 export class TrendingMonitor {
   private googleAdsClient: GoogleAdsClient | null = null;
+  private keywordCache: KeywordCache;
+
+  constructor() {
+    this.keywordCache = new KeywordCache();
+  }
 
   /**
    * GoogleAdsClient 인스턴스 가져오기 (lazy initialization)
@@ -35,21 +41,58 @@ export class TrendingMonitor {
 
   /**
    * 트렌딩 토픽에 대한 키워드 수익 데이터 가져오기
+   * 캐시를 사용하여 Google Ads API 호출 최소화
    *
    * @param topics 트렌딩 토픽 목록
    * @returns 키워드 데이터 배열
    */
   async getKeywordRevenueData(topics: TrendingTopic[]): Promise<KeywordData[]> {
-    const googleAds = this.getGoogleAdsClient();
     const keywords = topics.map((topic) => topic.title);
+    const keywordDataList: KeywordData[] = [];
+    const uncachedKeywords: string[] = [];
 
-    try {
-      const keywordDataList = await googleAds.getKeywordData(keywords);
-      return keywordDataList;
-    } catch (error) {
-      console.error('Failed to fetch keyword revenue data:', error);
-      return [];
+    let cacheHits = 0;
+    let cacheMisses = 0;
+
+    // 캐시 확인 및 데이터 수집
+    for (const keyword of keywords) {
+      const cachedData = this.keywordCache.get(keyword);
+
+      if (cachedData) {
+        keywordDataList.push(cachedData);
+        cacheHits++;
+      } else {
+        uncachedKeywords.push(keyword);
+        cacheMisses++;
+      }
     }
+
+    // 캐시되지 않은 키워드가 있으면 API 호출
+    if (uncachedKeywords.length > 0) {
+      try {
+        const googleAds = this.getGoogleAdsClient();
+        const newKeywordDataList = await googleAds.getKeywordData(uncachedKeywords);
+
+        // 새로 가져온 데이터를 캐시에 저장
+        for (const keywordData of newKeywordDataList) {
+          this.keywordCache.set(keywordData.keyword, keywordData);
+          keywordDataList.push(keywordData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch keyword revenue data:', error);
+      }
+    }
+
+    // 캐시 통계 로그
+    if (keywords.length > 0) {
+      const hitRate = ((cacheHits / keywords.length) * 100).toFixed(1);
+      console.log(`Cache stats: ${cacheHits} hits, ${cacheMisses} misses (${hitRate}% hit rate)`);
+      if (cacheMisses > 0) {
+        console.log(`API calls saved by cache: ${cacheHits} / ${keywords.length}`);
+      }
+    }
+
+    return keywordDataList;
   }
 
   /**
