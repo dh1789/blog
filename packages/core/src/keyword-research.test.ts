@@ -8,8 +8,12 @@ import { GoogleAdsClient } from './keyword-research';
 // google-ads-api 모킹
 vi.mock('google-ads-api', () => {
   const mockQuery = vi.fn();
+  const mockGenerateKeywordIdeas = vi.fn();
   const mockCustomer = vi.fn(() => ({
     query: mockQuery,
+    keywordPlanIdeas: {
+      generateKeywordIdeas: mockGenerateKeywordIdeas,
+    },
   }));
 
   return {
@@ -18,6 +22,7 @@ vi.mock('google-ads-api', () => {
     })),
     mockQuery,
     mockCustomer,
+    mockGenerateKeywordIdeas,
   };
 });
 
@@ -224,12 +229,187 @@ describe('GoogleAdsClient', () => {
   });
 
   describe('getKeywordData()', () => {
-    it('should throw "Not implemented yet" error', async () => {
+    it('should validate empty keywords array', async () => {
       const client = new GoogleAdsClient();
 
-      await expect(client.getKeywordData(['test'])).rejects.toThrow(
-        'Not implemented yet'
+      await expect(client.getKeywordData([])).rejects.toThrow(
+        'Keywords array cannot be empty'
       );
+    });
+
+    it('should validate maximum 100 keywords limit', async () => {
+      const client = new GoogleAdsClient();
+      const keywords = Array(101).fill('test');
+
+      await expect(client.getKeywordData(keywords)).rejects.toThrow(
+        'Maximum 100 keywords allowed per request'
+      );
+    });
+
+    it('should throw user-friendly error on authentication failure', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      // 인증 에러는 재시도하지 않으므로 한 번만 발생
+      mockGenerateKeywordIdeas.mockRejectedValueOnce(
+        new Error('Authentication failed')
+      );
+
+      const client = new GoogleAdsClient();
+
+      try {
+        await client.getKeywordData(['test']);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toMatch(/Google Ads API authentication failed/);
+      }
+    });
+
+    it('should throw user-friendly error on quota exceeded', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      // 할당량 초과는 재시도하므로 모든 시도에서 실패하도록 설정
+      mockGenerateKeywordIdeas.mockRejectedValue(
+        new Error('Quota exceeded')
+      );
+
+      const client = new GoogleAdsClient();
+
+      try {
+        await client.getKeywordData(['test']);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toMatch(/Google Ads API quota exceeded/);
+      }
+    });
+
+    it('should return keyword data with correct structure', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      const mockResponse = [
+        {
+          text: 'WordPress plugin',
+          keyword_idea_metrics: {
+            avg_monthly_searches: 10000,
+            average_cpc_micros: 2500000, // $2.50
+            competition: 'MEDIUM',
+            competition_index: 65,
+          },
+        },
+      ];
+
+      mockGenerateKeywordIdeas.mockResolvedValueOnce(mockResponse);
+
+      const client = new GoogleAdsClient();
+      const result = await client.getKeywordData(['WordPress plugin']);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        keyword: 'WordPress plugin',
+        searchVolume: 10000,
+        cpc: 2.5,
+        competition: 'MEDIUM',
+        competitionIndex: 65,
+      });
+    });
+
+    it('should convert CPC from micros to dollars', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      const mockResponse = [
+        {
+          text: 'test',
+          keyword_idea_metrics: {
+            avg_monthly_searches: 1000,
+            average_cpc_micros: 3750000, // $3.75
+            competition: 'LOW',
+          },
+        },
+      ];
+
+      mockGenerateKeywordIdeas.mockResolvedValueOnce(mockResponse);
+
+      const client = new GoogleAdsClient();
+      const result = await client.getKeywordData(['test']);
+
+      expect(result[0].cpc).toBe(3.75);
+    });
+
+    it('should handle missing competition index', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      const mockResponse = [
+        {
+          text: 'test',
+          keyword_idea_metrics: {
+            avg_monthly_searches: 1000,
+            average_cpc_micros: 1000000,
+            competition: 'HIGH',
+            // competition_index is missing
+          },
+        },
+      ];
+
+      mockGenerateKeywordIdeas.mockResolvedValueOnce(mockResponse);
+
+      const client = new GoogleAdsClient();
+      const result = await client.getKeywordData(['test']);
+
+      expect(result[0].competitionIndex).toBeUndefined();
+    });
+
+    it('should default to MEDIUM competition for unspecified values', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      const mockResponse = [
+        {
+          text: 'test',
+          keyword_idea_metrics: {
+            avg_monthly_searches: 1000,
+            average_cpc_micros: 1000000,
+            competition: 'UNSPECIFIED',
+          },
+        },
+      ];
+
+      mockGenerateKeywordIdeas.mockResolvedValueOnce(mockResponse);
+
+      const client = new GoogleAdsClient();
+      const result = await client.getKeywordData(['test']);
+
+      expect(result[0].competition).toBe('MEDIUM');
+    });
+
+    it('should skip keywords without text', async () => {
+      const { mockGenerateKeywordIdeas } = await import('google-ads-api');
+
+      const mockResponse = [
+        {
+          text: null, // Missing text
+          keyword_idea_metrics: {
+            avg_monthly_searches: 1000,
+            average_cpc_micros: 1000000,
+            competition: 'LOW',
+          },
+        },
+        {
+          text: 'valid keyword',
+          keyword_idea_metrics: {
+            avg_monthly_searches: 2000,
+            average_cpc_micros: 2000000,
+            competition: 'MEDIUM',
+          },
+        },
+      ];
+
+      mockGenerateKeywordIdeas.mockResolvedValueOnce(mockResponse);
+
+      const client = new GoogleAdsClient();
+      const result = await client.getKeywordData(['test']);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].keyword).toBe('valid keyword');
     });
   });
 });

@@ -114,12 +114,16 @@
 ### 3.0 키워드 수익성 분석 모듈
 
 #### 3.1 키워드 데이터 수집 구현
-- [ ] 3.1.1 `packages/core/src/keyword-research.ts`에 키워드 데이터 수집 메서드 추가
-  - `getKeywordMetrics(keywords: string[]): Promise<KeywordData[]>`
+- [x] 3.1.1 `packages/core/src/keyword-research.ts`에 키워드 데이터 수집 메서드 추가
+  - `getKeywordData(keywords: string[]): Promise<KeywordData[]>`
   - Google Keyword Planner API 호출 (검색량, CPC, 경쟁 강도)
   - API 응답 파싱 및 데이터 변환
-- [ ] 3.1.2 배치 처리 구현 (한 번에 최대 100개 키워드)
-- [ ] 3.1.3 재시도 로직 구현 (네트워크 에러, API 할당량 초과)
+- [x] 3.1.2 배치 처리 구현 (한 번에 최대 100개 키워드)
+  - Task 3.1.1에 포함되어 구현 완료 (100개 제한 검증)
+- [x] 3.1.3 재시도 로직 구현 (네트워크 에러, API 할당량 초과)
+  - `retryWithBackoff()` 헬퍼 함수 구현 (지수 백오프, 최대 3회)
+  - `isRetryableError()` 함수로 재시도 가능 에러 판단
+  - 네트워크 에러, 타임아웃, 할당량 초과 시 자동 재시도
 
 #### 3.2 수익성 점수 계산 구현
 - [ ] 3.2.1 `packages/core/src/revenue-scoring.ts` 파일 생성
