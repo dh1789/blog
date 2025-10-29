@@ -235,6 +235,9 @@ export interface TrendingOptions {
   minScore?: number;
   keywords?: string[];
   language?: 'ko' | 'en';
+  revenue?: boolean; // 수익성 분석 활성화 (Google Keyword Planner API)
+  outputFile?: string; // 결과 출력 파일 경로
+  format?: 'table' | 'json'; // 출력 형식
 }
 
 /**
@@ -249,6 +252,15 @@ export interface TrendScore {
     recency: number;
     keywordMatch: number;
   };
+}
+
+/**
+ * 수익성 분석이 포함된 트렌드 점수
+ * (TrendScore를 확장하여 키워드 수익성 데이터 추가)
+ */
+export interface ScoredTrendingTopic extends TrendScore {
+  revenueData?: KeywordData; // 키워드 데이터 (검색량, CPC, 경쟁 강도)
+  revenueScore?: RevenueScore; // 수익성 점수
 }
 
 /**
@@ -298,4 +310,67 @@ export interface AnalyticsOptions {
   period?: 'day' | 'week' | 'month' | 'year';
   limit?: number;
   sortBy?: 'views' | 'comments' | 'date';
+}
+
+/**
+ * 키워드 데이터 (Google Keyword Planner API)
+ */
+export interface KeywordData {
+  keyword: string;
+  searchVolume: number; // 월간 검색량
+  cpc: number; // Cost Per Click (USD)
+  competition: 'LOW' | 'MEDIUM' | 'HIGH'; // 경쟁 강도
+  competitionIndex?: number; // 경쟁 지수 (0-100)
+}
+
+/**
+ * 정규화된 키워드 지표
+ */
+export interface KeywordMetrics {
+  searchVolumeScore: number; // 0-1 정규화
+  cpcScore: number; // 0-1 정규화
+  competitionScore: number; // 0-1 정규화 (낮을수록 좋음)
+}
+
+/**
+ * 수익성 점수
+ */
+export interface RevenueScore {
+  keyword: string;
+  totalScore: number; // 0-100 종합 점수
+  metrics: KeywordMetrics;
+  expectedRevenue: {
+    conservative: number; // 보수적 예상 수익 (USD/월)
+    optimistic: number; // 낙관적 예상 수익 (USD/월)
+  };
+  ranking: {
+    overall: number; // 전체 순위
+    byVolume: number; // 검색량 순위
+    byRevenue: number; // 수익 순위
+  };
+}
+
+/**
+ * 주제 추천
+ */
+export interface TopicSuggestion {
+  title: string; // 추천 제목
+  keywords: string[]; // 관련 키워드들
+  template: string; // 사용된 템플릿 ("완벽 가이드", "TOP 10" 등)
+  estimatedRevenue: {
+    conservative: number; // 보수적 예상 수익 (USD/월)
+    optimistic: number; // 낙관적 예상 수익 (USD/월)
+  };
+  keywordScores: RevenueScore[]; // 키워드별 수익성 점수
+}
+
+/**
+ * 수익성 분석 옵션
+ */
+export interface RevenueAnalysisOptions {
+  minSearchVolume?: number; // 최소 검색량 필터
+  maxCompetition?: 'LOW' | 'MEDIUM' | 'HIGH'; // 최대 경쟁 강도
+  minCpc?: number; // 최소 CPC (USD)
+  maxCpc?: number; // 최대 CPC (USD)
+  limit?: number; // 결과 개수 제한
 }

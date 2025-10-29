@@ -32,3 +32,55 @@ export const AdConfigSchema = z.object({
   slotId: z.string(),
   positions: z.array(z.enum(['top', 'after-first-paragraph', 'after-first-h2', 'middle', 'bottom'])),
 });
+
+/**
+ * Epic 8.0: 키워드 수익성 분석 스키마
+ */
+
+export const KeywordDataSchema = z.object({
+  keyword: z.string().min(1, 'Keyword is required'),
+  searchVolume: z.number().int().min(0, 'Search volume must be non-negative'),
+  cpc: z.number().min(0, 'CPC must be non-negative'),
+  competition: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  competitionIndex: z.number().int().min(0).max(100).optional(),
+});
+
+export const KeywordMetricsSchema = z.object({
+  searchVolumeScore: z.number().min(0).max(1),
+  cpcScore: z.number().min(0).max(1),
+  competitionScore: z.number().min(0).max(1),
+});
+
+export const RevenueScoreSchema = z.object({
+  keyword: z.string().min(1),
+  totalScore: z.number().min(0).max(100),
+  metrics: KeywordMetricsSchema,
+  expectedRevenue: z.object({
+    conservative: z.number().min(0),
+    optimistic: z.number().min(0),
+  }),
+  ranking: z.object({
+    overall: z.number().int().min(1),
+    byVolume: z.number().int().min(1),
+    byRevenue: z.number().int().min(1),
+  }),
+});
+
+export const TopicSuggestionSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  keywords: z.array(z.string()).min(1, 'At least one keyword is required'),
+  template: z.string().min(1, 'Template is required'),
+  estimatedRevenue: z.object({
+    conservative: z.number().min(0),
+    optimistic: z.number().min(0),
+  }),
+  keywordScores: z.array(RevenueScoreSchema),
+});
+
+export const RevenueAnalysisOptionsSchema = z.object({
+  minSearchVolume: z.number().int().min(0).optional(),
+  maxCompetition: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional(),
+  minCpc: z.number().min(0).optional(),
+  maxCpc: z.number().min(0).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+});
