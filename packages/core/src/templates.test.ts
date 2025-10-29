@@ -48,7 +48,7 @@ describe('Template System', () => {
     );
 
     writeFileSync(
-      join(TEST_TEMPLATES_DIR, 'blog-post.txt'),
+      join(TEST_TEMPLATES_DIR, 'test-blog-post.txt'),
       `당신은 AI 활용 전문 블로거입니다.
 
 주제: {TOPIC}
@@ -64,13 +64,13 @@ describe('Template System', () => {
   afterAll(() => {
     // 테스트용 템플릿 파일만 삭제 (디렉토리는 유지)
     const testTemplate = join(TEST_TEMPLATES_DIR, 'test-template.txt');
-    const blogPostTemplate = join(TEST_TEMPLATES_DIR, 'blog-post.txt');
+    const testBlogPostTemplate = join(TEST_TEMPLATES_DIR, 'test-blog-post.txt');
 
     if (existsSync(testTemplate)) {
       rmSync(testTemplate);
     }
-    if (existsSync(blogPostTemplate)) {
-      rmSync(blogPostTemplate);
+    if (existsSync(testBlogPostTemplate)) {
+      rmSync(testBlogPostTemplate);
     }
   });
 
@@ -126,7 +126,7 @@ describe('Template System', () => {
       expect(templates.length).toBeGreaterThan(0);
 
       expect(templates).toContain('test-template');
-      // blog-post.txt는 다른 테스트 실행 순서에 따라 정리될 수 있으므로 존재 여부는 확인하지 않음
+      expect(templates).toContain('blog-post');
     });
   });
 

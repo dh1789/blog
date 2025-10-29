@@ -48,7 +48,7 @@ describe('Claude Code Integration', () => {
 
     // 테스트용 템플릿 파일 생성
     writeFileSync(
-      join(TEST_PROMPTS_DIR, 'blog-post.txt'),
+      join(TEST_PROMPTS_DIR, 'claude-test.txt'),
       `주제: {TOPIC}
 키워드: {KEYWORDS}
 타겟 단어 수: {WORDS}
@@ -68,7 +68,7 @@ describe('Claude Code Integration', () => {
     }
 
     // 테스트용 템플릿 파일 삭제
-    const templatePath = join(TEST_PROMPTS_DIR, 'blog-post.txt');
+    const templatePath = join(TEST_PROMPTS_DIR, 'claude-test.txt');
     if (existsSync(templatePath)) {
       rmSync(templatePath);
     }
