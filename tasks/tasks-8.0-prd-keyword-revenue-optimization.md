@@ -172,7 +172,7 @@
   - 전체/검색량/수익 순위 매기기 검증
   - 빈 배열 및 단일 키워드 처리 검증
 
-### 4.0 trending 명령어 확장
+### 4.0 trending 명령어 확장 ✅
 
 #### 4.1 TrendingMonitor 클래스 확장
 - [x] 4.1.1 `packages/core/src/trending.ts`의 `TrendingMonitor` 클래스 확장
