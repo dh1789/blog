@@ -52,25 +52,25 @@
   - `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN`, `GOOGLE_ADS_CUSTOMER_ID`
 
 #### 1.2 GoogleAdsClient 클래스 구현
-- [ ] 1.2.1 `packages/core/src/keyword-research.ts` 파일 생성
-- [ ] 1.2.2 `GoogleAdsClient` 클래스 구현
+- [x] 1.2.1 `packages/core/src/keyword-research.ts` 파일 생성
+- [x] 1.2.2 `GoogleAdsClient` 클래스 구현
   - Google Ads API v21 클라이언트 초기화
   - 환경 변수에서 인증 정보 로드
   - OAuth 2.0 토큰 관리
-- [ ] 1.2.3 연결 테스트 메서드 구현 (`testConnection()`)
-- [ ] 1.2.4 에러 핸들링 추가 (인증 실패, 네트워크 에러)
-- [ ] 1.2.5 사용자 친화적 에러 메시지 구현 (Google Ads 설정 가이드 링크 포함)
+- [x] 1.2.3 연결 테스트 메서드 구현 (`testConnection()`)
+- [x] 1.2.4 에러 핸들링 추가 (인증 실패, 네트워크 에러)
+- [x] 1.2.5 사용자 친화적 에러 메시지 구현 (Google Ads 설정 가이드 링크 포함)
 
 #### 1.3 GoogleAdsClient 유닛 테스트
-- [ ] 1.3.1 `packages/core/src/keyword-research.test.ts` 파일 생성
-- [ ] 1.3.2 GoogleAdsClient 클래스 초기화 테스트
+- [x] 1.3.1 `packages/core/src/keyword-research.test.ts` 파일 생성
+- [x] 1.3.2 GoogleAdsClient 클래스 초기화 테스트
   - 환경 변수 로드 검증
   - 클라이언트 인스턴스 생성 검증
-- [ ] 1.3.3 `testConnection()` 메서드 테스트
+- [x] 1.3.3 `testConnection()` 메서드 테스트
   - 정상 연결 시나리오 (모킹)
   - 인증 실패 시나리오
   - 네트워크 에러 시나리오
-- [ ] 1.3.4 에러 핸들링 테스트
+- [x] 1.3.4 에러 핸들링 테스트
   - 사용자 친화적 에러 메시지 검증
   - 에러 타입별 처리 검증
 
