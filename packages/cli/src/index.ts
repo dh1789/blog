@@ -15,6 +15,7 @@ import { previewCommand } from './commands/preview';
 import { imageGenerateCommand } from './commands/image';
 import { trendingCommand } from './commands/trending';
 import { analyticsCommand } from './commands/analytics';
+import { analyzeSeoCommand } from './commands/analyze-seo';
 
 const program = new Command();
 
@@ -101,5 +102,12 @@ program
   .option('-l, --limit <number>', '결과 개수 제한', '10')
   .option('-s, --sort-by <sort>', '정렬 기준 (views|comments|date)', 'views')
   .action(analyticsCommand);
+
+program
+  .command('analyze-seo <file>')
+  .description('마크다운 파일의 SEO 점수 분석 및 개선 제안')
+  .option('-v, --verbose', '상세 정보 출력 (섹션별 키워드 분포)')
+  .option('--json', 'JSON 형식으로 출력')
+  .action(analyzeSeoCommand);
 
 program.parse();

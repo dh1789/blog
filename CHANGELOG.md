@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2025-10-29
+
+### Added
+
+#### SEO Optimization System Enhancement (Epic 7.0)
+- **Length-Adaptive SEO Analysis**: Dynamic SEO scoring based on post length
+  - Automatic post length calculation with empty line filtering
+  - Length-based keyword density adjustment (0.7x-1.0x multiplier)
+    - Posts < 500 lines: 1.0x (target: 0.50-2.50%)
+    - Posts 500-1000 lines: 0.9x (target: 0.45-2.25%)
+    - Posts 1000-1500 lines: 0.8x (target: 0.40-2.00%)
+    - Posts 1500+ lines: 0.7x (target: 0.35-1.75%)
+  - Section distribution analysis (H2-based keyword distribution)
+  - Enhanced SEO scoring with 7 categories (added section distribution 20pt)
+  - Word boundary regex for accurate keyword matching
+
+- **CLI SEO Analysis Tool**: New `analyze-seo` command for comprehensive SEO evaluation
+  - `blog analyze-seo <file>` - Basic SEO analysis with color-coded scores
+  - `--verbose` flag - Detailed section-by-section keyword distribution
+  - `--json` flag - Machine-readable output for automation
+  - Visual progress bars for category scores
+  - Actionable improvement suggestions with specific section names and keyword counts
+  - Edge case handling (missing title, missing keywords, file not found)
+
+- **Guidelines v1.3**: Enhanced blog post generation guidelines
+  - Long post SEO strategy section
+  - Length-based keyword density formulas
+  - Section-by-section keyword placement strategies
+  - Length-based SEO score targets (65-80+ depending on length)
+  - Keyword distribution best practices
+
+### Improved
+
+- **SEO Algorithm**: Upgraded from fixed density targets to length-adaptive scoring
+  - More fair evaluation for long-form content (1000+ lines)
+  - Prevents unfair penalties for naturally lower density in longer posts
+  - All 38 SEO unit tests passing with comprehensive edge case coverage
+
+### Documentation
+
+- Updated README.md with SEO analysis usage examples and feature descriptions
+- Documented length-based weighting system
+- Added comprehensive testing documentation
+
 ## [0.1.0] - 2025-10-27
 
 ### Added

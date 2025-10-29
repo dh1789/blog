@@ -47,6 +47,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1
+      gray-matter:
+        specifier: ^4.0.3
+        version: 4.0.3
       inquirer:
         specifier: ^9.2.12
         version: 9.3.8(@types/node@20.19.23)
