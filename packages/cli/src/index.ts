@@ -93,6 +93,9 @@ program
   .option('-k, --keywords <keywords>', '키워드 필터 (쉼표 구분)')
   .option('-m, --min-score <score>', '최소 점수 필터', '0')
   .option('--language <lang>', '언어 설정 (ko|en)', 'ko')
+  .option('-r, --revenue', '수익성 분석 포함 (Google Keyword Planner API 필요)')
+  .option('-o, --output <path>', '결과를 파일로 저장 (JSON 형식)')
+  .option('-f, --format <type>', '출력 포맷 (table|json)', 'table')
   .action(trendingCommand);
 
 program

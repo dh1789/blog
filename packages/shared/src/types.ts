@@ -264,6 +264,32 @@ export interface ScoredTrendingTopic extends TrendScore {
 }
 
 /**
+ * 주제 추천 우선순위
+ */
+export type TopicPriority = 'high' | 'medium' | 'low';
+
+/**
+ * 주제 추천 결과
+ */
+export interface SuggestedTopic {
+  topic: TrendingTopic; // 트렌딩 토픽 원본 데이터
+  priority: TopicPriority; // 우선순위 (high/medium/low)
+  combinedScore: number; // 종합 점수 (0-100)
+  scoreBreakdown: {
+    trendScore: number; // 트렌드 점수 (0-100)
+    revenueScore: number; // 수익성 점수 (0-100)
+    seoScore: number; // SEO 난이도 점수 (0-100, 낮을수록 좋음)
+    relevanceScore: number; // 키워드 관련성 점수 (0-100)
+  };
+  reason: string; // 추천 이유
+  estimatedRevenue?: {
+    conservative: number; // 보수적 예상 수익
+    optimistic: number; // 낙관적 예상 수익
+  };
+  revenueData?: KeywordData; // 키워드 수익성 데이터
+}
+
+/**
  * 블로그 포스트 통계
  */
 export interface PostStats {

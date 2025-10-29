@@ -13,3 +13,6 @@ export * from './seo';
 export * from './image';
 export * from './trending';
 export * from './analytics';
+export * from './keyword-research';
+export * from './revenue-scoring';
+export * from './topic-suggestion';

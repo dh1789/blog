@@ -2,6 +2,7 @@
  * 트렌드 모니터링 모듈
  * - Reddit, Hacker News, Twitter에서 인기 토픽 수집
  * - 트렌드 점수 계산 및 정렬
+ * - Google Ads API 통합으로 키워드 수익성 분석
  */
 
 import axios from 'axios';
@@ -10,12 +11,47 @@ import type {
   TrendingOptions,
   TrendScore,
   TrendSource,
+  ScoredTrendingTopic,
+  KeywordData,
 } from '@blog/shared';
+import { GoogleAdsClient } from './keyword-research';
+import { calculateRevenueScores } from './revenue-scoring';
 
 /**
  * 트렌드 모니터링 클라이언트
  */
 export class TrendingMonitor {
+  private googleAdsClient: GoogleAdsClient | null = null;
+
+  /**
+   * GoogleAdsClient 인스턴스 가져오기 (lazy initialization)
+   */
+  private getGoogleAdsClient(): GoogleAdsClient {
+    if (!this.googleAdsClient) {
+      this.googleAdsClient = new GoogleAdsClient();
+    }
+    return this.googleAdsClient;
+  }
+
+  /**
+   * 트렌딩 토픽에 대한 키워드 수익 데이터 가져오기
+   *
+   * @param topics 트렌딩 토픽 목록
+   * @returns 키워드 데이터 배열
+   */
+  async getKeywordRevenueData(topics: TrendingTopic[]): Promise<KeywordData[]> {
+    const googleAds = this.getGoogleAdsClient();
+    const keywords = topics.map((topic) => topic.title);
+
+    try {
+      const keywordDataList = await googleAds.getKeywordData(keywords);
+      return keywordDataList;
+    } catch (error) {
+      console.error('Failed to fetch keyword revenue data:', error);
+      return [];
+    }
+  }
+
   /**
    * 트렌딩 토픽 가져오기
    */
@@ -271,6 +307,47 @@ export class TrendingMonitor {
     scoredTopics.sort((a, b) => b.finalScore - a.finalScore);
 
     return scoredTopics;
+  }
+
+  /**
+   * 트렌딩 토픽과 수익성 데이터를 결합하여 반환
+   *
+   * @param options 트렌딩 옵션
+   * @returns 수익성 데이터가 포함된 트렌딩 토픽 배열
+   */
+  async getTrendingTopicsWithRevenue(
+    options: TrendingOptions = {}
+  ): Promise<ScoredTrendingTopic[]> {
+    // 1. 소셜 미디어 트렌드 점수 가져오기
+    const trendScores = await this.getTrendingTopicsWithScores(options);
+
+    // 2. 키워드 수익 데이터 가져오기
+    const topics = trendScores.map((score) => score.topic);
+    const keywordDataList = await this.getKeywordRevenueData(topics);
+
+    // 3. 수익성 점수 계산
+    const revenueScores = calculateRevenueScores(keywordDataList);
+
+    // 4. 트렌드 점수와 수익성 점수 결합
+    const combinedResults: ScoredTrendingTopic[] = trendScores.map((trendScore, index) => {
+      const keywordData = keywordDataList[index];
+      const revenueScore = revenueScores[index];
+
+      return {
+        ...trendScore,
+        revenueData: keywordData,
+        revenueScore: revenueScore,
+      };
+    });
+
+    // 5. 종합 점수로 정렬 (트렌드 점수 60% + 수익성 점수 40%)
+    combinedResults.sort((a, b) => {
+      const scoreA = (a.finalScore * 0.6) + ((a.revenueScore?.totalScore || 0) * 0.4);
+      const scoreB = (b.finalScore * 0.6) + ((b.revenueScore?.totalScore || 0) * 0.4);
+      return scoreB - scoreA;
+    });
+
+    return combinedResults;
   }
 
   /**
