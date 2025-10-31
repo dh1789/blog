@@ -25,14 +25,14 @@
   - [x] 1.3 config.sh 작성 (DOMAIN, ADMIN_EMAIL, ADMIN_USER, ADMIN_PASSWORD, AVADA_THEME_ZIP 변수 정의)
   - [x] 1.4 ref/Avada_Full_Package/avada.zip를 scripts/wordpress-setup/으로 복사
 
-- [ ] 2.0 WordOps 기반 설치 스크립트 작성
-  - [ ] 2.1 setup-wordops.sh 작성 (config.sh source 및 기본 구조)
-  - [ ] 2.2 setup-wordops.sh에 WordOps 설치 로직 추가 (wget -qO wo wops.cc && sudo bash wo)
-  - [ ] 2.3 setup-wordops.sh에 WordPress 사이트 생성 명령 추가 (wo site create $DOMAIN --wp --php81 --letsencrypt --redis)
-  - [ ] 2.4 setup-wordops.sh에 관리자 계정 설정 추가 (--user, --pass, --email 옵션)
-  - [ ] 2.5 setup-theme.sh 작성 (WP-CLI로 Avada 테마 설치 및 활성화)
-  - [ ] 2.6 setup.sh 메인 orchestrator 작성 (setup-wordops.sh → setup-theme.sh 순서 실행)
-  - [ ] 2.7 모든 스크립트에 set -euo pipefail 및 에러 핸들링 추가
+- [x] 2.0 WordOps 기반 설치 스크립트 작성
+  - [x] 2.1 setup-wordops.sh 작성 (config.sh source 및 기본 구조)
+  - [x] 2.2 setup-wordops.sh에 WordOps 설치 로직 추가 (wget -qO wo wops.cc && sudo bash wo)
+  - [x] 2.3 setup-wordops.sh에 WordPress 사이트 생성 명령 추가 (wo site create $DOMAIN --wp --php81 --letsencrypt --redis)
+  - [x] 2.4 setup-wordops.sh에 관리자 계정 설정 추가 (--user, --pass, --email 옵션)
+  - [x] 2.5 setup-theme.sh 작성 (WP-CLI로 Avada 테마 설치 및 활성화)
+  - [x] 2.6 setup.sh 메인 orchestrator 작성 (setup-wordops.sh → setup-theme.sh 순서 실행)
+  - [x] 2.7 모든 스크립트에 set -euo pipefail 및 에러 핸들링 추가
 
 - [ ] 3.0 테스트 및 문서화
   - [ ] 3.1 로컬 VPS 테스트 환경 구축 (AWS EC2 또는 GCP, Ubuntu 20.04/22.04)
