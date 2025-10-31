@@ -54,3 +54,7 @@ temp/
 content/drafts/*.md
 !content/drafts/README.md
 ref/
+
+# WordPress server setup scripts (config contains passwords)
+scripts/wordpress-setup/config.sh
+scripts/wordpress-setup/avada.zip
