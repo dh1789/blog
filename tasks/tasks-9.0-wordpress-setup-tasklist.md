@@ -7,7 +7,7 @@
 - `scripts/wordpress-setup/setup-wordops.sh` - WordOps 설치 및 WordPress 사이트 생성 스크립트
 - `scripts/wordpress-setup/setup-theme.sh` - Avada 테마 설치 및 활성화 스크립트 (WP-CLI 사용)
 - `scripts/wordpress-setup/setup.sh` - 메인 orchestrator 스크립트 (전체 설치 프로세스 제어)
-- `docs/WORDPRESS_SETUP.md` - 설치 가이드 및 트러블슈팅 문서
+- `docs/VULTR_VPS_SETUP.md` - Vultr VPS 생성 및 WordPress 자동 설치 가이드 (트러블슈팅 포함)
 
 ### Notes
 
@@ -35,13 +35,13 @@
   - [x] 2.7 모든 스크립트에 set -euo pipefail 및 에러 핸들링 추가
 
 - [ ] 3.0 테스트 및 문서화
-  - [ ] 3.1 로컬 VPS 테스트 환경 구축 (AWS EC2 또는 GCP, Ubuntu 20.04/22.04)
+  - [ ] 3.1 로컬 VPS 테스트 환경 구축 (Vultr VPS, Ubuntu 20.04/22.04)
   - [ ] 3.2 전체 워크플로우 통합 테스트 (tar → scp → ssh 실행)
   - [ ] 3.3 HTTPS 접속 테스트 (Let's Encrypt SSL 확인)
   - [ ] 3.4 WordPress 관리자 페이지 접속 및 로그인 테스트
   - [ ] 3.5 Avada 테마 활성화 확인
-  - [ ] 3.6 docs/WORDPRESS_SETUP.md 작성 (사전 요구사항, 실행 방법, 예제 코드)
-  - [ ] 3.7 docs/WORDPRESS_SETUP.md에 트러블슈팅 섹션 추가 (DNS 설정, 방화벽 등)
+  - [x] 3.6 docs/VULTR_VPS_SETUP.md 작성 (사전 요구사항, 실행 방법, 예제 코드)
+  - [x] 3.7 docs/VULTR_VPS_SETUP.md에 트러블슈팅 섹션 추가 (DNS 설정, 방화벽 등)
   - [ ] 3.8 README.md 업데이트 (WordPress 서버 설치 방법 섹션 추가)
 
 ---
