@@ -55,6 +55,9 @@ content/drafts/*.md
 !content/drafts/README.md
 ref/
 
-# WordPress server setup scripts (config contains passwords)
+# WordPress server setup scripts (config contains passwords, SSL certificates)
 scripts/wordpress-setup/config.sh
 scripts/wordpress-setup/avada.zip
+scripts/wordpress-setup/cert.pem
+scripts/wordpress-setup/key.pem
+scripts/wordpress-setup.tar.gz

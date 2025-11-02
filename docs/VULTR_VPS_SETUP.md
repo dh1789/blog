@@ -157,7 +157,53 @@ lsb_release -a
 
 ## 4. WordPress 자동 설치
 
-### 4-1. 로컬에서 스크립트 패키징
+### 4-1. Cloudflare Origin Certificate 준비 (필수!)
+
+WordPress 자동 설치 전에 Cloudflare에서 SSL 인증서를 발급받아야 합니다.
+
+#### Cloudflare 대시보드에서 인증서 발급
+
+```
+1. https://dash.cloudflare.com 로그인
+2. beomanro.com (또는 사용할 도메인) 클릭
+3. 왼쪽 메뉴: SSL/TLS 클릭
+4. Origin Server 탭 클릭
+5. "Create Certificate" 버튼 클릭
+
+인증서 설정:
+- Private key type: RSA (2048)
+- Hostnames: *.beomanro.com, beomanro.com (기본값 유지)
+- Certificate Validity: 15 years (최대값 선택)
+
+6. "Create" 버튼 클릭
+```
+
+#### 인증서 파일 저장
+
+두 개의 텍스트 박스가 나타납니다:
+
+```bash
+# 로컬 터미널에서
+cd /Users/idongho/proj/blog/scripts/wordpress-setup
+
+# Origin Certificate 저장 (첫 번째 박스 내용 전체)
+# -----BEGIN CERTIFICATE----- 부터 -----END CERTIFICATE----- 까지
+cat > cert.pem
+# 붙여넣기 후 Ctrl+D
+
+# Private Key 저장 (두 번째 박스 내용 전체)
+# -----BEGIN PRIVATE KEY----- 부터 -----END PRIVATE KEY----- 까지
+cat > key.pem
+# 붙여넣기 후 Ctrl+D
+
+# 권한 확인
+ls -l *.pem
+# cert.pem과 key.pem 파일 생성 확인
+```
+
+⚠️ **중요**: Private Key는 이 화면에서만 볼 수 있습니다! 반드시 저장하세요.
+
+### 4-2. 로컬에서 스크립트 패키징
 
 ```bash
 # 로컬 터미널 (blog 프로젝트 루트에서)
@@ -199,10 +245,19 @@ tar -czf wordpress-setup.tar.gz wordpress-setup/
 
 # 확인
 ls -lh wordpress-setup.tar.gz
-# → 약 9.5MB (avada.zip 포함)
+# → 약 9.5MB (avada.zip + cert.pem + key.pem 포함)
+
+# 포함된 파일 확인
+tar -tzf wordpress-setup.tar.gz | grep -E "(pem|zip|sh)$"
+# wordpress-setup/cert.pem ✅
+# wordpress-setup/key.pem ✅
+# wordpress-setup/avada.zip ✅
+# wordpress-setup/config.sh ✅
+# wordpress-setup/setup.sh ✅
+# ...
 ```
 
-### 4-2. VPS로 업로드
+### 4-3. VPS로 업로드
 
 ```bash
 # 로컬 터미널에서 (scripts 디렉토리에서)
@@ -212,7 +267,7 @@ scp wordpress-setup.tar.gz root@123.45.67.89:/root/
 # 업로드 완료: wordpress-setup.tar.gz 100% 9.5MB
 ```
 
-### 4-3. VPS에서 설치 실행
+### 4-4. VPS에서 설치 실행
 
 ```bash
 # SSH 접속된 VPS 터미널에서
@@ -230,7 +285,7 @@ cd wordpress-setup
 sudo bash setup.sh
 ```
 
-### 4-4. 설치 진행 과정
+### 4-5. 설치 진행 과정
 ```bash
 ============================================
   WordPress 서버 자동 설치 시작
@@ -238,8 +293,10 @@ sudo bash setup.sh
 
 이 스크립트는 다음 작업을 수행합니다:
   1. WordOps 설치
-  2. WordPress 사이트 생성 (LEMP + SSL + 캐싱)
-  3. Avada 테마 설치 및 활성화
+  2. 방화벽(UFW) 설정 (80/tcp, 443/tcp 허용)
+  3. WordPress 사이트 생성 (LEMP + Redis 캐싱)
+  4. Cloudflare SSL 인증서 설치 및 Nginx 설정
+  5. Avada 테마 설치 및 활성화
 
 예상 소요 시간: 5-10분
 ============================================
@@ -247,13 +304,33 @@ sudo bash setup.sh
 계속 진행하시겠습니까? (y/N): y
 
 # ↓ 자동 진행
-[1/2] WordOps 설치 중...
-[2/2] WordPress 사이트 생성 중...
+[1/5] WordOps 설치 중...
+[2/5] 방화벽(UFW) 설정 중...
+  방화벽 규칙: 22/tcp, 80/tcp, 443/tcp 허용
+
+[3/5] WordPress 사이트 생성 중...
+[4/5] Cloudflare SSL 인증서 설정 중...
+  SSL 디렉토리 생성, 인증서 복사, Nginx 설정 완료
+
+[5/5] 관리자 계정 생성 중...
 [1/2] Avada 테마 업로드 중...
 [2/2] Avada 테마 활성화 중...
 
 ============================================
-  🎉 모든 설치가 완료되었습니다!
+  ✅ WordPress 설치 완료!
+============================================
+사이트 URL: https://beomanro.com
+관리자 페이지: https://beomanro.com/wp-admin
+
+🔒 SSL 설정:
+  - Cloudflare Origin Certificate 적용됨
+  - 방화벽(UFW): 80/tcp, 443/tcp 허용됨
+
+⚠️  중요: Cloudflare SSL 모드 설정 필수!
+  1. Cloudflare 대시보드 접속
+  2. beomanro.com 도메인 선택
+  3. SSL/TLS 메뉴 → Overview 탭
+  4. SSL/TLS encryption mode를 'Full (strict)'로 설정
 ============================================
 ```
 
@@ -261,20 +338,50 @@ sudo bash setup.sh
 
 ## 5. 도메인 연결
 
-### 5-1. DNS 설정 (필수)
+### 5-1. Cloudflare DNS 설정 (필수)
 
-#### 도메인이 있는 경우
+#### A 레코드 추가 및 프록시 설정
+
 ```
-1. 도메인 DNS 관리 페이지 접속
-   (Cloudflare, Cafe24, GoDaddy 등)
+1. Cloudflare 대시보드 접속
+   https://dash.cloudflare.com
 
-2. A 레코드 추가:
+2. beomanro.com 도메인 선택
+
+3. 왼쪽 메뉴: DNS 클릭
+
+4. A 레코드 추가:
    Type: A
-   Name: @ (또는 blog)
-   Value: 123.45.67.89 (VPS IP)
-   TTL: 자동 또는 3600
+   Name: @ (또는 www)
+   IPv4 address: 158.247.245.141 (VPS IP 주소)
+   Proxy status: Proxied (주황색 구름 🟠) ← 중요!
+   TTL: Auto
 
-3. 저장 후 전파 대기 (5분-1시간)
+5. "Save" 클릭
+
+6. DNS 전파 대기 (5-10분)
+```
+
+⚠️ **중요**: Proxy status를 "Proxied" (주황색 구름)로 설정해야 Cloudflare CDN 및 SSL이 작동합니다.
+
+### 5-2. Cloudflare SSL 모드 설정 (필수!)
+
+```
+1. Cloudflare 대시보드에서 beomanro.com 선택
+
+2. 왼쪽 메뉴: SSL/TLS 클릭
+
+3. Overview 탭에서 SSL/TLS encryption mode 확인
+
+4. "Full (strict)" 선택 ✅
+
+옵션 설명:
+- Off: SSL 없음 (사용 불가)
+- Flexible: Cloudflare ↔ 사용자만 HTTPS (사용 불가)
+- Full: Cloudflare ↔ VPS도 HTTPS (자체 서명 인증서 허용)
+- Full (strict): Cloudflare ↔ VPS HTTPS + 인증서 검증 ✅ 추천!
+
+5. 저장 (자동 적용)
 ```
 
 #### 도메인이 없는 경우 (테스트)
@@ -285,15 +392,19 @@ IP 주소로 직접 접속 가능하나 SSL 안 됨
 실제 운영은 도메인 필수!
 ```
 
-### 5-2. DNS 전파 확인
+### 5-3. DNS 전파 확인
 ```bash
 # 로컬 터미널에서
-nslookup blog.example.com
+nslookup beomanro.com
+
+# 예상 결과 (Cloudflare 프록시 사용 시):
+# Address: 104.21.x.x, 172.67.x.x (Cloudflare IP)
 
 # 또는
-dig blog.example.com
+dig beomanro.com
 
-# VPS IP가 나오면 성공
+# Cloudflare 프록시가 활성화되어 있으면 Cloudflare IP가 표시됨
+# 이것이 정상! VPS IP가 직접 노출되지 않음
 ```
 
 ---
@@ -426,16 +537,42 @@ https://blog.example.com
 3. 급하면 /etc/hosts 수정 (임시)
 ```
 
-### 문제 2: SSL 인증서 발급 실패
+### 문제 2: HTTPS 접속 안 됨 (Cloudflare 타임아웃)
 ```bash
-# 증상: HTTPS 접속 안 됨
+# 증상: 브라우저에서 Cloudflare 타임아웃 에러
+
+# 원인: 방화벽에서 443 포트 차단
+
+# 해결 (VPS SSH 접속 후):
+sudo ufw allow 443/tcp
+sudo ufw allow 80/tcp
+sudo ufw status
+
+# Nginx 재시작
+sudo systemctl restart nginx
+
+# 브라우저에서 재접속
+```
+
+### 문제 2-1: SSL 인증서 오류
+```bash
+# 증상: "Your connection is not private" 에러
 
 # 해결:
-# VPS SSH 접속 후
-sudo wo site update blog.example.com --letsencrypt
+# 1. Cloudflare SSL 모드 확인
+#    SSL/TLS → Overview → "Full (strict)" 선택
 
-# 또는 수동 발급
-sudo certbot --nginx -d blog.example.com
+# 2. VPS에서 인증서 파일 확인
+ls -la /etc/nginx/ssl/beomanro.com/
+# cert.pem, key.pem 파일 존재 확인
+
+# 3. Nginx 설정 확인
+sudo nginx -t
+
+# 4. 문제 계속되면 인증서 재설치
+cd /root/wordpress-setup
+sudo bash setup-wordops.sh
+# (4단계 SSL 설정 부분 재실행)
 ```
 
 ### 문제 3: 메모리 부족
