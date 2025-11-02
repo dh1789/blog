@@ -161,7 +161,7 @@ CLI 프레임워크
 
 먼저 개발 환경을 준비합니다.
 
-```
+```bash
 # Node.js 20+ 설치 확인
 node --version  # v20.0.0 이상
 
@@ -179,7 +179,7 @@ pnpm init
 
 **프로젝트 구조 생성:**
 
-```
+```bash
 mkdir -p packages/{cli,core,shared}/src
 mkdir -p content/posts/{ko,en}
 mkdir config
@@ -188,7 +188,7 @@ mkdir config
 
 **pnpm-workspace.yaml 생성:**
 
-```
+```yaml
 packages:
   - 'packages/*'
 
@@ -196,7 +196,7 @@ packages:
 
 **루트 package.json 설정:**
 
-```
+```json
 {
   "name": "blog-automation",
   "version": "1.0.0",
@@ -223,7 +223,7 @@ WordPress와 통신하는 핵심 클라이언트를 만듭니다.
 
 **packages/core/package.json:**
 
-```
+```json
 {
   "name": "@blog/core",
   "version": "1.0.0",
@@ -243,7 +243,7 @@ WordPress와 통신하는 핵심 클라이언트를 만듭니다.
 
 **packages/core/src/wordpress.ts:**
 
-```
+```typescript
 import WPAPI from 'wpapi';
 
 export interface WordPressConfig {
@@ -388,7 +388,7 @@ export class WordPressClient {
 
 **packages/core/package.json 업데이트:**
 
-```
+```json
 {
   "dependencies": {
     "wpapi": "^1.2.2",
@@ -408,7 +408,7 @@ export class WordPressClient {
 
 **packages/shared/src/schemas.ts (타입 검증):**
 
-```
+```typescript
 import { z } from 'zod';
 
 export const PostMetadataSchema = z.object({
@@ -428,7 +428,7 @@ export type PostMetadata = z.infer&#x3C;typeof PostMetadataSchema>;
 
 **packages/core/src/markdown.ts:**
 
-```
+```typescript
 import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { unified } from 'unified';
@@ -479,7 +479,7 @@ export async function parseMarkdownFile(
 
 **마크다운 파일 예제 (content/posts/ko/example.md):**
 
-```
+```markdown
 ---
 title: "WordPress 자동화로 블로그 생산성 10배 높이기"
 slug: "wordpress-automation-productivity"
@@ -512,7 +512,7 @@ language: "ko"
 
 **packages/core/src/ads.ts:**
 
-```
+```typescript
 import { JSDOM } from 'jsdom';
 
 export interface AdConfig {
@@ -632,7 +632,7 @@ CTR 영향
 
 **packages/cli/package.json:**
 
-```
+```json
 {
   "name": "@blog/cli",
   "version": "1.0.0",
@@ -658,7 +658,7 @@ CTR 영향
 
 **packages/cli/src/commands/publish.ts:**
 
-```
+```typescript
 import { Command } from 'commander';
 import ora from 'ora';
 import chalk from 'chalk';
@@ -737,7 +737,7 @@ export function createPublishCommand(): Command {
 
 **packages/cli/src/index.ts (진입점):**
 
-```
+```typescript
 #!/usr/bin/env node
 import { Command } from 'commander';
 import dotenv from 'dotenv';
@@ -762,7 +762,7 @@ program.parse();
 
 **.env.example (환경 변수 템플릿):**
 
-```
+```bash
 # WordPress 설정
 WORDPRESS_URL=https://your-blog.com
 WORDPRESS_USERNAME=your-username
@@ -784,7 +784,7 @@ DEFAULT_POST_STATUS=draft
 
 **packages/core/package.json 업데이트:**
 
-```
+```json
 {
   "dependencies": {
     "@anthropic-ai/sdk": "^0.15.0"
@@ -795,7 +795,7 @@ DEFAULT_POST_STATUS=draft
 
 **packages/core/src/claude.ts:**
 
-```
+```typescript
 import Anthropic from '@anthropic-ai/sdk';
 import fs from 'fs/promises';
 
@@ -914,7 +914,7 @@ language: "{language}"
 
 **CLI에 생성 명령어 추가 (packages/cli/src/commands/generate.ts):**
 
-```
+```typescript
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import ora from 'ora';
@@ -1010,7 +1010,7 @@ export function createGenerateCommand(): Command {
 
 **사용 예제:**
 
-```
+```bash
 # 대화형으로 콘텐츠 생성
 blog generate
 
@@ -1067,7 +1067,7 @@ blog publish content/posts/ko/1698234567-wordpress-automation.md
 
 **배치 발행 스크립트:**
 
-```
+```bash
 #!/bin/bash
 # batch-publish.sh - 여러 포스트를 한 번에 발행
 
@@ -1081,7 +1081,7 @@ done
 
 **스케줄 발행 (cron 사용):**
 
-```
+```bash
 # crontab -e
 # 매일 오전 9시에 특정 폴더의 포스트 발행
 0 9 * * * cd /path/to/blog-automation &#x26;&#x26; ./batch-publish.sh
@@ -1090,7 +1090,7 @@ done
 
 **GitHub Actions 자동화 (예시):**
 
-```
+```yaml
 name: Auto Publish Posts
 
 on:
@@ -1170,7 +1170,7 @@ AI 생성 콘텐츠 사용 시 다음 원칙을 지키세요:
 
 ### 1. 다국어 자동 번역
 
-```
+```typescript
 // packages/core/src/translation.ts
 export async function translatePost(
   markdown: string,
@@ -1199,7 +1199,7 @@ ${markdown}
 
 ### 2. 이미지 자동 생성 및 최적화
 
-```
+```typescript
 // packages/core/src/images.ts
 import sharp from 'sharp';
 import { WordPressClient } from './wordpress.js';
@@ -1226,7 +1226,7 @@ export async function optimizeAndUploadImage(
 
 ### 3. SEO 메타데이터 자동 생성
 
-```
+```typescript
 // packages/core/src/seo.ts
 export async function generateSEOMetadata(
   content: string
@@ -1262,7 +1262,7 @@ ${content.substring(0, 2000)}
 
 ### 4. 성과 분석 대시보드
 
-```
+```typescript
 // packages/core/src/analytics.ts
 export async function getPostPerformance(postId: number): Promise&#x3C;{
   views: number;
@@ -1320,7 +1320,7 @@ export async function getPostPerformance(postId: number): Promise&#x3C;{
 
 ### 바로 시작하기
 
-```
+```bash
 # 1. 프로젝트 클론 또는 생성
 git clone https://github.com/your-repo/blog-automation.git
 cd blog-automation

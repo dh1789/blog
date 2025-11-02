@@ -74,7 +74,7 @@ WordPress REST API는 WordPress 4.7 버전부터 코어에 통합된 기능으�
 
 **REST API 방식:**
 
-```
+```bash
 # 로컬에서 마크다운으로 편하게 작성
 blog publish content/posts/ko/my-awesome-post.md
 
@@ -154,7 +154,7 @@ blog/
 
 먼저 루트 디렉토리에 `pnpm-workspace.yaml` 파일을 생성합니다:
 
-```
+```yaml
 packages:
   - 'packages/*'
 
@@ -162,7 +162,7 @@ packages:
 
 루트 `package.json`:
 
-```
+```json
 {
   "name": "blog-automation",
   "version": "0.1.0",
@@ -184,7 +184,7 @@ packages:
 
 루트 `tsconfig.json`:
 
-```
+```json
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -214,7 +214,7 @@ packages:
 
 `packages/shared/src/types.ts`:
 
-```
+```typescript
 /**
  * WordPress 연결 설정
  */
@@ -272,7 +272,7 @@ export interface PublishOptions {
 
 `packages/shared/src/schemas.ts` (Zod 스키마):
 
-```
+```typescript
 import { z } from 'zod';
 
 /**
@@ -308,7 +308,7 @@ export const WordPressConfigSchema = z.object({
 
 `packages/core/src/wordpress.ts`:
 
-```
+```typescript
 import WPAPI from 'wpapi';
 import type { WordPressConfig, PostMetadata } from '@blog/shared';
 
@@ -497,7 +497,7 @@ export class WordPressClient {
 
 `packages/core/src/markdown.ts`:
 
-```
+```typescript
 import fs from 'fs/promises';
 import matter from 'gray-matter';
 import { unified } from 'unified';
@@ -557,7 +557,7 @@ async function markdownToHtml(markdown: string): Promise&#x3C;string> {
 
 `packages/core/src/ads.ts`:
 
-```
+```typescript
 import type { AdConfig, AdPosition } from '@blog/shared';
 
 /**
@@ -640,7 +640,7 @@ function generateAdSenseCode(adConfig: AdConfig): string {
 
 `packages/cli/src/commands/publish.ts`:
 
-```
+```typescript
 import { Command } from 'commander';
 import ora from 'ora';
 import chalk from 'chalk';
@@ -706,7 +706,7 @@ export const publishCommand = new Command('publish')
 
 `packages/cli/src/utils/config.ts`:
 
-```
+```typescript
 import fs from 'fs/promises';
 import path from 'path';
 import { config as dotenvConfig } from 'dotenv';
@@ -756,7 +756,7 @@ export async function loadConfig(): Promise&#x3C;AppConfig> {
 
 `packages/cli/src/index.ts` (CLI 진입점):
 
-```
+```typescript
 #!/usr/bin/env node
 
 import { Command } from 'commander';
@@ -777,7 +777,7 @@ program.parse();
 
 `packages/cli/package.json`:
 
-```
+```json
 {
   "name": "@blog/cli",
   "version": "0.1.0",
@@ -809,7 +809,7 @@ program.parse();
 
 `.env.example`:
 
-```
+```bash
 # WordPress 연결 설정
 WORDPRESS_URL=https://your-blog.com
 WORDPRESS_USERNAME=your-username
@@ -836,7 +836,7 @@ DEFAULT_POST_STATUS=draft
 
 `content/posts/ko/wordpress-api-guide.md`:
 
-```
+```markdown
 ---
 title: "WordPress REST API 완벽 가이드"
 slug: "wordpress-rest-api-complete-guide"
@@ -856,7 +856,7 @@ WordPress REST API는...
 
 ### 2. 빌드 및 설치
 
-```
+```bash
 # 의존성 설치
 pnpm install
 
@@ -871,7 +871,7 @@ pnpm link --global
 
 ### 3. 발행
 
-```
+```bash
 # 바로 발행
 blog publish content/posts/ko/wordpress-api-guide.md
 
@@ -905,7 +905,7 @@ URL: https://your-blog.com/?p=123
 
 `packages/core/src/media.ts`:
 
-```
+```typescript
 import fs from 'fs';
 import path from 'path';
 import FormData from 'form-data';
@@ -979,7 +979,7 @@ export async function replaceLocalImages(
 
 기존 포스트가 있으면 업데이트하는 기능:
 
-```
+```typescript
 /**
  * slug로 기존 포스트 검색
  */
@@ -1022,7 +1022,7 @@ async publishPost(
 
 모든 비동기 함수는 명확한 에러 메시지를 제공해야 합니다:
 
-```
+```typescript
 try {
   await wp.createPost(metadata, html);
 } catch (error) {
@@ -1042,7 +1042,7 @@ try {
 
 핵심 로직에 대한 단위 테스트 예시 (Vitest):
 
-```
+```typescript
 import { describe, it, expect } from 'vitest';
 import { injectAds } from '../src/ads';
 
@@ -1076,7 +1076,7 @@ describe('injectAds', () => {
 
 **이미지 최적화 예제 (sharp 사용)**:
 
-```
+```typescript
 import sharp from 'sharp';
 import path from 'path';
 
@@ -1158,7 +1158,7 @@ export async function uploadOptimizedImage(
 
 여러 포스트를 동시에 발행할 때:
 
-```
+```typescript
 async function publishMultiple(filePaths: string[]) {
   const promises = filePaths.map(filePath => publishPost(filePath));
   
@@ -1176,7 +1176,7 @@ async function publishMultiple(filePaths: string[]) {
 
 카테고리와 태그 ID를 캐싱하여 API 호출 줄이기:
 
-```
+```typescript
 private categoryCache = new Map&#x3C;string, number>();
 private tagCache = new Map&#x3C;string, number>();
 
@@ -1214,7 +1214,7 @@ private async resolveCategoryIds(categoryNames: string[]): Promise&#x3C;number[]
 - Application Password 재생성
 
 WordPress REST API 활성화 확인:
-```
+```bash
 curl https://your-blog.com/wp-json/wp/v2/posts
 
 ```
@@ -1227,7 +1227,7 @@ curl https://your-blog.com/wp-json/wp/v2/posts
 
 **해결 방법**:
 
-```
+```bash
 # pnpm 캐시 정리
 pnpm store prune
 
@@ -1246,7 +1246,7 @@ pnpm build
 
 **해결 방법**:
 
-```
+```bash
 # 타입 정의 재생성
 pnpm --filter @blog/shared build
 

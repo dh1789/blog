@@ -45,7 +45,15 @@ function httpGet(url) {
  * HTML을 마크다운 형식으로 간단히 정리
  */
 function htmlToMarkdown(html) {
-  // HTML 태그 제거 및 엔티티 디코딩
+  // 1. 먼저 코드 블록을 언어 정보와 함께 변환 (다른 태그 변환 전에 처리)
+  html = html.replace(/<pre><code class="language-(\w+)">(.*?)<\/code><\/pre>/gis, (match, lang, code) => {
+    return `\`\`\`${lang}\n${code}\n\`\`\`\n\n`;
+  });
+
+  // 2. 언어 클래스 없는 코드 블록 처리
+  html = html.replace(/<pre><code[^>]*>(.*?)<\/code><\/pre>/gis, '```\n$1\n```\n\n');
+
+  // 3. HTML 태그 제거 및 엔티티 디코딩
   let md = html
     .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
     .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
@@ -61,7 +69,6 @@ function htmlToMarkdown(html) {
     .replace(/<\/ol>/gi, '\n')
     .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
     .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<pre><code[^>]*>(.*?)<\/code><\/pre>/gis, '```\n$1\n```\n\n')
     .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis, '> $1\n\n')
     // Google AdSense 광고 코드 제거
     .replace(/<!-- Google AdSense -->[\s\S]*?<\/script>/gi, '')

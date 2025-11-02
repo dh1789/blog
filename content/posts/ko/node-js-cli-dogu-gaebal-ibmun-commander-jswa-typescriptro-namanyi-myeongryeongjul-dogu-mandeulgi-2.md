@@ -71,7 +71,7 @@ TypeScript를 사용하면 다음과 같은 이점이 있습니다:
 
 먼저 새로운 프로젝트를 생성하고 필요한 패키지를 설치합니다:
 
-```
+```bash
 mkdir my-cli-tool
 cd my-cli-tool
 npm init -y
@@ -82,7 +82,7 @@ npm install -D typescript @types/node tsx
 
 TypeScript 설정 파일(`tsconfig.json`)을 생성합니다:
 
-```
+```json
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -104,7 +104,7 @@ TypeScript 설정 파일(`tsconfig.json`)을 생성합니다:
 
 `package.json`에 다음 내용을 추가합니다:
 
-```
+```json
 {
   "name": "my-cli-tool",
   "version": "1.0.0",
@@ -143,7 +143,7 @@ TypeScript 설정 파일(`tsconfig.json`)을 생성합니다:
 
 `src/index.ts` 파일을 생성하고 기본 구조를 작성합니다:
 
-```
+```typescript
 #!/usr/bin/env node
 
 import { Command } from 'commander';
@@ -209,21 +209,21 @@ program.parse(process.argv);
 
 TypeScript 코드를 JavaScript로 컴파일합니다:
 
-```
+```bash
 npm run build
 
 ```
 
 로컬에서 테스트하기 위해 npm link를 사용합니다:
 
-```
+```bash
 npm link
 
 ```
 
 이제 터미널에서 CLI 도구를 사용할 수 있습니다:
 
-```
+```bash
 # 파일 생성
 mytool create test.js --content "console.log('Hello');"
 
@@ -250,14 +250,14 @@ Zod 같은 라이브러리를 사용하여 사용자 입력을 검증할 수 있
 
 먼저 Zod를 설치하세요:
 
-```
+```bash
 npm install zod
 
 ```
 
 사용 예제:
 
-```
+```typescript
 import { z } from 'zod';
 
 const fileNameSchema = z.string().regex(/^[\w\-. ]+$/);
@@ -273,7 +273,7 @@ const validatedName = fileNameSchema.parse(filename);
 
 설치 방법:
 
-```
+```bash
 npm install inquirer
 
 ```
@@ -284,14 +284,14 @@ npm install inquirer
 
 먼저 ora를 설치하세요:
 
-```
+```bash
 npm install ora
 
 ```
 
 사용 예제:
 
-```
+```typescript
 import ora from 'ora';
 
 const spinner = ora('파일 생성 중...').start();
