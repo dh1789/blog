@@ -99,6 +99,75 @@ pnpm link --global
 
 이제 `blog` 명령어를 전역에서 사용할 수 있습니다.
 
+## 🖥️ WordPress 서버 설치
+
+VPS에 WordPress + Avada 테마를 자동으로 설치합니다.
+
+### 필요 사항
+- Ubuntu 20.04 또는 22.04 LTS VPS
+- 도메인 (Cloudflare 등록 권장)
+- Cloudflare Origin Certificate
+
+### 설치 방법
+
+상세 가이드: [docs/VULTR_VPS_SETUP.md](docs/VULTR_VPS_SETUP.md)
+
+#### 1. Cloudflare Origin Certificate 준비
+
+```bash
+# Cloudflare 대시보드에서 인증서 발급
+# SSL/TLS → Origin Server → Create Certificate (15 years)
+
+# 로컬에 저장
+cd scripts/wordpress-setup
+# cert.pem, key.pem 파일 저장
+```
+
+#### 2. 설정 편집
+
+```bash
+# config.sh 편집
+vim scripts/wordpress-setup/config.sh
+
+# 도메인, 관리자 정보 입력
+DOMAIN="your-domain.com"
+ADMIN_EMAIL="your-email@gmail.com"
+ADMIN_PASSWORD="SecurePassword123"
+```
+
+#### 3. 패키징 및 VPS 전송
+
+```bash
+# 압축
+cd scripts
+tar -czf wordpress-setup.tar.gz wordpress-setup/
+
+# VPS로 전송
+scp wordpress-setup.tar.gz root@YOUR_VPS_IP:/root/
+```
+
+#### 4. VPS에서 설치 실행
+
+```bash
+# VPS SSH 접속
+ssh root@YOUR_VPS_IP
+
+# 압축 해제 및 실행
+cd /root
+tar -xzf wordpress-setup.tar.gz
+cd wordpress-setup
+sudo bash setup.sh
+```
+
+**설치 시간**: 5-10분
+**자동 구성**: LEMP + WordPress + Cloudflare SSL + Redis 캐싱 + Avada 테마
+
+### 실제 운영 사례
+
+- **도메인**: [https://beomanro.com](https://beomanro.com)
+- **설치 완료**: 2025-11-02
+- **구성**: Vultr VPS (Tokyo) + Cloudflare + Avada
+
 ## 🎯 사용법
 
 ### AI 초안 생성
@@ -413,13 +482,28 @@ pnpm format
 - [x] 트렌드 모니터링 (Reddit, HN, Twitter)
 - [x] 분석 대시보드
 
-### 🚧 Epic 5.0 - Testing & Documentation
+### ✅ Epic 5.0 - Testing & Documentation
 - [x] Vitest 설정
 - [x] 단위 테스트 (167 tests)
 - [x] 커버리지 측정 (82% core, 67% CLI)
-- [ ] 통합 테스트 개선
-- [ ] 수동 테스트
-- [ ] 사용자 가이드
+- [x] 통합 테스트
+- [x] CLI 검증
+- [x] 사용자 가이드
+
+### ✅ Epic 8.0 - Keyword Revenue Optimization
+- [x] Google Ads API 연동
+- [x] 키워드 수익성 분석 (검색량, CPC, 경쟁도)
+- [x] trending 명령어 --revenue 플래그
+- [x] 캐싱 시스템
+- [x] 종합 문서화
+
+### ✅ Epic 9.0 - WordPress Server Automation
+- [x] WordOps 기반 자동 설치 스크립트
+- [x] Cloudflare Origin Certificate SSL 설정
+- [x] 방화벽(UFW) 자동 구성
+- [x] Avada 테마 자동 설치
+- [x] VPS 실제 배포 검증 (beomanro.com)
+- [x] 완전 자동화 (5-10분 설치)
 
 ### 📋 Future Enhancements
 - [ ] WordPress 미디어 라이브러리 통합
