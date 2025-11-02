@@ -231,45 +231,32 @@ echo "-------------------------------"
 SITE_DIR="/var/www/$DOMAIN/htdocs"
 cd "$SITE_DIR"
 
-# 기존 사용자 목록 확인
+# 기존 사용자 확인
 echo "기존 WordPress 사용자 확인 중..."
-EXISTING_USERS=$(sudo -u www-data wp user list --field=user_login)
+sudo -u www-data wp user list
 
-# WordOps가 생성한 기본 계정 삭제
-echo "기본 계정 삭제 중..."
-for USER_ID in 1 2 3; do
-    sudo -u www-data wp user delete $USER_ID --yes --reassign=1 2>/dev/null || true
-done
+# WordOps가 생성한 기본 계정(ID 1)의 비밀번호를 config.sh 값으로 변경
+echo ""
+echo "관리자 계정 비밀번호 업데이트 중..."
+echo "  - 대상: ID 1 (WordOps 기본 계정)"
+echo "  - 새 비밀번호: config.sh의 ADMIN_PASSWORD 사용"
 
-# config.sh에서 지정한 관리자 계정 생성
-echo "관리자 계정 생성 중..."
-echo "  - 사용자명: $ADMIN_USER"
-echo "  - 이메일: $ADMIN_EMAIL"
-
-CREATE_RESULT=$(sudo -u www-data wp user create "$ADMIN_USER" "$ADMIN_EMAIL" \
-  --role=administrator \
+sudo -u www-data wp user update 1 \
   --user_pass="$ADMIN_PASSWORD" \
-  --display_name="Administrator" 2>&1)
+  --role=administrator
 
 if [ $? -eq 0 ]; then
-    echo "✅ 관리자 계정 생성 완료!"
-    sudo -u www-data wp user list
+    echo "✅ 관리자 계정 비밀번호 업데이트 완료!"
+    echo ""
+    echo "로그인 정보:"
+    ADMIN_LOGIN=$(sudo -u www-data wp user get 1 --field=user_login)
+    ADMIN_EMAIL_ACTUAL=$(sudo -u www-data wp user get 1 --field=user_email)
+    echo "  - 사용자명: $ADMIN_LOGIN"
+    echo "  - 이메일: $ADMIN_EMAIL_ACTUAL"
+    echo "  - 비밀번호: (config.sh의 ADMIN_PASSWORD)"
 else
-    echo "⚠️  관리자 계정 생성 실패. 기존 계정을 업데이트합니다."
-    echo "에러: $CREATE_RESULT"
-
-    # 계정이 이미 존재하면 비밀번호만 업데이트
-    if echo "$CREATE_RESULT" | grep -q "already exists"; then
-        echo "기존 '$ADMIN_USER' 계정의 비밀번호를 업데이트합니다..."
-        sudo -u www-data wp user update "$ADMIN_USER" \
-          --user_pass="$ADMIN_PASSWORD" \
-          --user_email="$ADMIN_EMAIL" \
-          --role=administrator
-        echo "✅ 계정 업데이트 완료!"
-    else
-        echo "❌ 계정 생성 실패. WordOps 기본 계정을 사용하세요."
-        echo "기본 계정 확인: wo site info $DOMAIN"
-    fi
+    echo "❌ 비밀번호 업데이트 실패"
+    echo "수동으로 변경하세요: sudo -u www-data wp user update 1 --user_pass=\"새비밀번호\""
 fi
 
 echo ""
@@ -283,10 +270,17 @@ echo "=================================="
 echo "사이트 URL: https://$DOMAIN"
 echo "관리자 페이지: https://$DOMAIN/wp-admin"
 echo ""
-echo "관리자 계정 정보:"
-echo "  - 사용자명: $ADMIN_USER"
-echo "  - 이메일: $ADMIN_EMAIL"
-echo "  - 비밀번호: (config.sh 참조)"
+echo "🔑 관리자 로그인 정보:"
+FINAL_ADMIN_LOGIN=$(sudo -u www-data wp user get 1 --field=user_login 2>/dev/null || echo "확인 필요")
+FINAL_ADMIN_EMAIL=$(sudo -u www-data wp user get 1 --field=user_email 2>/dev/null || echo "확인 필요")
+echo "  - 사용자명: $FINAL_ADMIN_LOGIN"
+echo "  - 이메일: $FINAL_ADMIN_EMAIL"
+echo "  - 비밀번호: (config.sh의 ADMIN_PASSWORD)"
+echo ""
+echo "💡 로그인 방법:"
+echo "  1. https://$DOMAIN/wp-admin 접속"
+echo "  2. 사용자명에 '$FINAL_ADMIN_LOGIN' 입력"
+echo "  3. 비밀번호에 config.sh의 ADMIN_PASSWORD 입력"
 echo ""
 echo "🔒 SSL 설정:"
 echo "  - Cloudflare Origin Certificate 적용됨"
