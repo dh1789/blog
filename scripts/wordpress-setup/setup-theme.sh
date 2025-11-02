@@ -49,21 +49,29 @@ echo "테마 파일: $AVADA_THEME_ZIP"
 echo "=================================="
 echo ""
 
-# WordPress 디렉토리로 이동
-cd "$SITE_DIR"
+# WordPress themes 디렉토리로 이동
+THEMES_DIR="$SITE_DIR/wp-content/themes"
+cd "$THEMES_DIR"
 
-echo "[1/2] Avada 테마 업로드 중..."
+echo "[1/2] Avada 테마 압축 해제 중..."
 echo "-------------------------------"
 
-# WP-CLI로 테마 설치 (www-data 사용자로 실행)
-sudo -u www-data wp theme install "$SCRIPT_DIR/$AVADA_THEME_ZIP"
+# Avada 테마 압축 해제 (www-data 사용자로 실행)
+sudo -u www-data unzip -q "$SCRIPT_DIR/$AVADA_THEME_ZIP"
 
 if [ $? -ne 0 ]; then
-    echo "Error: Avada 테마 설치 실패"
+    echo "Error: Avada 테마 압축 해제 실패"
     exit 1
 fi
 
-echo "Avada 테마 업로드 완료!"
+# Avada 디렉토리 존재 확인
+if [ ! -d "$THEMES_DIR/Avada" ]; then
+    echo "Error: Avada 테마 디렉토리를 찾을 수 없습니다."
+    echo "압축 파일 내용을 확인해주세요."
+    exit 1
+fi
+
+echo "Avada 테마 압축 해제 완료!"
 echo ""
 
 echo "[2/2] Avada 테마 활성화 중..."
