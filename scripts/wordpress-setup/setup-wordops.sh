@@ -225,27 +225,56 @@ systemctl reload nginx
 echo "SSL 설정 완료!"
 echo ""
 
-echo "[5/5] 관리자 계정 생성 중..."
+echo "[5/5] 관리자 계정 설정 중..."
 echo "-------------------------------"
 
-# 관리자 계정 생성 (WP-CLI 사용)
-echo "관리자 계정 생성 중..."
 SITE_DIR="/var/www/$DOMAIN/htdocs"
-
 cd "$SITE_DIR"
 
-# 기본 admin 계정 삭제 (WordOps가 자동 생성)
-sudo -u www-data wp user delete admin --yes 2>/dev/null || true
+# 기존 사용자 목록 확인
+echo "기존 WordPress 사용자 확인 중..."
+EXISTING_USERS=$(sudo -u www-data wp user list --field=user_login)
 
-# 새 관리자 계정 생성
-sudo -u www-data wp user create "$ADMIN_USER" "$ADMIN_EMAIL" \
+# WordOps가 생성한 기본 계정 삭제
+echo "기본 계정 삭제 중..."
+for USER_ID in 1 2 3; do
+    sudo -u www-data wp user delete $USER_ID --yes --reassign=1 2>/dev/null || true
+done
+
+# config.sh에서 지정한 관리자 계정 생성
+echo "관리자 계정 생성 중..."
+echo "  - 사용자명: $ADMIN_USER"
+echo "  - 이메일: $ADMIN_EMAIL"
+
+CREATE_RESULT=$(sudo -u www-data wp user create "$ADMIN_USER" "$ADMIN_EMAIL" \
   --role=administrator \
-  --user_pass="$ADMIN_PASSWORD"
+  --user_pass="$ADMIN_PASSWORD" \
+  --display_name="Administrator" 2>&1)
 
-if [ $? -ne 0 ]; then
-    echo "Warning: 관리자 계정 생성 실패. WordOps 기본 계정을 사용하세요."
-    echo "기본 계정 확인: wo site info $DOMAIN"
+if [ $? -eq 0 ]; then
+    echo "✅ 관리자 계정 생성 완료!"
+    sudo -u www-data wp user list
+else
+    echo "⚠️  관리자 계정 생성 실패. 기존 계정을 업데이트합니다."
+    echo "에러: $CREATE_RESULT"
+
+    # 계정이 이미 존재하면 비밀번호만 업데이트
+    if echo "$CREATE_RESULT" | grep -q "already exists"; then
+        echo "기존 '$ADMIN_USER' 계정의 비밀번호를 업데이트합니다..."
+        sudo -u www-data wp user update "$ADMIN_USER" \
+          --user_pass="$ADMIN_PASSWORD" \
+          --user_email="$ADMIN_EMAIL" \
+          --role=administrator
+        echo "✅ 계정 업데이트 완료!"
+    else
+        echo "❌ 계정 생성 실패. WordOps 기본 계정을 사용하세요."
+        echo "기본 계정 확인: wo site info $DOMAIN"
+    fi
 fi
+
+echo ""
+echo "최종 사용자 목록:"
+sudo -u www-data wp user list
 
 echo ""
 echo "=================================="
