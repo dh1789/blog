@@ -49,10 +49,11 @@ temp/
 # Keyword cache (Google Ads API responses)
 .cache/
 
-# Content drafts (AI generated markdown files, not for version control)
-# Keep directory structure and documentation
-content/drafts/*.md
-!content/drafts/README.md
+# Content drafts are version controlled as source of truth
+# WordPress is the publishing platform, Markdown is the source
+# Only exclude temporary and system files
+content/drafts/.DS_Store
+content/drafts/*.tmp
 ref/
 
 # WordPress server setup scripts (config contains passwords, SSL certificates)
