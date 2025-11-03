@@ -28,6 +28,7 @@ export class WordPressClient {
         slug: seoData?.slug || metadata.slug,
         excerpt: metadata.excerpt,
         status: metadata.status,
+        lang: metadata.language, // Polylang 언어 코드
         categories: await this.getCategoryIds(metadata.categories || []),
         tags: await this.getTagIds(metadata.tags || []),
       };
@@ -83,6 +84,7 @@ export class WordPressClient {
         slug: seoData?.slug || metadata.slug,
         excerpt: metadata.excerpt,
         status: metadata.status,
+        lang: metadata.language, // Polylang 언어 코드
       };
 
       // SEO 메타 데이터 추가
