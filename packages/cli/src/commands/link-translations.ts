@@ -18,8 +18,8 @@ export async function linkTranslationsCommand(options: LinkTranslationsOptions) 
 
   try {
     // 설정 로드
-    const config = loadConfig();
-    const wp = new WordPressClient(config);
+    const config = await loadConfig();
+    const wp = new WordPressClient(config.wordpress);
 
     // Post ID 파싱 및 검증
     const koId = parseInt(options.ko, 10);
@@ -48,7 +48,7 @@ export async function linkTranslationsCommand(options: LinkTranslationsOptions) 
     console.log(`한글 포스트: ID ${koId}`);
     console.log(`영문 포스트: ID ${enId}`);
     console.log(`\nWordPress 관리자에서 확인하세요:`);
-    console.log(`${config.url}/wp-admin/post.php?post=${koId}&action=edit`);
+    console.log(`${config.wordpress.url}/wp-admin/post.php?post=${koId}&action=edit`);
 
   } catch (error) {
     spinner.fail(chalk.red('언어 연결 실패'));
