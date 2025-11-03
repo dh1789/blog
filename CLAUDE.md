@@ -362,19 +362,239 @@ pnpm clean && pnpm build
 
 ---
 
+## 발견된 이슈 및 해결 방법
+
+**최종 업데이트**: 2025-11-03
+
+프로젝트 진행 중 발견된 주요 이슈와 해결 방법을 문서화합니다.
+자세한 내용은 `ISSUES.md`를 참고하세요.
+
+### 해결된 이슈 ✅
+
+#### 1. Excerpt 300자 제한 오류
+- **문제**: WordPress REST API가 excerpt를 최대 300자로 제한
+- **해결**: `optimizeExcerpt()` 함수 구현 (packages/core/src/translator.ts)
+- **참고**: ISSUES.md [TECH-001]
+
+#### 2. 번역 디스클레이머 자동 삽입
+- **문제**: 번역 포스트에 원본 링크 수동 추가 필요
+- **해결**: `generateTranslationDisclaimer()` 함수 구현
+- **형식**: `> **🌐 Translation**: Translated from [Korean](/ko/원본-슬러그).`
+- **참고**: ISSUES.md [TECH-003]
+
+### 개선 필요 이슈 ⚠️
+
+#### 1. Polylang 언어 연결 자동화 부재
+- **문제**: 한영 포스트 발행 후 수동으로 WordPress 관리자에서 연결 필요
+- **현재**: WordPress 관리자 → 포스트 편집 → Polylang 메타박스에서 수동 선택
+- **해결 방안**: `blog link-translations` 명령어 구현 예정
+- **우선순위**: Medium
+- **참고**: ISSUES.md [WF-001]
+
+#### 2. SEO 키워드 밀도 최적화 부족
+- **문제**: 대부분 키워드가 권장 범위(0.5-2.5%) 미달
+- **영향**: SEO 점수 42-75점으로 낮음
+- **해결 방안**: 자동 키워드 주입 로직 구현 예정
+- **우선순위**: Medium
+- **참고**: ISSUES.md [TECH-002]
+
+#### 3. 워크플로우 검증 단계 부재
+- **문제**: 한글 검증 완료 전에 영문 번역 진행
+- **해결**: WORKFLOW-GUIDE.md 작성으로 프로세스 표준화
+- **권장**: 한글 검증 → 발행 → 영문 번역 → 발행 → 연결
+- **참고**: ISSUES.md [WF-002], WORKFLOW-GUIDE.md
+
+### 전체 이슈 현황
+
+- **해결 완료**: 3개
+- **개선 중**: 4개
+- **미해결**: 1개
+
+**상세 내역**: `ISSUES.md` 참조
+
+---
+
+## 권장 워크플로우
+
+**최종 업데이트**: 2025-11-03
+
+품질 높은 한영 블로그 포스트 발행을 위한 표준 프로세스입니다.
+상세 가이드는 `WORKFLOW-GUIDE.md`를 참고하세요.
+
+### 핵심 원칙
+
+1. **한글 우선, 영문 후속**: 한글 포스트가 완벽하게 검증된 후에만 영문 번역 진행
+2. **각 단계마다 검증**: 발행 전 로컬 검증 필수
+3. **SEO 최적화**: 키워드 밀도 0.5-2.5%, Excerpt 300자 이하
+4. **자동화 활용**: CLI 명령어로 반복 작업 최소화
+
+### 4단계 프로세스
+
+#### Phase 1: 한글 포스트 작성 및 검증
+```bash
+# 1. 마크다운 작성
+vi content/posts/ko/my-post.md
+
+# 2. SEO 분석
+blog analyze-seo content/posts/ko/my-post.md --verbose
+
+# 3. 로컬 프리뷰
+blog preview content/posts/ko/my-post.md --show-ads
+
+# 4. 최종 검토 (체크리스트 확인)
+```
+
+**체크리스트**:
+- [ ] SEO 점수 70점 이상
+- [ ] 모든 필수 메타데이터 입력 (제목, excerpt, 카테고리, 태그)
+- [ ] Excerpt 300자 이하
+- [ ] 키워드 밀도 0.5-2.5% 범위
+
+#### Phase 2: 한글 포스트 발행
+```bash
+# 발행
+blog publish content/posts/ko/my-post.md
+
+# 출력 예시:
+# ✔ 포스트 발행 완료! (ID: 29)
+# URL: https://beomanro.com/?p=29
+
+# ⚠️ Post ID 기록 필수 (나중에 영문 연결 시 필요)
+```
+
+**확인 사항**:
+- [ ] WordPress 관리자에서 발행 확인
+- [ ] 실제 페이지 확인 (레이아웃, 이미지, 광고)
+- [ ] 필요시 수정 및 재발행
+
+#### Phase 3: 영문 번역 및 검증
+```bash
+# 번역 생성 (한글 검증 완료 후에만!)
+blog translate content/posts/ko/my-post.md --target en
+
+# 출력 예시:
+# ✔ 번역 완료!
+# ✅ 번역 파일 생성 완료: content/posts/en/my-post-english.md
+
+# 번역 품질 검토
+# - SEO 리포트 확인
+# - 키워드 밀도 조정
+# - 필요시 수동 수정
+```
+
+**체크리스트**:
+- [ ] 제목이 SEO 최적화되었는가? (How to, Complete Guide 등)
+- [ ] 번역 디스클레이머 포함되었는가?
+- [ ] 키워드 밀도가 적절한가?
+- [ ] 코드 블록이 보존되었는가?
+
+#### Phase 4: 영문 포스트 발행 및 연결
+```bash
+# 발행
+blog publish content/posts/en/my-post-english.md
+
+# 출력 예시:
+# ✔ 포스트 발행 완료! (ID: 26)
+# URL: https://beomanro.com/?p=26
+```
+
+**Polylang 언어 연결 (현재 수동)**:
+1. WordPress 관리자 → Posts → All Posts
+2. 한글 포스트 (ID: 29) 편집
+3. Polylang 메타박스에서 영문 포스트 (ID: 26) 선택
+4. 저장
+
+**향후 자동화 예정**:
+```bash
+blog link-translations --ko 29 --en 26
+```
+
+**최종 확인**:
+- [ ] 한영 포스트가 Polylang으로 연결되었는가?
+- [ ] 언어 전환 버튼이 정상 작동하는가?
+
+### 주의사항
+
+- ⚠️ **Excerpt는 300자를 절대 초과하지 마세요** (발행 실패)
+- ⚠️ **반드시 한글 검증 완료 후 영문 번역** (재작업 방지)
+- ⚠️ **Post ID를 반드시 기록** (연결 시 필요)
+
+### 효율성 팁
+
+```bash
+# Dry-run으로 시뮬레이션
+blog publish content/posts/ko/my-post.md --dry-run
+
+# 번역 미리보기
+blog translate content/posts/ko/my-post.md --dry-run
+```
+
+**상세 가이드**: `WORKFLOW-GUIDE.md` 참조
+
+---
+
 ## 다음 단계 (Next Steps)
 
-### 즉시 구현 가능한 기능
-1. `list` 명령어 완성 (WordPress 포스트 목록 조회)
-2. `delete` 명령어 완성 (포스트 삭제)
-3. 이미지 자동 업로드 및 경로 변환
-4. 콘텐츠 템플릿 시스템
+**최종 업데이트**: 2025-11-03
 
-### 중장기 개선 사항
-1. 웹 대시보드 추가 (Next.js)
-2. 포스트 스케줄링
-3. 성과 분석 (조회수, 광고 수익)
-4. AI 기반 SEO 최적화 제안
+### 즉시 실행 (이번 주)
+1. ✅ 번역 패턴 문서화 (TRANSLATION-PATTERNS.md)
+2. ✅ 이슈 추적 문서 작성 (ISSUES.md)
+3. ✅ 워크플로우 가이드 작성 (WORKFLOW-GUIDE.md)
+4. 🔄 Polylang 자동 연결 구현 방안 리서치
+
+### 단기 (1-2주)
+1. **Polylang 자동 연결 명령어 구현** (우선순위: HIGH)
+   - `blog link-translations --ko <id> --en <id>` 명령어
+   - 또는 `publish` 명령어에 `--link-to <id>` 옵션 추가
+   - 참고: ISSUES.md [WF-001]
+
+2. **SEO 키워드 밀도 자동 최적화** (우선순위: MEDIUM)
+   - 번역 시 키워드 밀도 자동 분석
+   - 부족한 키워드 자동 주입 (자연스러운 위치)
+   - 참고: ISSUES.md [TECH-002]
+
+3. **배치 번역 기능**
+   - 여러 포스트 동시 번역
+   - 진행률 표시
+   - 병렬 처리
+
+### 중기 (1개월)
+1. **통합 발행 명령어** (참고: ISSUES.md [UX-002])
+   ```bash
+   blog publish-bilingual content/posts/ko/my-post.md
+   # 자동으로: 한글 발행 → 검증 → 영문 번역 → 영문 발행 → 연결
+   ```
+
+2. **Git Hook 통합**
+   - 한글 포스트 커밋 시 자동 번역
+   - Watch 모드 (파일 변경 감지 → 자동 업데이트)
+
+3. **이미지 자동 처리**
+   - 이미지 자동 업로드 및 경로 변환
+   - 이미지 최적화 (압축, 리사이징)
+
+### 장기 (3개월)
+1. **완전 자동화 파이프라인**
+   - AI 콘텐츠 생성 → 한영 동시 생성 → 자동 발행
+   - 스케줄링 시스템
+   - 성과 분석 대시보드
+
+2. **다국어 확장**
+   - 일본어, 중국어, 스페인어 지원
+   - 언어별 SEO 전략
+   - 글로벌 콘텐츠 전략
+
+3. **웹 대시보드**
+   - Next.js 기반 관리 인터페이스
+   - 실시간 성과 모니터링
+   - 포스트 스케줄링 UI
+
+### 기타 개선 사항
+- `list` 명령어 완성 (WordPress 포스트 목록 조회)
+- `delete` 명령어 완성 (포스트 삭제)
+- 콘텐츠 템플릿 시스템
+- AI 기반 SEO 최적화 제안
 
 ---
 

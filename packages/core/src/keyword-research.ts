@@ -8,8 +8,6 @@
 import { GoogleAdsApi } from 'google-ads-api';
 import type {
   KeywordData,
-  RevenueScore,
-  TopicSuggestion,
 } from '@blog/shared';
 
 /**
@@ -227,12 +225,13 @@ export class GoogleAdsClient {
           keyword_seed: {
             keywords,
           },
-        });
+        } as any);
 
         // API 응답을 KeywordData 형식으로 변환
         const keywordDataList: KeywordData[] = [];
 
-        for (const idea of response) {
+        const results = Array.isArray(response) ? response : (response.results || []);
+        for (const idea of results) {
           if (!idea.text) continue;
 
           // 검색량 추출 (월간 평균)

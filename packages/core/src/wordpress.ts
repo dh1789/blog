@@ -202,6 +202,58 @@ export class WordPressClient {
     }
   }
 
+  /**
+   * Polylang 다국어 포스트 연결
+   * 한국어와 영어 포스트를 양방향으로 연결합니다.
+   *
+   * @param koPostId - 한국어 포스트 ID
+   * @param enPostId - 영어 포스트 ID
+   * @throws {Error} 포스트가 존재하지 않거나 연결에 실패한 경우
+   *
+   * @example
+   * ```typescript
+   * await wp.linkTranslations(29, 26);
+   * // 한국어 포스트(29)와 영어 포스트(26)가 연결됩니다
+   * ```
+   */
+  async linkTranslations(
+    koPostId: number,
+    enPostId: number
+  ): Promise<void> {
+    try {
+      // Polylang translation 데이터 객체
+      const translations = {
+        ko: koPostId,
+        en: enPostId,
+      };
+
+      // 1. 한국어 포스트에 영어 번역 연결
+      await this.wp.posts().id(koPostId).update({
+        meta: {
+          _pll_translations: JSON.stringify(translations),
+        },
+      });
+
+      // 2. 영어 포스트에 한국어 원본 연결 (양방향)
+      await this.wp.posts().id(enPostId).update({
+        meta: {
+          _pll_translations: JSON.stringify(translations),
+        },
+      });
+
+      console.log(`✅ 언어 연결 완료: 한글(${koPostId}) ↔ 영문(${enPostId})`);
+    } catch (error: any) {
+      // 에러 타입별 명확한 메시지 제공
+      if (error.code === 'rest_post_invalid_id' || error.statusCode === 404) {
+        throw new Error(`Post not found. Check if post IDs ${koPostId} and ${enPostId} exist.`);
+      } else if (error.statusCode === 401 || error.statusCode === 403) {
+        throw new Error(`Permission denied. Check WordPress authentication credentials.`);
+      } else {
+        throw new Error(`Failed to link translations: ${error.message || error}`);
+      }
+    }
+  }
+
   private async getCategoryIds(categories: string[]): Promise<number[]> {
     const ids: number[] = [];
     for (const cat of categories) {

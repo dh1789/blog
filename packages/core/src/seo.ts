@@ -24,7 +24,7 @@ export function generateSeoData(options: SeoOptions): SeoData {
   const {
     title,
     excerpt,
-    content,
+    content: _content,
     keywords,
     url,
     imageUrl,

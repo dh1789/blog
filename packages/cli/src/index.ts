@@ -16,6 +16,7 @@ import { imageGenerateCommand } from './commands/image';
 import { trendingCommand } from './commands/trending';
 import { analyticsCommand } from './commands/analytics';
 import { analyzeSeoCommand } from './commands/analyze-seo';
+import { translateCommand } from './commands/translate';
 
 const program = new Command();
 
@@ -112,5 +113,14 @@ program
   .option('-v, --verbose', '상세 정보 출력 (섹션별 키워드 분포)')
   .option('--json', 'JSON 형식으로 출력')
   .action(analyzeSeoCommand);
+
+program
+  .command('translate <file>')
+  .description('한국어 포스트를 영어로 번역 (AI 기반 SEO 최적화)')
+  .option('-t, --target <lang>', '타겟 언어', 'en')
+  .option('-p, --publish', '번역 후 WordPress에 자동 발행', false)
+  .option('--dry-run', '실제 파일 생성 없이 미리보기', false)
+  .option('-o, --output <path>', '출력 파일 경로 (기본값: content/posts/en/)')
+  .action(translateCommand);
 
 program.parse();

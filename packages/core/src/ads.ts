@@ -2,7 +2,7 @@
  * 광고 코드 삽입 로직
  */
 
-import type { AdConfig, AdPosition } from '@blog/shared';
+import type { AdConfig } from '@blog/shared';
 
 export function injectAds(htmlContent: string, adConfig: AdConfig): string {
   let result = htmlContent;
