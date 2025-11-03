@@ -19,6 +19,7 @@ interface PublishOptions {
   draft: boolean;
   language: 'ko' | 'en';
   dryRun: boolean;
+  linkTo?: string;  // 연결할 포스트 ID (영문 발행 시 사용)
 }
 
 export async function publishCommand(file: string, options: PublishOptions) {
@@ -142,6 +143,33 @@ export async function publishCommand(file: string, options: PublishOptions) {
 
     spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
     console.log(chalk.blue(`URL: ${config.wordpress.url}/?p=${postId}`));
+
+    // 언어 연결 (영문 포스트이고 --link-to 옵션이 있는 경우)
+    if (metadata.language === 'en' && options.linkTo) {
+      spinner.start('Polylang 언어 연결 중...');
+
+      try {
+        const koPostId = parseInt(options.linkTo, 10);
+
+        if (isNaN(koPostId) || koPostId <= 0) {
+          spinner.warn(chalk.yellow('⚠️  잘못된 --link-to 값입니다 (숫자여야 함). 언어 연결을 건너뜁니다.'));
+        } else {
+          await wpClient.linkTranslations(koPostId, postId);
+          spinner.succeed(chalk.green(`언어 연결 완료: 한글(${koPostId}) ↔ 영문(${postId})`));
+        }
+      } catch (error) {
+        // linkTranslations 실패 시에도 포스트 발행은 성공으로 처리
+        spinner.warn(chalk.yellow('⚠️  언어 연결 실패 (포스트 발행은 성공)'));
+
+        if (error instanceof Error) {
+          console.error(chalk.yellow(`언어 연결 오류: ${error.message}`));
+        }
+
+        console.log(chalk.cyan('\n수동 연결 방법:'));
+        console.log(chalk.gray(`  blog link-translations --ko ${options.linkTo} --en ${postId}`));
+        console.log(chalk.gray('  또는 WordPress 관리자에서 포스트 편집 → Polylang 메타박스에서 연결'));
+      }
+    }
   } catch (error) {
     spinner.fail(chalk.red('발행 실패'));
     console.error(chalk.red(error instanceof Error ? error.message : String(error)));

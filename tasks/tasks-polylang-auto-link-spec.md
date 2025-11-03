@@ -138,38 +138,28 @@
 **우선순위**: 중간
 **의존성**: 2.0 완료 후 (3.0과 병렬 가능)
 
-- [ ] 4.1 PublishOptions 인터페이스 수정
-  - packages/cli/src/commands/publish.ts 열기
-  - PublishOptions에 linkTo 옵션 추가
-  ```typescript
-  interface PublishOptions {
-    draft: boolean;
-    language: 'ko' | 'en';
-    dryRun: boolean;
-    linkTo?: string;  // 연결할 포스트 ID (영문 발행 시 사용)
-  }
-  ```
+- [x] 4.1 PublishOptions 인터페이스 수정
+  - ✅ packages/cli/src/commands/publish.ts 수정
+  - ✅ PublishOptions에 linkTo?: string 추가
 
-- [ ] 4.2 publishCommand 함수에 자동 연결 로직 추가
-  - 포스트 발행 후 (createPost 완료 후)
-  - 조건 체크: `metadata.language === 'en' && options.linkTo`
-  - linkTo 파싱 및 검증 (parseInt, isNaN)
+- [x] 4.2 publishCommand 함수에 자동 연결 로직 추가
+  - ✅ 포스트 발행 후 (createPost 완료 후) 조건 체크
+  - ✅ `metadata.language === 'en' && options.linkTo` 검증
+  - ✅ linkTo 파싱 및 검증 (parseInt, isNaN, 양수 체크)
 
-- [ ] 4.3 linkTranslations 호출
-  - `await wp.linkTranslations(koPostId, postId);`
-  - 스피너 텍스트 업데이트: `'Polylang 언어 연결 중...'`
-  - 성공 메시지 출력
+- [x] 4.3 linkTranslations 호출
+  - ✅ `await wpClient.linkTranslations(koPostId, postId);` 호출
+  - ✅ 스피너 텍스트 업데이트: `'Polylang 언어 연결 중...'`
+  - ✅ 성공 메시지 출력: `언어 연결 완료: 한글(...) ↔ 영문(...)`
 
-- [ ] 4.4 에러 처리
-  - linkTranslations 실패 시에도 포스트 발행은 성공으로 처리
-  - 연결 실패 경고 메시지만 표시
-  - 수동 연결 방법 안내
+- [x] 4.4 에러 처리
+  - ✅ linkTranslations 실패 시에도 포스트 발행은 성공으로 처리
+  - ✅ 연결 실패 경고 메시지 표시
+  - ✅ 수동 연결 방법 안내 (blog link-translations 명령어)
 
-- [ ] 4.5 packages/cli/src/index.ts에 옵션 추가
-  - publish 명령어에 --link-to 옵션 추가
-  ```typescript
-  .option('--link-to <id>', '연결할 한글 포스트 ID (영문 발행 시)')
-  ```
+- [x] 4.5 packages/cli/src/index.ts에 옵션 추가
+  - ✅ publish 명령어에 --link-to 옵션 추가
+  - ✅ 설명: '연결할 한글 포스트 ID (영문 발행 시)'
 
 ---
 
@@ -232,8 +222,7 @@
 
 - [x] **Phase 1: 조사** (1.0) ✅ 가정 기반 완료
 - [x] **Phase 2: 핵심 구현** (2.0) ✅ 완료
-- [x] **Phase 3: CLI 구현** (3.0) ✅ 완료
-- [ ] **Phase 3: CLI 구현** (4.0)
+- [x] **Phase 3: CLI 구현** (3.0, 4.0) ✅ 완료
 - [ ] **Phase 4: 검증** (5.0)
 
 ---
