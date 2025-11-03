@@ -17,6 +17,7 @@ import { trendingCommand } from './commands/trending';
 import { analyticsCommand } from './commands/analytics';
 import { analyzeSeoCommand } from './commands/analyze-seo';
 import { translateCommand } from './commands/translate';
+import { linkTranslationsCommand } from './commands/link-translations';
 
 const program = new Command();
 
@@ -122,5 +123,13 @@ program
   .option('--dry-run', '실제 파일 생성 없이 미리보기', false)
   .option('-o, --output <path>', '출력 파일 경로 (기본값: content/posts/en/)')
   .action(translateCommand);
+
+program
+  .command('link-translations')
+  .description('Polylang 언어 연결 (한글 ↔ 영문)')
+  .requiredOption('--ko <id>', '한국어 포스트 ID')
+  .requiredOption('--en <id>', '영어 포스트 ID')
+  .option('--auto', '자동 매칭 (slug 기반, 향후 구현)')
+  .action(linkTranslationsCommand);
 
 program.parse();

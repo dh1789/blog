@@ -97,51 +97,39 @@
 **우선순위**: 중간
 **의존성**: 2.0 완료 후
 
-- [ ] 3.1 commands/link-translations.ts 파일 생성
-  - packages/cli/src/commands/link-translations.ts 파일 생성
-  - 필요한 import 추가 (WordPressClient, loadConfig, ora, chalk)
+- [x] 3.1 commands/link-translations.ts 파일 생성
+  - ✅ packages/cli/src/commands/link-translations.ts 생성
+  - ✅ 필요한 import 추가 (WordPressClient, loadConfig, ora, chalk)
 
-- [ ] 3.2 LinkTranslationsOptions 인터페이스 정의
-  ```typescript
-  export interface LinkTranslationsOptions {
-    ko: string;   // 한글 post ID
-    en: string;   // 영문 post ID
-    auto?: boolean;  // 자동 매칭 (향후 구현)
-  }
-  ```
+- [x] 3.2 LinkTranslationsOptions 인터페이스 정의
+  - ✅ ko, en, auto 필드 정의
+  - ✅ TypeScript 타입 안전성 확보
 
-- [ ] 3.3 linkTranslationsCommand 함수 구현
-  - 설정 로드 (loadConfig())
-  - WordPressClient 초기화
-  - Post ID 파싱 및 검증 (parseInt, isNaN 체크)
-  - 잘못된 입력 시 에러 메시지 및 process.exit(1)
+- [x] 3.3 linkTranslationsCommand 함수 구현
+  - ✅ 설정 로드 (loadConfig())
+  - ✅ WordPressClient 초기화
+  - ✅ Post ID 파싱 및 검증 (parseInt, isNaN, 양수 체크)
+  - ✅ 잘못된 입력 시 에러 메시지 및 process.exit(1)
 
-- [ ] 3.4 진행 상태 표시 (ora 스피너)
-  - `ora('Polylang 언어 연결 중...').start()`
-  - 성공 시: `spinner.succeed(chalk.green('언어 연결 완료!'))`
-  - 실패 시: `spinner.fail(chalk.red('언어 연결 실패'))`
+- [x] 3.4 진행 상태 표시 (ora 스피너)
+  - ✅ `ora('Polylang 언어 연결 중...').start()`
+  - ✅ 성공 시: `spinner.succeed(chalk.green('언어 연결 완료!'))`
+  - ✅ 실패 시: `spinner.fail(chalk.red('언어 연결 실패'))`
 
-- [ ] 3.5 연결 결과 출력
-  - 한글 포스트 ID, 영문 포스트 ID 표시
-  - WordPress 관리자 링크 제공
-  - 예: `${config.url}/wp-admin/post.php?post=${koId}&action=edit`
+- [x] 3.5 연결 결과 출력
+  - ✅ 한글 포스트 ID, 영문 포스트 ID 표시
+  - ✅ WordPress 관리자 링크 제공
+  - ✅ 형식화된 출력 (=== 연결 결과 ===)
 
-- [ ] 3.6 에러 처리 및 사용자 친화적 메시지
-  - try-catch로 에러 처리
-  - 에러 타입별 명확한 안내 메시지
+- [x] 3.6 에러 처리 및 사용자 친화적 메시지
+  - ✅ try-catch로 에러 처리
+  - ✅ 에러 타입별 명확한 안내 메시지 (Post not found, Permission denied, 네트워크)
 
-- [ ] 3.7 packages/cli/src/index.ts에 명령어 등록
-  - import 추가: `import { linkTranslationsCommand } from './commands/link-translations';`
-  - program.command() 추가:
-  ```typescript
-  program
-    .command('link-translations')
-    .description('Polylang 언어 연결 (한글 ↔ 영문)')
-    .requiredOption('--ko <id>', '한국어 포스트 ID')
-    .requiredOption('--en <id>', '영어 포스트 ID')
-    .option('--auto', '자동 매칭 (slug 기반, 향후 구현)')
-    .action(linkTranslationsCommand);
-  ```
+- [x] 3.7 packages/cli/src/index.ts에 명령어 등록
+  - ✅ import 추가: `import { linkTranslationsCommand } from './commands/link-translations';`
+  - ✅ program.command() 추가 완료
+  - ✅ --ko, --en requiredOption 설정
+  - ✅ --auto option 설정 (향후 구현)
 
 ---
 
@@ -244,7 +232,8 @@
 
 - [x] **Phase 1: 조사** (1.0) ✅ 가정 기반 완료
 - [x] **Phase 2: 핵심 구현** (2.0) ✅ 완료
-- [ ] **Phase 3: CLI 구현** (3.0, 4.0)
+- [x] **Phase 3: CLI 구현** (3.0) ✅ 완료
+- [ ] **Phase 3: CLI 구현** (4.0)
 - [ ] **Phase 4: 검증** (5.0)
 
 ---
