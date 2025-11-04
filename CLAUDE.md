@@ -208,10 +208,20 @@ language: "ko"  # or "en"
 - [x] **종합 테스트**: 39 tests (translator: 12, validation: 19, wordpress: 8)
 - [x] **문서화**: README.md, CLAUDE.md, E2E 가이드
 
+### ✅ Epic 12.0 - WordPress 미디어 라이브러리 통합 (완료)
+- [x] **Media API 클라이언트**: `WordPressClient.findMediaByFilename()` 구현
+- [x] **이미지 경로 파싱**: 마크다운/HTML 이미지 경로 추출 (`parseImagePaths`)
+- [x] **URL 변환**: 로컬 경로 → WordPress CDN URL 변환 (`replaceImageUrls`)
+- [x] **경로 해석**: 상대 경로 → 절대 경로 변환 (`resolveImagePath`)
+- [x] **CLI 통합**: `publish --upload-images` 옵션
+- [x] **중복 감지**: 파일명 기반 자동 중복 체크 및 URL 재사용
+- [x] **진행률 표시**: 실시간 업로드 진행률 및 최종 리포트
+- [x] **종합 테스트**: 42 tests (findMediaByFilename: 5, markdown: 29, 기존 유지)
+- [x] **문서화**: README.md, CLAUDE.md
+
 ### 🚧 Phase 2 - 자동화 강화 (예정)
 - [ ] 일괄 업로드/업데이트
 - [ ] 스케줄 발행
-- [ ] 이미지 자동 최적화
 
 ### 📋 Phase 3 - 수익 최적화 (예정)
 - [ ] 광고 위치 A/B 테스팅
@@ -232,6 +242,10 @@ WordPress REST API와 통신하는 핵심 클라이언트
 - `updatePost(postId, metadata, content)`: 기존 포스트 업데이트
 - `deletePost(postId)`: 포스트 삭제
 - `uploadMedia(filePath)`: 미디어 업로드
+- `findMediaByFilename(filename)`: 파일명으로 미디어 검색 (Epic 12.0)
+  - WordPress 미디어 라이브러리에서 정확히 일치하는 파일명 검색
+  - 중복 이미지 감지에 사용
+  - 반환: `MediaItem | null`
 
 **인증**: WordPress Application Password 사용
 
@@ -242,6 +256,33 @@ WordPress REST API와 통신하는 핵심 클라이언트
 1. `gray-matter`로 frontmatter 추출
 2. Zod 스키마로 메타데이터 검증
 3. `unified` 파이프라인으로 마크다운 → HTML 변환
+
+#### 이미지 처리 함수 (packages/core/src/markdown.ts) - Epic 12.0
+
+**`parseImagePaths(content: string): string[]`**
+마크다운 콘텐츠에서 로컬 이미지 경로 추출
+
+**기능**:
+- 마크다운 이미지 패턴 (`![alt](path)`) 파싱
+- HTML img 태그 (`<img src="path">`) 파싱
+- 외부 URL (http://, https://) 자동 제외
+- 중복 경로 자동 제거
+
+**`replaceImageUrls(content: string, imageUrlMap: Map<string, string>): string`**
+마크다운 콘텐츠의 이미지 경로를 WordPress URL로 변환
+
+**기능**:
+- 로컬 경로를 WordPress CDN URL로 일괄 변환
+- 마크다운 이미지 및 HTML img 태그 모두 지원
+- 특수문자 경로 안전하게 처리 (정규식 이스케이프)
+
+**`resolveImagePath(basePath: string, relativePath: string): string`**
+상대 이미지 경로를 절대 경로로 변환
+
+**기능**:
+- `./`, `../` 상대 경로 해석
+- 마크다운 파일 위치 기준 절대 경로 계산
+- Node.js `path.resolve()` 활용
 
 #### `injectAds` (packages/core/src/ads.ts)
 HTML 콘텐츠에 광고 코드 자동 삽입
@@ -314,8 +355,12 @@ Polylang 언어 연결 (Epic 11.0)
 **주요 타입**:
 - `WordPressConfig`: WordPress 연결 정보
 - `PostMetadata`: 포스트 메타데이터 (frontmatter)
+- `MediaItem`: WordPress 미디어 아이템 (Epic 12.0)
+  - `id`, `url`, `source_url`, `title`, `alt_text`
+  - `media_details`: width, height, file 경로
 - `AdConfig`: 광고 설정
 - `PublishOptions`: 발행 옵션
+  - `uploadImages?: boolean`: 이미지 자동 업로드 (Epic 12.0)
 
 ---
 

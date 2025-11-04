@@ -24,6 +24,10 @@ WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최�
 
 ### 🚀 WordPress 자동화
 - **원클릭 발행**: 마크다운 → WordPress 자동 변환 및 업로드
+- **🖼️ 이미지 자동 업로드 (Epic 12.0)**: 로컬 이미지를 WordPress 미디어 라이브러리에 자동 업로드
+  - 중복 이미지 자동 감지 및 재사용
+  - 마크다운 경로 자동 변환 (로컬 → WordPress CDN URL)
+  - 업로드 진행률 및 결과 리포트
 - **SEO 자동화**: 메타 태그, Open Graph, Twitter Card 자동 생성
 - **광고 자동 삽입**: Google AdSense 코드 최적 위치 자동 삽입
 - **포스트 관리**: 목록 조회, 삭제, 상태 변경
@@ -234,6 +238,37 @@ blog publish content/posts/en/guide.md --language en
 # 영어 포스트 발행 + 자동 언어 연결 (Polylang)
 blog publish content/posts/en/guide.md --link-to 29
 # 한글 Post ID 29와 자동으로 연결됨
+
+# 🆕 로컬 이미지 자동 업로드 (Epic 12.0)
+blog publish content/posts/my-post.md --upload-images
+
+# 실행 흐름:
+# 1. 마크다운에서 이미지 경로 파싱 (![](path), <img src="path">)
+# 2. 각 이미지의 중복 여부 확인 (WordPress 미디어 라이브러리)
+# 3. 신규 이미지만 업로드, 중복은 기존 URL 재사용
+# 4. 마크다운 경로를 WordPress URL로 자동 변환
+# 5. HTML 재생성 및 발행
+```
+
+**이미지 업로드 출력 예시**:
+```
+=== 이미지 자동 업로드 ===
+⠹ 이미지 경로 파싱 중...
+⠹ 로컬 이미지 3개 발견
+
+발견된 이미지: ./images/screenshot.png, ./images/diagram.jpg, ../shared/logo.png
+
+⠹ 이미지 업로드 중: screenshot.png
+  ✓ 업로드: screenshot.png → https://beomanro.com/wp-content/uploads/2025/11/screenshot.png
+⠹ 이미지 업로드 중: diagram.jpg
+  ↻ 중복: diagram.jpg → 기존 URL 재사용
+⠹ 이미지 업로드 중: logo.png
+  ✓ 업로드: logo.png → https://beomanro.com/wp-content/uploads/2025/11/logo.png
+
+=== 이미지 업로드 리포트 ===
+총 이미지: 3
+성공: 3
+✔ 이미지 업로드 완료
 ```
 
 ### 포스트 관리
@@ -633,8 +668,22 @@ pnpm format
 - [x] 종합 테스트 (39 tests: translator 12, validation 19, wordpress 8)
 - [x] 문서화 및 사용 가이드
 
+### ✅ Epic 12.0 - WordPress Media Library Integration
+- [x] WordPress Media API 클라이언트 구현
+  - [x] `findMediaByFilename()`: 중복 이미지 검색
+  - [x] 기존 `uploadMedia()` 활용
+- [x] 이미지 경로 파싱 및 URL 변환
+  - [x] `parseImagePaths()`: 마크다운/HTML 이미지 경로 추출
+  - [x] `replaceImageUrls()`: 로컬 경로 → WordPress URL 변환
+  - [x] `resolveImagePath()`: 상대 경로 → 절대 경로 변환
+- [x] CLI 통합
+  - [x] `--upload-images` 플래그 추가
+  - [x] 자동 업로드 워크플로우 구현
+  - [x] 진행률 표시 및 결과 리포트
+- [x] 종합 테스트 (42 tests: findMediaByFilename 5, markdown 29, 기존 유지)
+- [x] 문서화 (README.md, CLAUDE.md)
+
 ### 📋 Future Enhancements
-- [ ] WordPress 미디어 라이브러리 통합
 - [ ] 일괄 업로드/업데이트
 - [ ] 스케줄 발행
 - [ ] 성능 분석 (Core Web Vitals)
