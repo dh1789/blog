@@ -14,6 +14,9 @@ import {
   validateKeywordDensity,
   translatePost,
   validateTranslation,
+  parseImagePaths,
+  replaceImageUrls,
+  resolveImagePath,
 } from '@blog/core';
 import { loadConfig } from '../utils/config';
 
@@ -23,6 +26,7 @@ interface PublishOptions {
   dryRun: boolean;
   linkTo?: string;  // 연결할 포스트 ID (영문 발행 시 사용)
   noTranslate?: boolean;  // 자동 번역 비활성화 (기본값: false)
+  uploadImages?: boolean;  // 이미지 자동 업로드 (기본값: false)
 }
 
 export async function publishCommand(file: string, options: PublishOptions) {
@@ -33,11 +37,12 @@ export async function publishCommand(file: string, options: PublishOptions) {
     const fileContent = await fs.readFile(filePath, 'utf-8');
 
     spinner.text = '파일 파싱 및 검증 중...';
-    let metadata, htmlContent, seoData;
+    let metadata, htmlContent, seoData, content;
 
     try {
       const parsed = await parseMarkdownFile(fileContent);
       metadata = parsed.metadata;
+      content = parsed.content;
       htmlContent = parsed.htmlContent;
       seoData = parsed.seoData;
     } catch (error) {
@@ -134,8 +139,109 @@ export async function publishCommand(file: string, options: PublishOptions) {
       return;
     }
 
+    // 이미지 자동 업로드 워크플로우
+    let finalContent = content;
+    let finalHtmlContent = htmlContent;
+
+    if (options.uploadImages) {
+      console.log(chalk.cyan('\n=== 이미지 자동 업로드 ==='));
+      spinner.start('이미지 경로 파싱 중...');
+
+      const imagePaths = parseImagePaths(content);
+
+      if (imagePaths.length === 0) {
+        spinner.info(chalk.blue('로컬 이미지가 없습니다. 업로드를 건너뜁니다.'));
+      } else {
+        spinner.text = `로컬 이미지 ${imagePaths.length}개 발견`;
+        console.log(chalk.gray(`\n발견된 이미지: ${imagePaths.join(', ')}\n`));
+
+        const imageUrlMap = new Map<string, string>();
+        const uploadResults: { success: string[]; failed: Array<{ path: string; error: string }> } = {
+          success: [],
+          failed: [],
+        };
+
+        // 마크다운 파일의 디렉토리 경로
+        const markdownDir = path.dirname(filePath);
+
+        for (const imagePath of imagePaths) {
+          const absolutePath = resolveImagePath(markdownDir, imagePath);
+
+          spinner.text = `이미지 업로드 중: ${path.basename(imagePath)}`;
+
+          try {
+            // 파일 존재 확인
+            await fs.access(absolutePath);
+
+            const filename = path.basename(absolutePath);
+
+            // 중복 체크
+            const existingMedia = await wpClient.findMediaByFilename(filename);
+
+            let wordpressUrl: string;
+
+            if (existingMedia) {
+              wordpressUrl = existingMedia.source_url;
+              console.log(chalk.yellow(`  ↻ 중복: ${filename} → 기존 URL 재사용`));
+            } else {
+              // 신규 업로드
+              const uploadResult = await wpClient.uploadMedia(absolutePath);
+              wordpressUrl = uploadResult.url;
+              console.log(chalk.green(`  ✓ 업로드: ${filename} → ${wordpressUrl}`));
+            }
+
+            imageUrlMap.set(imagePath, wordpressUrl);
+            uploadResults.success.push(imagePath);
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.log(chalk.red(`  ✗ 실패: ${imagePath} - ${errorMessage}`));
+            uploadResults.failed.push({ path: imagePath, error: errorMessage });
+          }
+        }
+
+        // URL 변환
+        if (imageUrlMap.size > 0) {
+          spinner.text = '마크다운 이미지 URL 변환 중...';
+          finalContent = replaceImageUrls(content, imageUrlMap);
+
+          // HTML 재생성
+          const { unified } = await import('unified');
+          const { default: remarkParse } = await import('remark-parse');
+          const { default: remarkGfm } = await import('remark-gfm');
+          const { default: remarkRehype } = await import('remark-rehype');
+          const { default: rehypeStringify } = await import('rehype-stringify');
+
+          const result = await unified()
+            .use(remarkParse)
+            .use(remarkGfm)
+            .use(remarkRehype)
+            .use(rehypeStringify)
+            .process(finalContent);
+
+          finalHtmlContent = String(result);
+        }
+
+        // 최종 리포트
+        console.log(chalk.cyan('\n=== 이미지 업로드 리포트 ==='));
+        console.log(chalk.white('총 이미지:'), chalk.gray(imagePaths.length));
+        console.log(chalk.green('성공:'), chalk.gray(uploadResults.success.length));
+
+        if (uploadResults.failed.length > 0) {
+          console.log(chalk.red('실패:'), chalk.gray(uploadResults.failed.length));
+          console.log(chalk.yellow('\n실패한 이미지:'));
+          uploadResults.failed.forEach(({ path: p, error }) => {
+            console.log(chalk.yellow(`  - ${p}: ${error}`));
+          });
+        }
+
+        console.log(chalk.cyan('==================\n'));
+
+        spinner.succeed(chalk.green('이미지 업로드 완료'));
+      }
+    }
+
     spinner.text = '광고 코드 삽입 중...';
-    const contentWithAds = injectAds(htmlContent, config.ads);
+    const contentWithAds = injectAds(finalHtmlContent, config.ads);
 
     spinner.text = 'WordPress에 업로드 중 (SEO 메타데이터 포함)...';
     const postId = await wpClient.createPost(
