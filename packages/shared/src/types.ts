@@ -400,3 +400,48 @@ export interface RevenueAnalysisOptions {
   maxCpc?: number; // 최대 CPC (USD)
   limit?: number; // 결과 개수 제한
 }
+
+// ============================================================================
+// Translation Types (자동 번역 시스템)
+// ============================================================================
+
+/**
+ * 번역 옵션
+ */
+export interface TranslationOptions {
+  targetLang?: 'ko' | 'en';
+  preserveCodeBlocks?: boolean;
+  timeout?: number;
+}
+
+/**
+ * 번역 검증 결과
+ */
+export interface ValidationResult {
+  isValid: boolean;
+  issues: ValidationIssue[];
+  metrics: TranslationQualityMetrics;
+}
+
+/**
+ * 검증 이슈
+ */
+export interface ValidationIssue {
+  type: 'metadata' | 'content' | 'quality' | 'seo';
+  severity: 'error' | 'warning' | 'info';
+  message: string;
+  field?: string;
+}
+
+/**
+ * 번역 품질 메트릭
+ */
+export interface TranslationQualityMetrics {
+  lineCountDiff: number; // 라인 수 차이 (절대값)
+  lineCountDiffPercent: number; // 라인 수 차이 비율 (%)
+  preservedCodeBlocks: number; // 보존된 코드 블록 수
+  metadataComplete: boolean; // 메타데이터 완전성
+  seoOptimized: boolean; // SEO 최적화 여부
+  titleLength: number; // 제목 길이
+  excerptLength: number; // Excerpt 길이
+}

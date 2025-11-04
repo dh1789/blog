@@ -84,3 +84,48 @@ export const RevenueAnalysisOptionsSchema = z.object({
   maxCpc: z.number().min(0).optional(),
   limit: z.number().int().min(1).max(100).optional(),
 });
+
+// ============================================================================
+// Translation Schemas (자동 번역 시스템)
+// ============================================================================
+
+/**
+ * 번역 옵션 스키마
+ */
+export const TranslationOptionsSchema = z.object({
+  targetLang: z.enum(['ko', 'en']).optional(),
+  preserveCodeBlocks: z.boolean().optional().default(true),
+  timeout: z.number().int().min(1000).max(600000).optional(), // 1초~10분
+});
+
+/**
+ * 검증 이슈 스키마
+ */
+export const ValidationIssueSchema = z.object({
+  type: z.enum(['metadata', 'content', 'quality', 'seo']),
+  severity: z.enum(['error', 'warning', 'info']),
+  message: z.string().min(1, 'Validation message is required'),
+  field: z.string().optional(),
+});
+
+/**
+ * 번역 품질 메트릭 스키마
+ */
+export const TranslationQualityMetricsSchema = z.object({
+  lineCountDiff: z.number().int().min(0, 'Line count diff must be non-negative'),
+  lineCountDiffPercent: z.number().min(0).max(100, 'Line count diff percent must be between 0-100'),
+  preservedCodeBlocks: z.number().int().min(0, 'Preserved code blocks must be non-negative'),
+  metadataComplete: z.boolean(),
+  seoOptimized: z.boolean(),
+  titleLength: z.number().int().min(0),
+  excerptLength: z.number().int().min(0).max(300, 'Excerpt must be 300 characters or less'),
+});
+
+/**
+ * 번역 검증 결과 스키마
+ */
+export const ValidationResultSchema = z.object({
+  isValid: z.boolean(),
+  issues: z.array(ValidationIssueSchema),
+  metrics: TranslationQualityMetricsSchema,
+});

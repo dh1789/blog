@@ -33,6 +33,7 @@ program
   .option('-l, --language <lang>', '언어 설정 (ko|en)', 'ko')
   .option('--dry-run', '실제 업로드 없이 시뮬레이션', false)
   .option('--link-to <id>', '연결할 한글 포스트 ID (영문 발행 시)')
+  .option('--no-translate', '자동 번역 비활성화 (한글 포스트만 발행)', false)
   .action(publishCommand);
 
 program

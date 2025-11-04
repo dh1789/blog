@@ -193,11 +193,24 @@ language: "ko"  # or "en"
 - [x] 광고 코드 자동 삽입 (`injectAds` 함수)
 - [x] CLI 기본 명령어 (`publish`, `list`, `delete`, `config`)
 
+### ✅ Epic 11.0 - AI 자동 번역 시스템 (완료)
+- [x] **번역 엔진**: Claude Code 통합 (`translatePost` 함수)
+- [x] **품질 검증**: 8단계 validation 시스템
+  - [x] 라인 수 검증 (50-150% 범위)
+  - [x] 코드 블록 보존 검증
+  - [x] SEO 키워드 보존 검증
+  - [x] 키워드 밀도 검증 (0.5-2.5%)
+  - [x] 제목 길이 검증 (≤60자)
+  - [x] 링크/헤딩 구조 보존
+- [x] **SEO 최적화**: 영문 SEO 제목/요약 자동 생성
+- [x] **CLI 통합**: `publish --no-translate` 옵션
+- [x] **Polylang 자동 연결**: `WordPressClient.linkTranslations()`
+- [x] **종합 테스트**: 39 tests (translator: 12, validation: 19, wordpress: 8)
+- [x] **문서화**: README.md, CLAUDE.md, E2E 가이드
+
 ### 🚧 Phase 2 - 자동화 강화 (예정)
 - [ ] 일괄 업로드/업데이트
 - [ ] 스케줄 발행
-- [ ] SEO 메타데이터 자동 생성
-- [ ] 다국어 콘텐츠 관리 개선
 - [ ] 이미지 자동 최적화
 
 ### 📋 Phase 3 - 수익 최적화 (예정)
@@ -239,6 +252,61 @@ HTML 콘텐츠에 광고 코드 자동 삽입
 - `after-first-h2`: 첫 번째 h2 제목 뒤
 - `middle`: 콘텐츠 중간
 - `bottom`: 콘텐츠 최하단
+
+#### `translatePost` (packages/core/src/translator.ts)
+한글 포스트를 영문으로 자동 번역 (Epic 11.0)
+
+**프로세스**:
+1. 원본 메타데이터 및 콘텐츠 파싱
+2. Claude Code로 콘텐츠 번역 (executeClaude)
+3. SEO 최적화 영문 제목 생성 (60자 이하)
+4. SEO 최적화 영문 요약 생성 (300자 이하)
+5. 카테고리/태그 번역
+6. 슬러그 자동 생성 (-en 접미사)
+7. 번역 디스클레이머 삽입
+
+**타임아웃**: 60ms/단어 (최소 2분, 최대 10분)
+
+**주요 함수**:
+- `translateContent()`: 본문 번역 (기술 용어 보존, SEO 키워드 자연스러운 삽입)
+- `generateSEOTitle()`: 영문 SEO 제목 생성
+- `generateSEOExcerpt()`: 영문 SEO 요약 생성 (300자 엄격 제한)
+- `translateMetadata()`: 메타데이터 번역
+
+#### `validateTranslation` (packages/core/src/validation.ts)
+번역 품질 종합 검증 (Epic 11.0)
+
+**8단계 검증**:
+1. **기본 검증**: 비어있지 않음, 코드 블록 개수, 링크 개수, 헤딩 구조
+2. **라인 수 검증**: 50-150% 범위 (에러), 70-130% 범위 (경고)
+3. **SEO 키워드 검증**: 모든 tags 키워드 포함 여부
+4. **키워드 밀도 검증**: 0.5-2.5% 권장 범위
+5. **제목 길이 검증**: ≤60자 (SEO 최적)
+6. **링크/헤딩 보존**: 마크다운 구조 일치
+7. **코드 블록 보존**: 완전 일치 (번역 금지)
+8. **메타데이터 완전성**: title, excerpt, slug, categories, tags
+
+**반환값**:
+- `isValid`: boolean (에러 없으면 true, 경고만 있으면 통과)
+- `issues`: ValidationIssue[] (severity: error|warning|info)
+- `metrics`: TranslationQualityMetrics (품질 메트릭)
+
+#### `WordPressClient.linkTranslations` (packages/core/src/wordpress.ts)
+Polylang 언어 연결 (Epic 11.0)
+
+**프로세스**:
+1. Polylang REST API Helper 플러그인 endpoint 호출
+2. Basic Auth 인증
+3. POST 요청: `{ ko_post_id, en_post_id }`
+4. 양방향 연결 완료
+
+**에러 처리**:
+- 404: 플러그인 미설치 → 설치 가이드 제공
+- polylang_not_active: Polylang 비활성화
+- invalid_ko_post/invalid_en_post: 잘못된 포스트 ID
+- 네트워크 에러
+
+**WordPress 플러그인**: `/wordpress-plugin/polylang-rest-api-helper.php` (Polylang Free 버전 지원)
 
 ### 타입 시스템
 모든 핵심 타입은 `packages/shared/src/types.ts`에 정의되어 있으며, Zod 스키마(`packages/shared/src/schemas.ts`)로 런타임 검증됩니다.
@@ -382,33 +450,34 @@ pnpm clean && pnpm build
 - **형식**: `> **🌐 Translation**: Translated from [Korean](/ko/원본-슬러그).`
 - **참고**: ISSUES.md [TECH-003]
 
+#### 3. Polylang 언어 연결 자동화 (Epic 11.0)
+- **문제**: 한영 포스트 발행 후 수동으로 WordPress 관리자에서 연결 필요
+- **해결**: `WordPressClient.linkTranslations()` 메서드 구현
+- **기능**: Polylang REST API Helper 플러그인을 통한 자동 연결
+- **워크플로우**: `blog publish` 시 자동 번역 → 자동 발행 → 자동 연결
+- **참고**: packages/core/src/wordpress.ts:225-295
+
+#### 4. 워크플로우 검증 단계 자동화 (Epic 11.0)
+- **문제**: 한글 검증 완료 전에 영문 번역 진행, 수동 검증 필요
+- **해결**: 8단계 자동 품질 검증 시스템 구현
+- **기능**: 라인 수, 코드 블록, SEO 키워드, 제목 길이, 링크/헤딩 자동 검증
+- **워크플로우**: 번역 → 자동 검증 → 검증 실패 시 발행 중단
+- **참고**: packages/core/src/validation.ts
+
 ### 개선 필요 이슈 ⚠️
 
-#### 1. Polylang 언어 연결 자동화 부재
-- **문제**: 한영 포스트 발행 후 수동으로 WordPress 관리자에서 연결 필요
-- **현재**: WordPress 관리자 → 포스트 편집 → Polylang 메타박스에서 수동 선택
-- **해결 방안**: `blog link-translations` 명령어 구현 예정
-- **우선순위**: Medium
-- **참고**: ISSUES.md [WF-001]
-
-#### 2. SEO 키워드 밀도 최적화 부족
+#### 1. SEO 키워드 밀도 최적화 부족
 - **문제**: 대부분 키워드가 권장 범위(0.5-2.5%) 미달
 - **영향**: SEO 점수 42-75점으로 낮음
 - **해결 방안**: 자동 키워드 주입 로직 구현 예정
 - **우선순위**: Medium
 - **참고**: ISSUES.md [TECH-002]
 
-#### 3. 워크플로우 검증 단계 부재
-- **문제**: 한글 검증 완료 전에 영문 번역 진행
-- **해결**: WORKFLOW-GUIDE.md 작성으로 프로세스 표준화
-- **권장**: 한글 검증 → 발행 → 영문 번역 → 발행 → 연결
-- **참고**: ISSUES.md [WF-002], WORKFLOW-GUIDE.md
-
 ### 전체 이슈 현황
 
-- **해결 완료**: 3개
-- **개선 중**: 4개
-- **미해결**: 1개
+- **해결 완료**: 6개 (Epic 11.0로 2개 추가 해결)
+- **개선 중**: 1개
+- **미해결**: 0개
 
 **상세 내역**: `ISSUES.md` 참조
 
@@ -416,157 +485,156 @@ pnpm clean && pnpm build
 
 ## 권장 워크플로우
 
-**최종 업데이트**: 2025-11-03
+**최종 업데이트**: 2025-11-04 (Epic 11.0 자동 번역 시스템 반영)
 
-품질 높은 한영 블로그 포스트 발행을 위한 표준 프로세스입니다.
-상세 가이드는 `WORKFLOW-GUIDE.md`를 참고하세요.
+AI 자동 번역 시스템을 활용한 원클릭 한영 블로그 포스트 발행 프로세스입니다.
 
 ### 핵심 원칙
 
-1. **한글 우선, 영문 후속**: 한글 포스트가 완벽하게 검증된 후에만 영문 번역 진행
-2. **각 단계마다 검증**: 발행 전 로컬 검증 필수
-3. **SEO 최적화**: 키워드 밀도 0.5-2.5%, Excerpt 300자 이하
-4. **자동화 활용**: CLI 명령어로 반복 작업 최소화
+1. **원클릭 자동화**: 한글 발행 시 자동으로 번역 → 검증 → 영문 발행 → 언어 연결
+2. **자동 품질 검증**: 8단계 validation으로 번역 품질 보증
+3. **SEO 최적화**: 영문 SEO 제목/요약 자동 생성, 키워드 밀도 검증
+4. **실패 안전**: 번역/검증 실패 시에도 한글 포스트는 정상 발행
 
-### 4단계 프로세스
+### 2단계 프로세스 (Epic 11.0 자동 번역)
 
-#### Phase 1: 한글 포스트 작성 및 검증
+#### Phase 1: 한글 포스트 작성 및 로컬 검증
 ```bash
 # 1. 마크다운 작성
 vi content/posts/ko/my-post.md
 
-# 2. SEO 분석
+# 2. SEO 분석 (선택사항)
 blog analyze-seo content/posts/ko/my-post.md --verbose
 
-# 3. 로컬 프리뷰
+# 3. 실시간 프리뷰 (선택사항)
 blog preview content/posts/ko/my-post.md --show-ads
 
-# 4. 최종 검토 (체크리스트 확인)
 ```
 
-**체크리스트**:
-- [ ] SEO 점수 70점 이상
+**로컬 검증 체크리스트**:
+- [ ] SEO 점수 70점 이상 (선택사항)
 - [ ] 모든 필수 메타데이터 입력 (제목, excerpt, 카테고리, 태그)
 - [ ] Excerpt 300자 이하
-- [ ] 키워드 밀도 0.5-2.5% 범위
+- [ ] 키워드 밀도 0.5-2.5% 범위 (선택사항)
 
-#### Phase 2: 한글 포스트 발행
+#### Phase 2: 원클릭 발행 (자동 번역 + 자동 연결)
 ```bash
-# 발행
+# 한 줄 명령어로 한영 포스트 발행 완료
 blog publish content/posts/ko/my-post.md
 
-# 출력 예시:
-# ✔ 포스트 발행 완료! (ID: 29)
-# URL: https://beomanro.com/?p=29
-
-# ⚠️ Post ID 기록 필수 (나중에 영문 연결 시 필요)
+# 실행 흐름 (자동):
+# 1. 한글 포스트 파싱 및 SEO 검증
+# 2. WordPress에 한글 포스트 발행 (ID: 29)
+# 3. ✨ 자동 번역 시작 (Claude Code)
+# 4. 번역 품질 검증 (8단계)
+#    - 라인 수 50-150% 범위 확인
+#    - 코드 블록 완전 보존 확인
+#    - SEO 키워드 모두 포함 확인
+#    - 키워드 밀도 0.5-2.5% 확인
+#    - 제목 길이 ≤60자 확인
+#    - 링크/헤딩 구조 보존 확인
+# 5. 검증 통과 시 영문 포스트 발행 (ID: 26)
+# 6. Polylang으로 언어 연결: 한글(29) ↔ 영문(26)
+# 7. 완료!
 ```
 
-**확인 사항**:
-- [ ] WordPress 관리자에서 발행 확인
-- [ ] 실제 페이지 확인 (레이아웃, 이미지, 광고)
-- [ ] 필요시 수정 및 재발행
+**출력 예시**:
+```
+=== 자동 번역 시작 ===
+⠹ 한글 포스트 번역 중 (Claude Code)...
+✔ 번역 품질 검증 통과
 
-#### Phase 3: 영문 번역 및 검증
-```bash
-# 번역 생성 (한글 검증 완료 후에만!)
-blog translate content/posts/ko/my-post.md --target en
+=== 번역 품질 메트릭 ===
+라인 수 차이: 8.5%
+코드 블록 보존: 3개
+메타데이터 완전성: ✓
+SEO 최적화: ✓
+제목 길이: 58자
+Excerpt 길이: 285자/300자
 
-# 출력 예시:
-# ✔ 번역 완료!
-# ✅ 번역 파일 생성 완료: content/posts/en/my-post-english.md
+✔ 영어 포스트 발행 완료! (ID: 26)
+✔ 언어 연결 완료: 한글(29) ↔ 영문(26)
 
-# 번역 품질 검토
-# - SEO 리포트 확인
-# - 키워드 밀도 조정
-# - 필요시 수동 수정
+✓ 자동 번역 및 발행 완료!
 ```
 
-**체크리스트**:
-- [ ] 제목이 SEO 최적화되었는가? (How to, Complete Guide 등)
-- [ ] 번역 디스클레이머 포함되었는가?
-- [ ] 키워드 밀도가 적절한가?
-- [ ] 코드 블록이 보존되었는가?
-
-#### Phase 4: 영문 포스트 발행 및 연결
+**자동 번역 비활성화 (한글만 발행)**:
 ```bash
-# 발행
-blog publish content/posts/en/my-post-english.md
-
-# 출력 예시:
-# ✔ 포스트 발행 완료! (ID: 26)
-# URL: https://beomanro.com/?p=26
-```
-
-**Polylang 언어 연결 (현재 수동)**:
-1. WordPress 관리자 → Posts → All Posts
-2. 한글 포스트 (ID: 29) 편집
-3. Polylang 메타박스에서 영문 포스트 (ID: 26) 선택
-4. 저장
-
-**향후 자동화 예정**:
-```bash
-blog link-translations --ko 29 --en 26
+blog publish content/posts/ko/my-post.md --no-translate
 ```
 
 **최종 확인**:
-- [ ] 한영 포스트가 Polylang으로 연결되었는가?
-- [ ] 언어 전환 버튼이 정상 작동하는가?
+- [ ] WordPress 관리자에서 한글/영문 포스트 확인
+- [ ] 실제 페이지 확인 (레이아웃, 이미지, 광고)
+- [ ] 언어 전환 버튼 정상 작동 확인
+
+### 실패 처리
+
+**번역 실패 시**:
+- 한글 포스트만 발행됨
+- 에러 메시지 출력
+- 수동 번역 또는 재시도 가능
+
+**검증 실패 시**:
+- 한글 포스트만 발행됨
+- 검증 이슈 상세 출력 (에러/경고/정보)
+- 품질 개선 후 재시도
+
+**Polylang 연결 실패 시**:
+- 양쪽 포스트 모두 발행 성공
+- 수동 연결 가이드 제공:
+  ```bash
+  blog link-translations --ko 29 --en 26
+  ```
 
 ### 주의사항
 
 - ⚠️ **Excerpt는 300자를 절대 초과하지 마세요** (발행 실패)
-- ⚠️ **반드시 한글 검증 완료 후 영문 번역** (재작업 방지)
-- ⚠️ **Post ID를 반드시 기록** (연결 시 필요)
+- ⚠️ **검증 실패 시 품질 개선 후 재시도** (한글 포스트는 이미 발행됨)
+- ✅ **번역/연결 실패해도 한글 포스트는 정상 발행** (실패 안전)
 
-### 효율성 팁
+### 고급 옵션
 
 ```bash
-# Dry-run으로 시뮬레이션
+# 시뮬레이션 (실제 업로드 안 함)
 blog publish content/posts/ko/my-post.md --dry-run
 
-# 번역 미리보기
-blog translate content/posts/ko/my-post.md --dry-run
+# 초안으로 저장 (번역도 초안)
+blog publish content/posts/ko/my-post.md --draft
 ```
-
-**상세 가이드**: `WORKFLOW-GUIDE.md` 참조
 
 ---
 
 ## 다음 단계 (Next Steps)
 
-**최종 업데이트**: 2025-11-03
+**최종 업데이트**: 2025-11-04 (Epic 11.0 완료)
 
-### 즉시 실행 (이번 주)
-1. ✅ 번역 패턴 문서화 (TRANSLATION-PATTERNS.md)
-2. ✅ 이슈 추적 문서 작성 (ISSUES.md)
-3. ✅ 워크플로우 가이드 작성 (WORKFLOW-GUIDE.md)
-4. 🔄 Polylang 자동 연결 구현 방안 리서치
+### ✅ 완료된 기능 (Epic 11.0)
+1. ✅ AI 자동 번역 시스템 구현
+2. ✅ 8단계 품질 검증 시스템
+3. ✅ Polylang 자동 연결 (`WordPressClient.linkTranslations()`)
+4. ✅ 원클릭 한영 발행 (`blog publish`)
+5. ✅ `--no-translate` 플래그 추가
+6. ✅ 종합 테스트 (39 tests)
+7. ✅ 문서화 (README.md, CLAUDE.md, E2E 가이드)
 
 ### 단기 (1-2주)
-1. **Polylang 자동 연결 명령어 구현** (우선순위: HIGH)
-   - `blog link-translations --ko <id> --en <id>` 명령어
-   - 또는 `publish` 명령어에 `--link-to <id>` 옵션 추가
-   - 참고: ISSUES.md [WF-001]
-
-2. **SEO 키워드 밀도 자동 최적화** (우선순위: MEDIUM)
-   - 번역 시 키워드 밀도 자동 분석
-   - 부족한 키워드 자동 주입 (자연스러운 위치)
+1. **SEO 키워드 밀도 자동 최적화** (우선순위: MEDIUM)
+   - 번역 시 키워드 밀도 자동 분석 ✅ (구현됨)
+   - 부족한 키워드 자동 주입 (자연스러운 위치) ⏳ (예정)
    - 참고: ISSUES.md [TECH-002]
 
-3. **배치 번역 기능**
+2. **배치 번역 기능**
    - 여러 포스트 동시 번역
    - 진행률 표시
    - 병렬 처리
 
-### 중기 (1개월)
-1. **통합 발행 명령어** (참고: ISSUES.md [UX-002])
-   ```bash
-   blog publish-bilingual content/posts/ko/my-post.md
-   # 자동으로: 한글 발행 → 검증 → 영문 번역 → 영문 발행 → 연결
-   ```
+3. **번역 캐싱**
+   - 이전 번역 결과 재사용
+   - 부분 번역 지원 (수정된 섹션만 재번역)
 
-2. **Git Hook 통합**
+### 중기 (1개월)
+1. **Git Hook 통합**
    - 한글 포스트 커밋 시 자동 번역
    - Watch 모드 (파일 변경 감지 → 자동 업데이트)
 

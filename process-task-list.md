@@ -3,12 +3,26 @@
 Guidelines for managing task lists in markdown files to track progress on completing a PRD
 
 ## Task Implementation
-- **One sub-task at a time:** Do **NOT** start the next sub‑task until you ask the user for permission and they say "yes" or "y"
-- **Test Execution Policy:**
-  - **NEVER skip tests**: All tests must be executed completely, even if they take time
-  - **Timeout setting**: Set test timeout to 10 minutes (600000ms) to allow sufficient execution time
-  - **Wait for completion**: Always wait for full test suite to complete before proceeding
-  - **No shortcuts**: Do not use grep, tail, or other methods to skip test execution
+- **One sub-task at a time:** Do **NOT** start the next sub‑task until you ask the user for permission and they say "yes" or "y". **Use the AskUserQuestion tool** to present options and gather user decisions efficiently through Claude Code's interactive interface.
+- **Test Implementation and Execution Policy:**
+  - **Unit Test Requirements:**
+    - All implemented classes and functions must have corresponding unit tests using the programming language's native testing framework (e.g., Jest for JavaScript, pytest for Python, JUnit for Java).
+    - Each unit test suite must include a minimum of 3 test cases covering:
+      - **Happy Path:** Verify the most common, expected scenarios work correctly.
+      - **Boundary Conditions:** Test edge cases including minimum values, maximum values, empty inputs, null values.
+      - **Exception Cases:** Validate proper handling of invalid inputs and error conditions.
+      - **Side Effects:** Ensure test independence and no impact on global state or external systems.
+    - Unit tests must be written during implementation, not as an afterthought.
+  - **System Test Requirements:**
+    - Based on the PRD user stories, create end-to-end system tests that validate complete workflows.
+    - Test at least 2 realistic user scenarios representing normal feature usage.
+    - **Must use real data for validation** - no hardcoded values or dummy data allowed.
+    - System tests verify the integration of all components from start to finish.
+  - **Test Execution Policy:**
+    - **NEVER skip tests**: All tests must be executed completely, even if they take time
+    - **Timeout setting**: Set test timeout to 10 minutes (600000ms) to allow sufficient execution time
+    - **Wait for completion**: Always wait for full test suite to complete before proceeding
+    - **No shortcuts**: Do not use grep, tail, or other methods to skip test execution
 - **Completion protocol:**
   1. When you finish a **sub‑task**, immediately mark it as completed by changing `[ ]` to `[x]`.
   2. If **all** subtasks underneath a parent task are now `[x]`, follow this sequence:
@@ -75,6 +89,60 @@ Guidelines for managing task lists in markdown files to track progress on comple
 }
 ```
 
+## Language Policy
+
+**IMPORTANT:** All code comments, documentation, and user communications must be written in Korean (한글) to maintain consistency and accessibility for the development team.
+
+### Language Requirements:
+
+1. **Code Comments:**
+   - All comments in implementation code must be written in Korean
+   - Function and class documentation must use Korean
+   - Inline explanations and TODO comments must be in Korean
+
+2. **User Communications:**
+   - All progress reports and summaries to the user must be in Korean
+   - Status updates and completion notifications must be in Korean
+   - When reporting to users, **always include information about any markdown files that were created, modified, or deleted** during the implementation
+
+3. **Commit Messages:**
+   - Follow conventional commit format in English (e.g., `feat:`, `fix:`, `refactor:`)
+   - The commit summary line should be in English for international compatibility
+   - Detailed commit body descriptions may include Korean explanations when needed
+
+4. **Discord Notifications:**
+   - As specified in the Discord Notification Requirements section, all Discord messages must be in Korean
+   - This extends to all user-facing communications
+
+5. **Technical Terms:**
+   - Common technical terms and abbreviations used in Korean development context may remain in English (e.g., API, HTTP, JSON, function names, variable names)
+   - Programming language keywords and syntax remain in their original form
+   - When in doubt, use the term as it would naturally appear in Korean technical documentation
+
+### Examples:
+
+**Code Comments:**
+```javascript
+// ✅ Correct:
+// 사용자 인증 토큰을 검증합니다
+function validateToken(token) { ... }
+
+// ❌ Incorrect:
+// Validates user authentication token
+function validateToken(token) { ... }
+```
+
+**User Report:**
+```
+✅ Correct:
+"Task 1.1 완료: 사용자 프로필 API 구현이 완료되었습니다.
+수정된 파일: api/profile.js, api/profile.test.js
+생성된 문서: docs/api-profile.md"
+
+❌ Incorrect:
+"Task 1.1 completed: User profile API implementation finished."
+```
+
 ## AI Instructions
 
 When working with task lists, the AI must:
@@ -88,3 +156,9 @@ When working with task lists, the AI must:
 5. Before starting work, check which sub‑task is next.
 6. After implementing a sub‑task, update the file and then pause for user approval.
 7. **ALWAYS send Discord notifications** as specified in the Discord Notification Requirements section above.
+8. **Follow the Language Policy** as specified in the Language Policy section above:
+   - Write all code comments and documentation in Korean
+   - Provide all user reports and summaries in Korean
+   - Include markdown file change information when reporting to users
+   - Use conventional commit format in English for git commits
+9. **Context Preservation:** If context becomes abbreviated during communication (e.g., when reporting in English), reload the task list file, the PRD file, and any other referenced documents using the Read tool before continuing work to ensure full context is maintained and no information is lost.

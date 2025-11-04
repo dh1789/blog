@@ -12,6 +12,8 @@ import {
   injectAds,
   calculateSeoScore,
   validateKeywordDensity,
+  translatePost,
+  validateTranslation,
 } from '@blog/core';
 import { loadConfig } from '../utils/config';
 
@@ -20,6 +22,7 @@ interface PublishOptions {
   language: 'ko' | 'en';
   dryRun: boolean;
   linkTo?: string;  // 연결할 포스트 ID (영문 발행 시 사용)
+  noTranslate?: boolean;  // 자동 번역 비활성화 (기본값: false)
 }
 
 export async function publishCommand(file: string, options: PublishOptions) {
@@ -143,6 +146,151 @@ export async function publishCommand(file: string, options: PublishOptions) {
 
     spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
     console.log(chalk.blue(`URL: ${config.wordpress.url}/?p=${postId}`));
+
+    // 자동 번역 워크플로우 (한글 포스트이고 --no-translate가 아닌 경우)
+    if (metadata.language === 'ko' && !options.noTranslate && !options.dryRun) {
+      console.log(chalk.cyan('\n=== 자동 번역 시작 ==='));
+      spinner.start('한글 포스트 번역 중 (Claude Code)...');
+
+      try {
+        // 1. 포스트 번역
+        const translationResult = await translatePost(fileContent, metadata, {
+          targetLang: 'en',
+          optimizeSeo: true,
+          preserveCodeBlocks: true,
+        });
+
+        spinner.text = '번역 품질 검증 중...';
+
+        // 2. 품질 검증
+        const validationResult = await validateTranslation(
+          fileContent,
+          metadata,
+          translationResult.translatedContent,
+          translationResult.translatedMetadata
+        );
+
+        // 3. 검증 결과 출력
+        spinner.info(chalk.blue('번역 품질 검증 완료'));
+
+        console.log(chalk.cyan('\n=== 번역 품질 메트릭 ==='));
+        console.log(chalk.white('라인 수 차이:'), chalk.gray(`${validationResult.metrics.lineCountDiffPercent.toFixed(1)}%`));
+        console.log(chalk.white('코드 블록 보존:'), chalk.gray(`${validationResult.metrics.preservedCodeBlocks}개`));
+        console.log(
+          chalk.white('메타데이터 완전성:'),
+          validationResult.metrics.metadataComplete ? chalk.green('✓') : chalk.red('✗')
+        );
+        console.log(
+          chalk.white('SEO 최적화:'),
+          validationResult.metrics.seoOptimized ? chalk.green('✓') : chalk.red('✗')
+        );
+        console.log(chalk.white('제목 길이:'), chalk.gray(`${validationResult.metrics.titleLength}자`));
+        console.log(chalk.white('Excerpt 길이:'), chalk.gray(`${validationResult.metrics.excerptLength}자/300자`));
+
+        // 4. 검증 이슈 출력
+        if (validationResult.issues.length > 0) {
+          console.log(chalk.cyan('\n=== 검증 이슈 ==='));
+
+          const errors = validationResult.issues.filter((i) => i.severity === 'error');
+          const warnings = validationResult.issues.filter((i) => i.severity === 'warning');
+          const infos = validationResult.issues.filter((i) => i.severity === 'info');
+
+          if (errors.length > 0) {
+            console.log(chalk.red(`\n❌ 에러 (${errors.length}개):`));
+            errors.forEach((issue) => {
+              console.log(chalk.red(`  - ${issue.message}`));
+            });
+          }
+
+          if (warnings.length > 0) {
+            console.log(chalk.yellow(`\n⚠️  경고 (${warnings.length}개):`));
+            warnings.forEach((issue) => {
+              console.log(chalk.yellow(`  - ${issue.message}`));
+            });
+          }
+
+          if (infos.length > 0) {
+            console.log(chalk.blue(`\nℹ️  정보 (${infos.length}개):`));
+            infos.forEach((issue) => {
+              console.log(chalk.blue(`  - ${issue.message}`));
+            });
+          }
+        }
+
+        // 5. 검증 실패 시 중단
+        if (!validationResult.isValid) {
+          spinner.fail(chalk.red('번역 품질 검증 실패'));
+          console.log(chalk.yellow('\n한글 포스트만 발행되었습니다.'));
+          console.log(chalk.gray('번역 품질을 개선한 후 다시 시도하거나, --no-translate 옵션으로 수동 번역하세요.'));
+          return;
+        }
+
+        spinner.succeed(chalk.green('번역 품질 검증 통과'));
+
+        // 6. 영어 포스트 발행
+        spinner.start('영어 포스트 발행 중...');
+
+        const englishContentWithAds = injectAds(translationResult.translatedContent, config.ads);
+        const englishPostId = await wpClient.createPost(
+          { ...translationResult.translatedMetadata, status: finalStatus },
+          englishContentWithAds,
+          // SEO 데이터는 번역된 메타데이터에서 생성
+          {
+            slug: translationResult.translatedMetadata.slug || '',
+            meta: {
+              title: translationResult.translatedMetadata.title,
+              description: translationResult.translatedMetadata.excerpt || '',
+              keywords: translationResult.translatedMetadata.tags || [],
+            },
+            openGraph: {
+              'og:title': translationResult.translatedMetadata.title,
+              'og:description': translationResult.translatedMetadata.excerpt || '',
+              'og:type': 'article',
+              'og:locale': 'en_US',
+            },
+            twitterCard: {
+              'twitter:card': 'summary_large_image',
+              'twitter:title': translationResult.translatedMetadata.title,
+              'twitter:description': translationResult.translatedMetadata.excerpt || '',
+            },
+          }
+        );
+
+        spinner.succeed(chalk.green(`영어 포스트 발행 완료! (ID: ${englishPostId})`));
+        console.log(chalk.blue(`URL: ${config.wordpress.url}/?p=${englishPostId}`));
+
+        // 7. Polylang 언어 연결
+        spinner.start('Polylang 언어 연결 중...');
+
+        try {
+          await wpClient.linkTranslations(postId, englishPostId);
+          spinner.succeed(chalk.green(`언어 연결 완료: 한글(${postId}) ↔ 영문(${englishPostId})`));
+        } catch (linkError) {
+          spinner.warn(chalk.yellow('⚠️  언어 연결 실패 (포스트 발행은 성공)'));
+
+          if (linkError instanceof Error) {
+            console.error(chalk.yellow(`언어 연결 오류: ${linkError.message}`));
+          }
+
+          console.log(chalk.cyan('\n수동 연결 방법:'));
+          console.log(chalk.gray(`  blog link-translations --ko ${postId} --en ${englishPostId}`));
+          console.log(chalk.gray('  또는 WordPress 관리자에서 포스트 편집 → Polylang 메타박스에서 연결'));
+        }
+
+        console.log(chalk.green('\n✓ 자동 번역 및 발행 완료!'));
+      } catch (translationError) {
+        spinner.fail(chalk.red('자동 번역 실패'));
+
+        if (translationError instanceof Error) {
+          console.error(chalk.red(`\n번역 오류: ${translationError.message}`));
+        }
+
+        console.log(chalk.yellow('\n한글 포스트만 발행되었습니다.'));
+        console.log(chalk.gray('나중에 수동으로 번역하거나, 문제를 해결한 후 다시 시도하세요.'));
+      }
+    } else if (metadata.language === 'ko' && options.noTranslate) {
+      console.log(chalk.gray('\n자동 번역이 비활성화되었습니다. (--no-translate)'));
+    }
 
     // 언어 연결 (영문 포스트이고 --link-to 옵션이 있는 경우)
     if (metadata.language === 'en' && options.linkTo) {

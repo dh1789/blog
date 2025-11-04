@@ -1,6 +1,6 @@
 # 프로젝트 이슈 추적 (Issues Tracking)
 
-**최종 업데이트**: 2025-11-03
+**최종 업데이트**: 2025-11-04
 **프로젝트**: WordPress Content Automation CLI
 
 ---
@@ -26,17 +26,18 @@
 
 #### 🟡 [WF-001] Polylang 언어 연결 자동화 부재
 
-**상태**: ❌ 미해결
+**상태**: ✅ 해결 완료
 **우선순위**: Medium
 **발견일**: 2025-11-03
-**영향도**: 사용성 저하, 수동 작업 증가
+**해결일**: 2025-11-04
+**영향도**: 사용성 개선, 자동화 구현
 
 **문제 설명**:
 - 한국어 포스트와 영어 포스트를 발행한 후 WordPress 관리자에서 수동으로 연결해야 함
 - Polylang UI가 직관적이지 않아 연결 과정이 번거로움
 - 실수로 잘못된 포스트를 연결할 위험성 존재
 
-**현재 워크플로우**:
+**이전 워크플로우**:
 ```bash
 # 1. 한글 발행
 blog publish content/posts/ko/my-post.md  # → Post ID: 100
@@ -51,30 +52,38 @@ blog publish content/posts/en/my-post.md  # → Post ID: 101
 - 저장
 ```
 
-**해결 방안**:
-1. **옵션 A**: `blog link-translations` 명령어 구현
+**구현된 솔루션**:
+
+1. **옵션 A**: `blog link-translations` 명령어 ✅ 구현 완료
    ```bash
    blog link-translations --ko 100 --en 101
    ```
+   - 독립 명령어로 언제든지 수동 연결 가능
+   - 상세한 에러 처리 및 사용자 피드백
+   - 파일: `packages/cli/src/commands/link-translations.ts`
 
-2. **옵션 B**: `publish` 명령어에 자동 연결 통합
+2. **옵션 B**: `publish` 명령어에 자동 연결 통합 ✅ 구현 완료
    ```bash
    blog publish content/posts/en/my-post.md --link-to 100
    ```
+   - 영문 발행과 동시에 자동 연결
+   - 연결 실패 시에도 포스트 발행은 성공 처리
+   - 실패 시 수동 연결 방법 안내
+   - 파일: `packages/cli/src/commands/publish.ts`
 
-3. **옵션 C**: 통합 발행 명령어 (권장)
-   ```bash
-   blog publish-bilingual content/posts/ko/my-post.md
-   # 자동으로: 한글 발행 → 검증 → 영문 번역 → 영문 발행 → 연결
-   ```
+3. **핵심 메서드**: `WordPressClient.linkTranslations()` ✅ 구현 완료
+   - WordPress REST API로 `_pll_translations` meta 필드 업데이트
+   - 양방향 연결 (한국어 ↔ 영어)
+   - JSON 형식: `{"ko": koPostId, "en": enPostId}`
+   - 파일: `packages/core/src/wordpress.ts`
 
-**필요 기술 조사**:
-- [ ] Polylang REST API 문서 확인
-- [ ] `pll_save_post_translations()` PHP 함수 REST API 접근성
-- [ ] WordPress meta 필드로 연결 정보 저장 방법
+**기술 조사 결과**:
+- [x] Polylang REST API 확인: WordPress REST API로 meta 필드 접근 가능
+- [x] Meta 필드명: `_pll_translations` (JSON 직렬화 객체)
+- [x] 양방향 연결 메커니즘 확인 및 구현
 
-**예상 구현 시간**: 2-3시간
-**참고 파일**: `packages/core/src/wordpress.ts`
+**구현 시간**: 4시간 (예상 2-3시간보다 1시간 추가)
+**참고 문서**: `POLYLANG-AUTO-LINK-SPEC.md`, `tasks/tasks-polylang-auto-link-spec.md`
 
 ---
 
@@ -362,9 +371,9 @@ function generateTranslationDisclaimer(
 ## 📈 이슈 통계
 
 ### 상태별 통계
-- ✅ **해결 완료**: 3개 (TECH-001, TECH-003, WF-003)
+- ✅ **해결 완료**: 4개 (WF-001, TECH-001, TECH-003, WF-003)
 - ⚠️ **개선 중**: 4개 (WF-002, TECH-002, UX-001, UX-002)
-- ❌ **미해결**: 1개 (WF-001)
+- ❌ **미해결**: 0개
 
 ### 우선순위별 통계
 - 🔴 **Critical**: 0개
@@ -383,11 +392,10 @@ function generateTranslationDisclaimer(
 ### 즉시 실행 (이번 주)
 1. ✅ WORKFLOW-GUIDE.md 작성 (권장 워크플로우 문서화)
 2. ✅ CLAUDE.md 업데이트 (이슈 및 워크플로우 섹션 추가)
-3. 🔄 Polylang 자동 연결 구현 방안 리서치
+3. ✅ Polylang 자동 연결 구현 완료 ([WF-001])
 
 ### 단기 (1-2주)
-1. Polylang 자동 연결 명령어 구현 ([WF-001])
-2. SEO 키워드 밀도 자동 최적화 ([TECH-002])
+1. SEO 키워드 밀도 자동 최적화 ([TECH-002])
 
 ### 중기 (1개월)
 1. 통합 발행 명령어 구현 ([UX-002])

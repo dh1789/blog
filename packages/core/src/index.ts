@@ -18,3 +18,4 @@ export * from './revenue-scoring';
 export * from './topic-suggestion';
 export * from './cache';
 export * from './translator';
+export * from './validation';

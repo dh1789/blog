@@ -9,6 +9,13 @@ WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최�
 - **초안 수정**: AI 기반 콘텐츠 개선 및 리파인
 - **템플릿 시스템**: 다양한 콘텐츠 유형별 맞춤 템플릿
 
+### 🌐 AI 자동 번역 (Epic 11.0)
+- **원클릭 번역 & 발행**: 한글 포스트 발행 시 자동으로 영문 번역 및 발행
+- **Claude Code 통합**: 고품질 AI 번역 엔진
+- **8단계 품질 검증**: 라인 수, 코드 블록, SEO 키워드, 제목 길이 자동 검증
+- **SEO 최적화**: 영문 SEO에 최적화된 제목/요약 자동 생성
+- **Polylang 자동 연결**: 한영 포스트 자동 연결로 언어 전환 지원
+
 ### 🖼️ 이미지 생성 (DALL-E 3)
 - **AI 이미지 생성**: DALL-E 3를 사용한 블로그 이미지 생성
 - **다양한 크기 지원**: 1024x1024, 1792x1024, 1024x1792
@@ -223,6 +230,10 @@ blog publish content/posts/my-post.md --dry-run
 
 # 영어 콘텐츠 발행
 blog publish content/posts/en/guide.md --language en
+
+# 영어 포스트 발행 + 자동 언어 연결 (Polylang)
+blog publish content/posts/en/guide.md --link-to 29
+# 한글 Post ID 29와 자동으로 연결됨
 ```
 
 ### 포스트 관리
@@ -241,6 +252,101 @@ blog delete 123
 
 # 강제 삭제 (확인 없이)
 blog delete 123 --force
+```
+
+### AI 자동 번역 (Epic 11.0)
+
+한글 포스트 발행 시 Claude Code를 활용해 자동으로 영문 번역 및 발행합니다.
+
+```bash
+# 기본 사용: 한글 포스트 발행 → 자동 번역 → 영문 발행 → 언어 연결
+blog publish content/posts/ko/my-post.md
+
+# 실행 흐름:
+# 1. 한글 포스트 파싱 및 SEO 검증
+# 2. WordPress에 한글 포스트 발행 (ID: 29)
+# 3. ✨ 자동 번역 시작 (Claude Code)
+# 4. 번역 품질 검증 (8단계)
+# 5. 검증 통과 시 영문 포스트 발행 (ID: 26)
+# 6. Polylang으로 언어 연결: 한글(29) ↔ 영문(26)
+
+# 자동 번역 비활성화 (한글만 발행)
+blog publish content/posts/ko/my-post.md --no-translate
+
+# 초안으로 저장 (번역도 초안)
+blog publish content/posts/ko/my-post.md --draft
+```
+
+**품질 검증 기준**:
+- ✅ 라인 수: 50-150% 범위 (너무 짧거나 길면 에러)
+- ✅ 코드 블록: 완전 보존 (개수 일치)
+- ✅ SEO 키워드: 모든 태그 포함 여부
+- ✅ 키워드 밀도: 0.5-2.5% 권장
+- ✅ 제목 길이: ≤60자 (SEO 최적)
+- ✅ 링크/헤딩: 구조 보존
+
+**출력 예시**:
+```
+=== 자동 번역 시작 ===
+⠹ 한글 포스트 번역 중 (Claude Code)...
+✔ 번역 품질 검증 통과
+
+=== 번역 품질 메트릭 ===
+라인 수 차이: 8.5%
+코드 블록 보존: 3개
+메타데이터 완전성: ✓
+SEO 최적화: ✓
+제목 길이: 58자
+Excerpt 길이: 285자/300자
+
+✔ 영어 포스트 발행 완료! (ID: 26)
+✔ 언어 연결 완료: 한글(29) ↔ 영문(26)
+```
+
+**실패 처리**:
+- 번역 실패 시: 한글 포스트만 발행, 에러 메시지 출력
+- 검증 실패 시: 한글 포스트만 발행, 검증 이슈 상세 출력
+- 연결 실패 시: 양쪽 포스트 발행 성공, 수동 연결 가이드 제공
+
+### 다국어 콘텐츠 관리 (Polylang)
+
+Polylang 플러그인을 사용하는 WordPress 사이트에서 한글/영문 포스트를 수동으로 연결합니다.
+
+```bash
+# 방법 1: 발행 시 자동 연결 (권장)
+# 1. 먼저 한글 포스트 발행
+blog publish content/posts/ko/my-post.md
+# → Post ID: 29
+
+# 2. 영문 포스트 발행 + 자동 연결
+blog publish content/posts/en/my-post.md --link-to 29
+# → Post ID: 26, 자동으로 ID 29와 연결됨
+
+# 방법 2: 별도 명령어로 연결
+# 이미 발행된 포스트들을 나중에 연결
+blog link-translations --ko 29 --en 26
+```
+
+**기능:**
+- ✅ WordPress REST API를 통한 Polylang meta 필드 자동 업데이트
+- ✅ 양방향 연결 (한국어 ↔ 영어)
+- ✅ 자동 에러 처리 및 사용자 친화적 메시지
+- ✅ 연결 실패 시에도 포스트 발행은 성공 처리
+
+**워크플로우 예시:**
+```bash
+# 1. 한글 포스트 작성 및 발행
+blog publish content/posts/ko/nodejs-cli-guide.md
+# ✔ 포스트 발행 완료! (ID: 100)
+
+# 2. 영문 번역
+blog translate content/posts/ko/nodejs-cli-guide.md --target en
+# ✔ 번역 파일 생성: content/posts/en/build-nodejs-cli-tools.md
+
+# 3. 영문 발행 + 자동 연결
+blog publish content/posts/en/build-nodejs-cli-tools.md --link-to 100
+# ✔ 포스트 발행 완료! (ID: 101)
+# ✔ 언어 연결 완료: 한글(100) ↔ 영문(101)
 ```
 
 ### 트렌드 모니터링
@@ -505,12 +611,34 @@ pnpm format
 - [x] VPS 실제 배포 검증 (beomanro.com)
 - [x] 완전 자동화 (5-10분 설치)
 
+### ✅ Epic 10.0 - Multilingual Content Management
+- [x] Polylang 자동 언어 연결
+- [x] `link-translations` 명령어 구현
+- [x] `publish --link-to` 옵션 통합
+- [x] WordPress REST API 기반 양방향 연결
+- [x] 완전 자동화 워크플로우
+
+### ✅ Epic 11.0 - AI Auto-Translation System
+- [x] Claude Code 통합 번역 엔진
+- [x] 8단계 품질 검증 시스템
+  - [x] 라인 수 검증 (50-150% 범위)
+  - [x] 코드 블록 보존
+  - [x] SEO 키워드 보존
+  - [x] 키워드 밀도 검증 (0.5-2.5%)
+  - [x] 제목 길이 검증 (≤60자)
+  - [x] 링크/헤딩 구조 보존
+- [x] SEO 최적화 영문 제목/요약 자동 생성
+- [x] `publish --no-translate` 플래그
+- [x] 자동 번역 → 발행 → Polylang 연결 완전 자동화
+- [x] 종합 테스트 (39 tests: translator 12, validation 19, wordpress 8)
+- [x] 문서화 및 사용 가이드
+
 ### 📋 Future Enhancements
 - [ ] WordPress 미디어 라이브러리 통합
 - [ ] 일괄 업로드/업데이트
 - [ ] 스케줄 발행
 - [ ] 성능 분석 (Core Web Vitals)
-- [ ] 다국어 콘텐츠 자동 번역
+- [ ] 추가 언어 지원 (일본어, 중국어)
 - [ ] GitHub Actions CI/CD
 
 ## 📄 라이선스
