@@ -19,6 +19,22 @@ export interface PostMetadata {
   featuredImage?: string;
 }
 
+/**
+ * WordPress 미디어 아이템
+ */
+export interface MediaItem {
+  id: number;
+  url: string;
+  source_url: string;
+  title: string;
+  alt_text?: string;
+  media_details?: {
+    width: number;
+    height: number;
+    file: string;
+  };
+}
+
 export interface AdConfig {
   clientId: string;
   slotId: string;

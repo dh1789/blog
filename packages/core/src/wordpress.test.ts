@@ -9,6 +9,37 @@ import type { WordPressConfig } from '@blog/shared';
 // Mock fetch globally
 global.fetch = vi.fn();
 
+// Mock WPAPI
+vi.mock('wpapi', () => {
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      posts: vi.fn().mockReturnValue({
+        create: vi.fn(),
+        id: vi.fn().mockReturnValue({
+          update: vi.fn(),
+          delete: vi.fn(),
+        }),
+        perPage: vi.fn().mockReturnThis(),
+        param: vi.fn().mockReturnThis(),
+      }),
+      media: vi.fn().mockReturnValue({
+        file: vi.fn().mockReturnValue({
+          create: vi.fn(),
+        }),
+        search: vi.fn(),
+      }),
+      categories: vi.fn().mockReturnValue({
+        search: vi.fn(),
+        create: vi.fn(),
+      }),
+      tags: vi.fn().mockReturnValue({
+        search: vi.fn(),
+        create: vi.fn(),
+      }),
+    })),
+  };
+});
+
 describe('WordPressClient', () => {
   const mockConfig: WordPressConfig = {
     url: 'https://test.com',
@@ -214,6 +245,149 @@ describe('WordPressClient', () => {
       expect(decodedCredentials).toBe('testuser:testpass');
 
       consoleLogSpy.mockRestore();
+    });
+  });
+
+  describe('findMediaByFilename', () => {
+    it('should find existing media by exact filename', async () => {
+      // Mock WPAPI media search response
+      const mockMediaResponse = [
+        {
+          id: 123,
+          source_url: 'https://test.com/wp-content/uploads/2025/11/screenshot.png',
+          title: { rendered: 'Screenshot' },
+          alt_text: 'Test screenshot',
+          media_details: {
+            width: 1920,
+            height: 1080,
+            file: '2025/11/screenshot.png',
+          },
+        },
+      ];
+
+      const mockMediaSearch = vi.fn().mockResolvedValue(mockMediaResponse);
+
+      // Create test client with mocked wp
+      const testClient = new (class extends WordPressClient {
+        constructor(config: WordPressConfig) {
+          super(config);
+          this.wp = {
+            media: () => ({
+              search: mockMediaSearch,
+            }),
+          } as any;
+        }
+      })(mockConfig);
+
+      const result = await testClient.findMediaByFilename('screenshot.png');
+
+      expect(result).not.toBeNull();
+      expect(result?.id).toBe(123);
+      expect(result?.source_url).toBe('https://test.com/wp-content/uploads/2025/11/screenshot.png');
+      expect(result?.title).toBe('Screenshot');
+      expect(result?.media_details?.file).toBe('2025/11/screenshot.png');
+    });
+
+    it('should return null when media is not found', async () => {
+      const mockMediaSearch = vi.fn().mockResolvedValue([]);
+
+      const testClient = new (class extends WordPressClient {
+        constructor(config: WordPressConfig) {
+          super(config);
+          this.wp = {
+            media: () => ({
+              search: mockMediaSearch,
+            }),
+          } as any;
+        }
+      })(mockConfig);
+
+      const result = await testClient.findMediaByFilename('nonexistent.png');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when filename does not match exactly', async () => {
+      // Mock media with different filename
+      const mockMediaResponse = [
+        {
+          id: 456,
+          source_url: 'https://test.com/wp-content/uploads/2025/11/different.png',
+          title: { rendered: 'Different' },
+          media_details: {
+            file: '2025/11/different.png',
+          },
+        },
+      ];
+
+      const mockMediaSearch = vi.fn().mockResolvedValue(mockMediaResponse);
+
+      const testClient = new (class extends WordPressClient {
+        constructor(config: WordPressConfig) {
+          super(config);
+          this.wp = {
+            media: () => ({
+              search: mockMediaSearch,
+            }),
+          } as any;
+        }
+      })(mockConfig);
+
+      const result = await testClient.findMediaByFilename('screenshot.png');
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle media without media_details', async () => {
+      // Mock media response without media_details
+      const mockMediaResponse = [
+        {
+          id: 789,
+          source_url: 'https://test.com/wp-content/uploads/test.png',
+          title: { rendered: 'Test' },
+        },
+      ];
+
+      const mockMediaSearch = vi.fn().mockResolvedValue(mockMediaResponse);
+
+      const testClient = new (class extends WordPressClient {
+        constructor(config: WordPressConfig) {
+          super(config);
+          this.wp = {
+            media: () => ({
+              search: mockMediaSearch,
+            }),
+          } as any;
+        }
+      })(mockConfig);
+
+      const result = await testClient.findMediaByFilename('test.png');
+
+      // Should return null because exact filename match requires media_details
+      expect(result).toBeNull();
+    });
+
+    it('should throw error when API call fails', async () => {
+      const mockMediaSearch = vi.fn().mockRejectedValue(new Error('Network error'));
+
+      const testClient = new (class extends WordPressClient {
+        constructor(config: WordPressConfig) {
+          super(config);
+          this.wp = {
+            media: () => ({
+              search: mockMediaSearch,
+            }),
+          } as any;
+        }
+      })(mockConfig);
+
+      await expect(testClient.findMediaByFilename('test.png')).rejects.toThrow(
+        /Failed to search media/
+      );
+
+      await expect(testClient.findMediaByFilename('test.png')).rejects.toThrow(
+        /Network error/
+      );
     });
   });
 });

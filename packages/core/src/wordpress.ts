@@ -3,10 +3,10 @@
  */
 
 import WPAPI from 'wpapi';
-import type { WordPressConfig, PostMetadata, SeoData } from '@blog/shared';
+import type { WordPressConfig, PostMetadata, SeoData, MediaItem } from '@blog/shared';
 
 export class WordPressClient {
-  private wp: WPAPI;
+  protected wp: WPAPI;
   private config: WordPressConfig;
 
   constructor(config: WordPressConfig) {
@@ -191,6 +191,52 @@ export class WordPressClient {
       };
     } catch (error) {
       throw new Error(`Failed to upload media: ${error}`);
+    }
+  }
+
+  /**
+   * 파일명으로 미디어 라이브러리 검색 (중복 체크용)
+   *
+   * @param filename - 검색할 파일명 (예: "screenshot.png")
+   * @returns 이미 업로드된 이미지 정보 또는 null
+   *
+   * @example
+   * ```typescript
+   * const existing = await wp.findMediaByFilename('screenshot.png');
+   * if (existing) {
+   *   console.log('이미 업로드됨:', existing.source_url);
+   * }
+   * ```
+   */
+  async findMediaByFilename(filename: string): Promise<MediaItem | null> {
+    try {
+      // WordPress REST API의 search 파라미터로 검색
+      const media = await this.wp.media().search(filename);
+
+      if (!media || media.length === 0) {
+        return null;
+      }
+
+      // 정확히 일치하는 파일명 찾기
+      const exactMatch = media.find((item: any) => {
+        const mediaFilename = item.media_details?.file?.split('/').pop();
+        return mediaFilename === filename;
+      });
+
+      if (!exactMatch) {
+        return null;
+      }
+
+      return {
+        id: exactMatch.id,
+        url: exactMatch.source_url,
+        source_url: exactMatch.source_url,
+        title: exactMatch.title?.rendered || '',
+        alt_text: exactMatch.alt_text,
+        media_details: exactMatch.media_details,
+      };
+    } catch (error) {
+      throw new Error(`Failed to search media: ${error}`);
     }
   }
 
