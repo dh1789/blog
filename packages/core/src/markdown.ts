@@ -24,6 +24,12 @@ export async function parseMarkdownFile(fileContent: string): Promise<ParsedPost
 
   const metadata = PostMetadataSchema.parse(data);
 
+  // Polylang Free 제약: 언어별 고유 slug 필요
+  // 영어 포스트는 자동으로 '-en' 접미사 추가 (한글은 기본 언어로 유지)
+  if (metadata.language === 'en' && metadata.slug && !metadata.slug.endsWith('-en')) {
+    metadata.slug = `${metadata.slug}-en`;
+  }
+
   const htmlContent = await convertMarkdownToHtml(content);
 
   // SEO 데이터 생성
