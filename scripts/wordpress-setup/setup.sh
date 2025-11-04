@@ -22,8 +22,9 @@ echo "이 스크립트는 다음 작업을 수행합니다:"
 echo "  1. WordOps 설치"
 echo "  2. WordPress 사이트 생성 (LEMP + SSL + 캐싱)"
 echo "  3. Avada 테마 설치 및 활성화"
+echo "  4. Polylang 다국어 플러그인 설정"
 echo ""
-echo "예상 소요 시간: 5-10분"
+echo "예상 소요 시간: 7-12분"
 echo "============================================"
 echo ""
 
@@ -52,7 +53,7 @@ fi
 
 echo ""
 echo "============================================"
-echo "  단계 2/2: Avada 테마 설치"
+echo "  단계 2/3: Avada 테마 설치"
 echo "============================================"
 echo ""
 
@@ -69,6 +70,26 @@ fi
 
 echo ""
 echo "============================================"
+echo "  단계 3/3: Polylang 다국어 설정"
+echo "============================================"
+echo ""
+
+# setup-polylang.sh 실행
+bash "$SCRIPT_DIR/setup-polylang.sh"
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "Error: Polylang 설정 실패"
+    echo "WordPress와 테마는 정상적으로 설치되었으나 Polylang 설정에 실패했습니다."
+    echo "수동 설정 방법:"
+    echo "  1. WordPress 관리자 → 플러그인 → 새로 추가"
+    echo "  2. 'Polylang' 검색 → 설치 → 활성화"
+    echo "  3. 언어 메뉴에서 한국어, English 추가"
+    exit 1
+fi
+
+echo ""
+echo "============================================"
 echo "  🎉 모든 설치가 완료되었습니다!"
 echo "============================================"
 echo ""
@@ -76,7 +97,9 @@ echo "다음 단계:"
 echo "  1. 브라우저에서 사이트 접속하여 확인"
 echo "  2. 관리자 페이지 로그인"
 echo "  3. Avada 테마 라이선스 등록"
-echo "  4. 사이트 설정 및 콘텐츠 작성"
+echo "  4. blog CLI로 포스트 발행 및 다국어 연결"
+echo "     - blog publish content/posts/ko/my-post.md"
+echo "     - blog publish content/posts/en/my-post.md --link-to <한글ID>"
 echo ""
 echo "설치 정보는 config.sh 파일을 참조하세요."
 echo "============================================"

@@ -7,8 +7,10 @@ import type { WordPressConfig, PostMetadata, SeoData } from '@blog/shared';
 
 export class WordPressClient {
   private wp: WPAPI;
+  private config: WordPressConfig;
 
   constructor(config: WordPressConfig) {
+    this.config = config;
     this.wp = new WPAPI({
       endpoint: `${config.url}/wp-json`,
       username: config.username,
@@ -206,6 +208,10 @@ export class WordPressClient {
    * Polylang 다국어 포스트 연결
    * 한국어와 영어 포스트를 양방향으로 연결합니다.
    *
+   * ⚠️ 주의: Polylang REST API 기능은 Pro 버전에서만 공식 지원됩니다.
+   * 무료 버전 사용자는 WordPress에 Polylang REST API Helper 플러그인을 설치해야 합니다.
+   * 플러그인 위치: /wordpress-plugin/polylang-rest-api-helper.php
+   *
    * @param koPostId - 한국어 포스트 ID
    * @param enPostId - 영어 포스트 ID
    * @throws {Error} 포스트가 존재하지 않거나 연결에 실패한 경우
@@ -221,36 +227,70 @@ export class WordPressClient {
     enPostId: number
   ): Promise<void> {
     try {
-      // Polylang translation 데이터 객체
-      const translations = {
-        ko: koPostId,
-        en: enPostId,
-      };
+      // Polylang REST API Helper 플러그인의 커스텀 endpoint 사용
+      const response = await fetch(
+        `${this.config.url}/wp-json/polylang-helper/v1/link-translations`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + Buffer.from(
+              `${this.config.username}:${this.config.password}`
+            ).toString('base64'),
+          },
+          body: JSON.stringify({
+            ko_post_id: koPostId,
+            en_post_id: enPostId,
+          }),
+        }
+      );
 
-      // 1. 한국어 포스트에 영어 번역 연결
-      await this.wp.posts().id(koPostId).update({
-        meta: {
-          _pll_translations: JSON.stringify(translations),
-        },
-      });
+      if (!response.ok) {
+        const error = await response.json();
 
-      // 2. 영어 포스트에 한국어 원본 연결 (양방향)
-      await this.wp.posts().id(enPostId).update({
-        meta: {
-          _pll_translations: JSON.stringify(translations),
-        },
-      });
+        // 플러그인이 설치되지 않은 경우 (404)
+        if (response.status === 404) {
+          throw new Error(
+            '❌ Polylang REST API Helper 플러그인이 설치되지 않았습니다.\n' +
+            '\n' +
+            '해결 방법:\n' +
+            '1. /wordpress-plugin/polylang-rest-api-helper.php 파일을\n' +
+            '2. WordPress 서버의 wp-content/plugins/ 디렉토리에 업로드\n' +
+            '3. WordPress 관리자에서 플러그인 활성화\n' +
+            '\n' +
+            '자세한 설명: /wordpress-plugin/README.md 참고'
+          );
+        }
 
-      console.log(`✅ 언어 연결 완료: 한글(${koPostId}) ↔ 영문(${enPostId})`);
-    } catch (error: any) {
-      // 에러 타입별 명확한 메시지 제공
-      if (error.code === 'rest_post_invalid_id' || error.statusCode === 404) {
-        throw new Error(`Post not found. Check if post IDs ${koPostId} and ${enPostId} exist.`);
-      } else if (error.statusCode === 401 || error.statusCode === 403) {
-        throw new Error(`Permission denied. Check WordPress authentication credentials.`);
-      } else {
-        throw new Error(`Failed to link translations: ${error.message || error}`);
+        // Polylang이 활성화되지 않은 경우
+        if (error.code === 'polylang_not_active') {
+          throw new Error(
+            '❌ Polylang 플러그인이 활성화되지 않았습니다.\n' +
+            'WordPress 관리자 → 플러그인에서 Polylang을 활성화하세요.'
+          );
+        }
+
+        // 포스트가 존재하지 않는 경우
+        if (error.code === 'invalid_ko_post' || error.code === 'invalid_en_post') {
+          throw new Error(`❌ ${error.message}`);
+        }
+
+        throw new Error(`Failed to link translations: ${error.message || 'Unknown error'}`);
       }
+
+      const data = await response.json();
+
+      // 성공 메시지
+      console.log(`✅ 언어 연결 완료: 한글(${koPostId}) ↔ 영문(${enPostId})`);
+      console.log(`   - 한글: ${data.data.ko_post.title}`);
+      console.log(`   - 영문: ${data.data.en_post.title}`);
+    } catch (error: any) {
+      // 네트워크 에러나 기타 예외
+      if (error.message.includes('플러그인')) {
+        throw error; // 플러그인 관련 에러는 그대로 전달
+      }
+
+      throw new Error(`Failed to link translations: ${error.message || error}`);
     }
   }
 
