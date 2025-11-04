@@ -78,23 +78,27 @@ export async function translateCommand(file: string, options: TranslateOptions) 
 
     // 검증
     console.log(chalk.cyan('\n=== 번역 검증 중 ==='));
-    const validation = validateTranslation(
+    const validation = await validateTranslation(
+      fileContent,
       metadata,
-      translationResult.translatedMetadata,
-      translationResult.translatedContent
+      translationResult.translatedContent,
+      translationResult.translatedMetadata
     );
 
-    if (!validation.passed) {
+    const errors = validation.issues.filter(i => i.severity === 'error');
+    const warnings = validation.issues.filter(i => i.severity === 'warning');
+
+    if (errors.length > 0) {
       console.error(chalk.red('\n❌ 검증 실패:'));
-      validation.errors.forEach(err => console.error(chalk.red(`  - ${err}`)));
+      errors.forEach(err => console.error(chalk.red(`  - ${err.message}`)));
     }
 
-    if (validation.warnings.length > 0) {
+    if (warnings.length > 0) {
       console.warn(chalk.yellow('\n⚠️  경고:'));
-      validation.warnings.forEach(warn => console.warn(chalk.yellow(`  - ${warn}`)));
+      warnings.forEach(warn => console.warn(chalk.yellow(`  - ${warn.message}`)));
     }
 
-    if (validation.passed) {
+    if (validation.isValid) {
       console.log(chalk.green('✅ 번역 검증 통과'));
     }
 
