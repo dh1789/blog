@@ -81,7 +81,7 @@
 
 ## 태스크 (Tasks)
 
-- [ ] **1.0 벤치마크 조사 및 설정 파일 생성** (1회성 작업, Phase 1)
+- [x] **1.0 벤치마크 조사 및 설정 파일 생성** (1회성 작업, Phase 1)
   - [x] 1.1 Web 검색으로 SEO 상위 블로그 크롤링 (TechCrunch, Smashing Magazine, CSS-Tricks 등)
     - Puppeteer 또는 Cheerio 사용
     - 포스트당 평균 이미지 개수 수집
@@ -111,12 +111,12 @@
       - Boundary Conditions: 검색 결과 0개, 검색 결과 100개 이상, 불완전한 데이터
       - Exception Cases: Web 검색 실패, AI 분석 실패, 파싱 에러
 
-- [ ] **2.0 이미지 생성 엔진 스파이크 및 선택** (1회성 작업, Phase 1)
-  - [ ] 2.1 Claude Code CLI 이미지 생성 기능 검증
-    - 간단한 프롬프트로 이미지 생성 테스트 ("Generate a blog post image about WordPress")
-    - 이미지 파일 생성 및 저장 확인
-    - 실패 케이스 테스트 (타임아웃, API 에러, 네트워크 실패)
-    - 생성 시간 측정 (평균, 최소, 최대)
+- [ ] **2.0 이미지 생성 엔진 스파이크 및 선택** (1회성 작업, Phase 1) 🟡 OpenAI API 키 필요
+  - [x] 2.1 Claude Code CLI 이미지 생성 기능 검증 (불가 확인, DALL-E로 전환)
+    - Claude API는 텍스트 전용, 이미지 생성 불가
+    - DALL-E 3 API로 즉시 전환 결정
+    - spike-image-generation.mjs 스크립트 작성 완료
+    - OpenAI API 키 설정 필요 (실행 대기 중)
   - [ ] 2.2 품질/크기 제어 가능성 검증
     - 해상도 지정 가능 여부 확인 (1200x630, 800x450 등)
     - 품질 설정 옵션 확인 (high/medium/low)
