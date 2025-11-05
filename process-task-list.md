@@ -30,14 +30,15 @@ Guidelines for managing task lists in markdown files to track progress on comple
     - **Only if all tests pass**: Stage changes (`git add .`)
     - **Clean up**: Remove any temporary files and temporary code before committing
     - **Commit**: Use a descriptive commit message that:
-      - Uses conventional commit format (`feat:`, `fix:`, `refactor:`, etc.)
-      - Summarizes what was accomplished in the parent task
-      - Lists key changes and additions
+      - Uses conventional commit format with Korean descriptions (`feat:`, `fix:`, `refactor:`, etc.)
+      - Summarizes what was accomplished in the parent task in Korean
+      - Lists key changes and additions in Korean
       - References the task number and PRD context
+      - Must be clear enough for junior developers to understand
       - **Formats the message as a single-line command using `-m` flags**, e.g.:
 
         ```
-        git commit -m "feat: add payment validation logic" -m "- Validates card type and expiry" -m "- Adds unit tests for edge cases" -m "Related to T123 in PRD"
+        git commit -m "feat: 결제 검증 로직 추가" -m "- 카드 타입 및 만료일 검증 구현" -m "- 엣지 케이스 유닛 테스트 추가" -m "PRD T123 관련"
         ```
   3. Once all the subtasks are marked completed and changes have been committed, mark the **parent task** as completed.
 - Stop after each sub‑task and wait for the user's go‑ahead.
@@ -106,9 +107,12 @@ Guidelines for managing task lists in markdown files to track progress on comple
    - When reporting to users, **always include information about any markdown files that were created, modified, or deleted** during the implementation
 
 3. **Commit Messages:**
-   - Follow conventional commit format in English (e.g., `feat:`, `fix:`, `refactor:`)
-   - The commit summary line should be in English for international compatibility
-   - Detailed commit body descriptions may include Korean explanations when needed
+   - Use conventional commit format with Korean descriptions
+   - Keep the commit type prefix in English (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`)
+   - Write the commit description and body in Korean for clarity and accessibility to junior developers
+   - Commit messages must be clear and descriptive enough for junior developers to understand what was changed and why
+   - Use the multi-line format with `-m` flags for structured commit messages
+   - Example format: `git commit -m "feat: 기능 설명" -m "- 세부 내용 1" -m "- 세부 내용 2"`
 
 4. **Discord Notifications:**
    - As specified in the Discord Notification Requirements section, all Discord messages must be in Korean
@@ -143,6 +147,20 @@ function validateToken(token) { ... }
 "Task 1.1 completed: User profile API implementation finished."
 ```
 
+**Commit Messages:**
+```bash
+✅ Correct:
+git commit -m "feat: 사용자 프로필 수정 기능 구현" \
+           -m "- 프로필 이미지 업로드 기능 추가" \
+           -m "- 닉네임 변경 검증 로직 구현" \
+           -m "관련 태스크: T123"
+
+❌ Incorrect:
+git commit -m "feat: implement user profile edit feature" \
+           -m "- Add profile image upload" \
+           -m "- Implement nickname validation"
+```
+
 ## AI Instructions
 
 When working with task lists, the AI must:
@@ -160,5 +178,5 @@ When working with task lists, the AI must:
    - Write all code comments and documentation in Korean
    - Provide all user reports and summaries in Korean
    - Include markdown file change information when reporting to users
-   - Use conventional commit format in English for git commits
+   - Use conventional commit format with Korean descriptions for git commits
 9. **Context Preservation:** If context becomes abbreviated during communication (e.g., when reporting in English), reload the task list file, the PRD file, and any other referenced documents using the Read tool before continuing work to ensure full context is maintained and no information is lost.

@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "블로그 이미지 생성 기본 설정",
+  "description": "Epic 13.0: AI 기반 포스트 이미지 자동 생성 시스템 - Task 1.0 벤치마크 조사 결과",
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-05",
+  "source": "Web 크롤링 (CSS-Tricks, Smashing Magazine, A List Apart) + 업계 표준 (Moz, Google, Open Graph)",
+  "methodology": "실제 데이터 vs 참고 데이터 비교 분석, 보수적 접근",
+  "featuredImage": {
+    "description": "대표 이미지 (Open Graph, 소셜 미디어 공유용)",
+    "width": 1200,
+    "height": 630,
+    "aspectRatio": "1.91:1",
+    "format": "webp",
+    "fallbackFormat": "jpg",
+    "quality": 85,
+    "maxFileSize": 100000,
+    "maxFileSizeReadable": "100KB",
+    "rationale": "Open Graph 표준, Facebook/Twitter/LinkedIn 최적화, Core Web Vitals 충족"
+  },
+  "contentImages": {
+    "description": "본문 이미지 (콘텐츠 내부에 삽입되는 이미지)",
+    "count": {
+      "min": 4,
+      "max": 5,
+      "recommended": 4,
+      "countRule": "1 image per 500 words"
+    },
+    "placement": {
+      "strategy": "after every 2nd H2 heading",
+      "alternativeStrategy": "every 500 words",
+      "rationale": "콘텐츠 구조화, 가독성 향상, 체류 시간 증가"
+    },
+    "dimensions": {
+      "width": 800,
+      "height": 450,
+      "aspectRatio": "16:9"
+    },
+    "format": "webp",
+    "fallbackFormat": "jpg",
+    "quality": 80,
+    "maxFileSize": 50000,
+    "maxFileSizeReadable": "50KB",
+    "rationale": "16:9 비율 모바일 친화적, 로딩 속도 최적화, SEO 최적 밀도"
+  },
+  "performance": {
+    "targetMetrics": {
+      "timeOnPage": "+30-50%",
+      "bounceRate": "-25-35%",
+      "pageViews": "+20-30%"
+    },
+    "constraints": {
+      "totalImagesPerPost": "4-5개 (보수적 접근)",
+      "adSenseBalance": "광고 viewability 확보",
+      "loadingSpeed": "Core Web Vitals 충족"
+    }
+  },
+  "benchmark": {
+    "realCrawling": {
+      "averageImagesPerPost": 5.92,
+      "commonSizes": ["1200x600", "1920x1080", "800x450"],
+      "commonFormats": {
+        "png": "45%",
+        "jpg": "25%",
+        "webp": "20%"
+      }
+    },
+    "referenceData": {
+      "averageImagesPerPost": 4.5,
+      "recommendedSize": "1200x630 (featured), 800x450 (content)",
+      "recommendedFormat": "WebP"
+    },
+    "finalDecision": "참고 데이터 우선 적용 (보수적 접근)"
+  },
+  "compatibility": {
+    "wordpress": "5.8+",
+    "avadaTheme": "지원",
+    "browser": "모던 브라우저 (Chrome, Firefox, Safari, Edge)",
+    "mobileFirst": true
+  },
+  "seo": {
+    "openGraphCompliant": true,
+    "googleRecommended": true,
+    "imageToWordRatio": "1:500",
+    "altTextRequired": true,
+    "lazyLoadingRecommended": true
+  }
+}

@@ -1,0 +1,596 @@
+[
+  {
+    "blog": "CSS-Tricks",
+    "url": "https://css-tricks.com",
+    "totalPosts": 5,
+    "posts": [
+      {
+        "url": "https://css-tricks.com/category/articles/",
+        "imageCount": 9,
+        "images": [
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/10/trig-tangent-graph.png",
+            "width": 1800,
+            "height": 900,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/10/s_E63F027435C482D5813799164A830B3E060276A78A7A02CCD5EC79D53323A5B8_1761081109189_2025-10-21-8.webp",
+            "width": 1920,
+            "height": 1080,
+            "format": "webp",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/10/details-tabs-subgrid.webp",
+            "width": 1200,
+            "height": 600,
+            "format": "webp",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2020/10/motion-blur.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/10/javascript-for-everyone-scaled.png",
+            "width": 2560,
+            "height": 1440,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2021/04/sticky-header.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/10/sequential-thumb.png",
+            "width": 1400,
+            "height": 750,
+            "format": "png",
+            "alt": "A series of six dits in a single row. Five are the same size and colored dark gray. The fifth item is scaled slightly smaller and colored gold."
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2019/08/css-tricks-logo-blur.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2019/11/percentage-padding-width.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          }
+        ],
+        "wordCount": 757
+      },
+      {
+        "url": "https://css-tricks.com/category/notes/",
+        "imageCount": 9,
+        "images": [
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2017/05/user-facing-state.png",
+            "width": 1000,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/07/liquid-glass-still.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2022/08/puzzle-pieces-scatter.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2018/09/css-shapes.jpg",
+            "width": 1200,
+            "height": 600,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2019/12/carousel-slides.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/02/web-components-demystified.jpg",
+            "width": 1200,
+            "height": 600,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2024/07/css-functions-mixins.png",
+            "width": 913,
+            "height": 433,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2022/09/details-box.jpg",
+            "width": 1200,
+            "height": 600,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2019/02/image-alt-attribute.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          }
+        ],
+        "wordCount": 852
+      },
+      {
+        "url": "https://css-tricks.com/category/links/",
+        "imageCount": 9,
+        "images": [
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/08/stuff-nonsense-icon.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/09/always-twisted-icon.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2024/09/jim-neilsen.svg",
+            "width": null,
+            "height": null,
+            "format": "svg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/08/css-questions-logo.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/08/stuff-nonsense-icon.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/07/atomic-design-icon.svg",
+            "width": null,
+            "height": null,
+            "format": "svg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/07/layout-maestro-icon.svg",
+            "width": null,
+            "height": null,
+            "format": "svg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/06/kelp-icon.webp",
+            "width": null,
+            "height": null,
+            "format": "webp",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/06/faviconV2.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          }
+        ],
+        "wordCount": 1366
+      },
+      {
+        "url": "https://css-tricks.com/picks/",
+        "imageCount": 1,
+        "images": [
+          {
+            "src": "https://secure.gravatar.com/avatar/a8e040142716a4b44d014d80fbcf99c635b1d8faabfe469b6954a8ef2f168595?s=80&d=retro&r=pg",
+            "width": null,
+            "height": null,
+            "format": "com/avatar/a8e040142716a4b44d014d80fbcf99c635b1d8faabfe469b6954a8ef2f168595",
+            "alt": ""
+          }
+        ],
+        "wordCount": 1690
+      },
+      {
+        "url": "https://css-tricks.com/the-most-hated-css-feature-tan/",
+        "imageCount": 11,
+        "images": [
+          {
+            "src": "https://secure.gravatar.com/avatar/165ac177dc80e530919963bbe0c419e5e05604ac178f5a7c64b0bcb67288d2a8?s=80&d=retro&r=pg",
+            "width": null,
+            "height": null,
+            "format": "com/avatar/165ac177dc80e530919963bbe0c419e5e05604ac178f5a7c64b0bcb67288d2a8",
+            "alt": ""
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/most_hated_feature.jpg?resize=1920%2C1080&ssl=1",
+            "width": 1920,
+            "height": 1080,
+            "format": "jpg",
+            "alt": "Most Hated Feature: trigonometric functions"
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/formula_tan_b1klgj.png?resize=1920%2C1080&ssl=1",
+            "width": 1920,
+            "height": 1080,
+            "format": "png",
+            "alt": "Tangent equals sine over cosine."
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/right-angled-triangle_rmo35a.png?resize=1920%2C1080&ssl=1",
+            "width": 1920,
+            "height": 1080,
+            "format": "png",
+            "alt": "Right angled triangle"
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/tan_formula_2_fpi7fx.png?resize=1920%2C1080&ssl=1",
+            "width": 1920,
+            "height": 1080,
+            "format": "png",
+            "alt": "Tangent is equal to opposite over adjacent"
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/octagon_ndidwt.png?resize=1394%2C1347&ssl=1",
+            "width": 1394,
+            "height": 1347,
+            "format": "png",
+            "alt": "An octagon shape made out of eight converging triangles in various colors. Each triangle is labeled 1 through 8."
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/square_wcgvlx.png?resize=1392%2C1362&ssl=1",
+            "width": 1392,
+            "height": 1362,
+            "format": "png",
+            "alt": "Sectioned list as square"
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/explanation_polygon_p8xg81.png?resize=1920%2C1080&ssl=1",
+            "width": 1920,
+            "height": 1080,
+            "format": "png",
+            "alt": "Diagramming a right triangle in the middle of an item. The width, height, and angle are labeled."
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/tan_formula_3_jtstpe.png?resize=1920%2C1080&ssl=1",
+            "width": 1920,
+            "height": 1080,
+            "format": "png",
+            "alt": "Tangent equals height times one half divided by width. Height equals two times tangent times width."
+          },
+          {
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/10/gta-5-character-switching.png?resize=410%2C398&ssl=1",
+            "width": 410,
+            "height": 398,
+            "format": "png",
+            "alt": "Circle divided into four quadrants with different stern-looking male characters in each quadrant."
+          }
+        ],
+        "wordCount": 2449
+      }
+    ]
+  },
+  {
+    "blog": "Smashing Magazine",
+    "url": "https://www.smashingmagazine.com",
+    "totalPosts": 2,
+    "posts": [
+      {
+        "url": "https://www.smashingmagazine.com/the-smashing-newsletter/",
+        "imageCount": 0,
+        "images": [],
+        "wordCount": 669
+      },
+      {
+        "url": "https://www.smashingmagazine.com/2020/03/smart-interface-design-patterns-checklists/",
+        "imageCount": 5,
+        "images": [
+          {
+            "src": "https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/f8829123-e4b0-43b3-861a-66a4b8554086/rachel-andrew-tw-profile.jpg",
+            "width": 100,
+            "height": 100,
+            "format": "jpg",
+            "alt": "Rachel Andrew"
+          },
+          {
+            "src": "https://res.cloudinary.com/indysigner/image/fetch/f_auto,q_80/w_400/https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/08320642-4a3d-450a-b0d9-bbaf3c03845a/checklists.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": "The cover of the PDF deck on “Smart Interface Design Patterns”"
+          },
+          {
+            "src": "https://res.cloudinary.com/indysigner/image/fetch/f_auto,q_80/w_400/https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/860dbb85-f722-4094-8829-ef9f0b01283d/hamburger-checklist.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": "A screenshot of the Hamburger Design Checklist with 13 questions to discuss when designing and building a good navigation"
+          },
+          {
+            "src": "https://res.cloudinary.com/indysigner/image/fetch/f_auto,q_80/w_400/https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/b84eb5dc-4f7d-4768-b621-5492a5628730/03-no-hamburgers-smart-interface-design-patterns-checklists.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": "Three different design patterns without hamburger navigation on three mobile devices"
+          },
+          {
+            "src": "https://www.smashingmagazine.com/images/logo/logo--red.png",
+            "width": 35,
+            "height": 46,
+            "format": "png",
+            "alt": "Smashing Editorial"
+          }
+        ],
+        "wordCount": 1167
+      }
+    ]
+  },
+  {
+    "blog": "A List Apart",
+    "url": "https://alistapart.com",
+    "totalPosts": 5,
+    "posts": [
+      {
+        "url": "https://alistapart.com/",
+        "imageCount": 5,
+        "images": [
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/03/ala-logo-big.png?fit=960%2C98&ssl=1",
+            "width": 960,
+            "height": 98,
+            "format": "png",
+            "alt": "A List Apart"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2019/03/logo_a-book-apart-color.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": "A Book Apart Logo"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/04/promo_aba_2.jpg?w=960&ssl=1",
+            "width": null,
+            "height": null,
+            "format": "jpg",
+            "alt": "A Book Apart. Brief books for people who design, write, and code."
+          }
+        ],
+        "wordCount": 1074
+      },
+      {
+        "url": "https://alistapart.com/articles/",
+        "imageCount": 5,
+        "images": [
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/03/ala-logo-big.png?fit=960%2C98&ssl=1",
+            "width": 960,
+            "height": 98,
+            "format": "png",
+            "alt": "A List Apart"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2019/03/logo_a-book-apart-color.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": "A Book Apart Logo"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/04/promo_aba_2.jpg?w=960&ssl=1",
+            "width": null,
+            "height": null,
+            "format": "jpg",
+            "alt": "A Book Apart. Brief books for people who design, write, and code."
+          }
+        ],
+        "wordCount": 804
+      },
+      {
+        "url": "https://alistapart.com/events/",
+        "imageCount": 3,
+        "images": [
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/03/ala-logo-big.png?fit=960%2C98&ssl=1",
+            "width": 960,
+            "height": 98,
+            "format": "png",
+            "alt": "A List Apart"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/04/promo_aba_2.jpg?w=960&ssl=1",
+            "width": null,
+            "height": null,
+            "format": "jpg",
+            "alt": "A Book Apart. Brief books for people who design, write, and code."
+          }
+        ],
+        "wordCount": 826
+      },
+      {
+        "url": "https://alistapart.com/topics/",
+        "imageCount": 9,
+        "images": [
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/03/ala-logo-big.png?fit=960%2C98&ssl=1",
+            "width": 960,
+            "height": 98,
+            "format": "png",
+            "alt": "A List Apart"
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2013/01/code.jpg?fit=300%2C128&ssl=1",
+            "width": 300,
+            "height": 128,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2013/01/content.jpg?fit=300%2C180&ssl=1",
+            "width": 300,
+            "height": 180,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2013/01/design.jpg?fit=300%2C135&ssl=1",
+            "width": 300,
+            "height": 135,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2013/01/industry_2.jpg?fit=300%2C139&ssl=1",
+            "width": 300,
+            "height": 139,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2013/01/process.jpg?fit=300%2C138&ssl=1",
+            "width": 300,
+            "height": 138,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2013/01/user-experience.jpg?fit=300%2C146&ssl=1",
+            "width": 300,
+            "height": 146,
+            "format": "jpg",
+            "alt": ""
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/04/promo_aba_2.jpg?w=960&ssl=1",
+            "width": null,
+            "height": null,
+            "format": "jpg",
+            "alt": "A Book Apart. Brief books for people who design, write, and code."
+          }
+        ],
+        "wordCount": 655
+      },
+      {
+        "url": "https://alistapart.com/about/contribute/",
+        "imageCount": 5,
+        "images": [
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/03/ala-logo-big.png?fit=960%2C98&ssl=1",
+            "width": 960,
+            "height": 98,
+            "format": "png",
+            "alt": "A List Apart"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2019/03/logo_a-book-apart-color.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": "A Book Apart Logo"
+          },
+          {
+            "src": "https://alistapart.com/wp-content/uploads/2025/04/IDS_700x200_Logo.gif",
+            "width": null,
+            "height": null,
+            "format": "gif",
+            "alt": "Northwestern Information Design and Strategy, School Of Professional Studies"
+          },
+          {
+            "src": "https://i0.wp.com/alistapart.com/wp-content/uploads/2019/04/promo_aba_2.jpg?w=960&ssl=1",
+            "width": null,
+            "height": null,
+            "format": "jpg",
+            "alt": "A Book Apart. Brief books for people who design, write, and code."
+          }
+        ],
+        "wordCount": 1093
+      }
+    ]
+  }
+]

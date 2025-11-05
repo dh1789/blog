@@ -461,3 +461,156 @@ export interface TranslationQualityMetrics {
   titleLength: number; // 제목 길이
   excerptLength: number; // Excerpt 길이
 }
+
+// ============================================================================
+// Image Benchmark Types (이미지 벤치마크 시스템)
+// ============================================================================
+
+/**
+ * 이미지 메타데이터
+ */
+export interface ImageMetadata {
+  src: string;
+  width: number | null;
+  height: number | null;
+  format: string;
+  alt: string;
+}
+
+/**
+ * 포스트 분석 결과
+ */
+export interface PostAnalysis {
+  url: string;
+  imageCount: number;
+  images: ImageMetadata[];
+  wordCount: number;
+}
+
+/**
+ * 블로그 크롤링 결과
+ */
+export interface BlogCrawlResult {
+  blog: string;
+  url: string;
+  totalPosts: number;
+  posts: PostAnalysis[];
+}
+
+/**
+ * 이미지 기본 설정 (Featured Image)
+ */
+export interface FeaturedImageConfig {
+  description: string;
+  width: number;
+  height: number;
+  aspectRatio: string;
+  format: string;
+  fallbackFormat: string;
+  quality: number;
+  maxFileSize: number;
+  maxFileSizeReadable: string;
+  rationale: string;
+}
+
+/**
+ * 이미지 기본 설정 (Content Images)
+ */
+export interface ContentImagesConfig {
+  description: string;
+  count: {
+    min: number;
+    max: number;
+    recommended: number;
+    countRule: string;
+  };
+  placement: {
+    strategy: string;
+    alternativeStrategy: string;
+    rationale: string;
+  };
+  dimensions: {
+    width: number;
+    height: number;
+    aspectRatio: string;
+  };
+  format: string;
+  fallbackFormat: string;
+  quality: number;
+  maxFileSize: number;
+  maxFileSizeReadable: string;
+  rationale: string;
+}
+
+/**
+ * 이미지 기본 설정 전체
+ */
+export interface ImageDefaults {
+  $schema: string;
+  title: string;
+  description: string;
+  version: string;
+  lastUpdated: string;
+  source: string;
+  methodology: string;
+  featuredImage: FeaturedImageConfig;
+  contentImages: ContentImagesConfig;
+  performance: {
+    targetMetrics: {
+      timeOnPage: string;
+      bounceRate: string;
+      pageViews: string;
+    };
+    constraints: {
+      totalImagesPerPost: string;
+      adSenseBalance: string;
+      loadingSpeed: string;
+    };
+  };
+  benchmark: {
+    realCrawling: {
+      averageImagesPerPost: number;
+      commonSizes: string[];
+      commonFormats: Record<string, string>;
+    };
+    referenceData: {
+      averageImagesPerPost: number;
+      recommendedSize: string;
+      recommendedFormat: string;
+    };
+    finalDecision: string;
+  };
+  compatibility: {
+    wordpress: string;
+    avadaTheme: string;
+    browser: string;
+    mobileFirst: boolean;
+  };
+  seo: {
+    openGraphCompliant: boolean;
+    googleRecommended: boolean;
+    imageToWordRatio: string;
+    altTextRequired: boolean;
+    lazyLoadingRecommended: boolean;
+  };
+}
+
+/**
+ * 벤치마크 분석 옵션
+ */
+export interface BenchmarkAnalysisOptions {
+  targetBlogs?: string[]; // 크롤링 대상 블로그 URL 리스트
+  postsPerBlog?: number; // 블로그당 샘플링할 포스트 수
+  outputPath?: string; // 결과 저장 경로
+  timeout?: number; // 크롤링 타임아웃 (ms)
+}
+
+/**
+ * 벤치마크 분석 결과
+ */
+export interface BenchmarkAnalysisResult {
+  success: boolean;
+  crawlResults: BlogCrawlResult[];
+  imageDefaults: ImageDefaults;
+  error?: string;
+}

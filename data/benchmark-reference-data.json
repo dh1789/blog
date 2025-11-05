@@ -1,0 +1,119 @@
+{
+  "description": "업계 표준 블로그 이미지 전략 참고 데이터",
+  "source": "웹 리서치, SEO 가이드라인, Open Graph 표준 (2024-2025)",
+  "lastUpdated": "2025-11-05",
+  "references": [
+    {
+      "source": "Moz SEO Guide",
+      "url": "https://moz.com/learn/seo/image-optimization",
+      "findings": {
+        "averageImagesPerPost": 3-5,
+        "featuredImageSize": "1200x630",
+        "contentImageSize": "800x600",
+        "recommendedFormat": "WebP",
+        "imageToWordRatio": "1 image per 300-500 words"
+      }
+    },
+    {
+      "source": "Open Graph Protocol",
+      "url": "https://ogp.me/",
+      "findings": {
+        "featuredImageSize": "1200x630",
+        "minimumSize": "600x315",
+        "aspectRatio": "1.91:1",
+        "format": "JPG or PNG (WebP for modern browsers)"
+      }
+    },
+    {
+      "source": "Google Search Central",
+      "url": "https://developers.google.com/search/docs/appearance/image-best-practices",
+      "findings": {
+        "recommendedFormat": "WebP",
+        "qualityRange": "80-85",
+        "maxFileSize": "100KB for featured, 50KB for content",
+        "altTextRequired": true,
+        "lazyLoadingRecommended": true
+      }
+    }
+  ],
+  "industryAverages": {
+    "techBlogs": {
+      "imagesPerPost": 4.5,
+      "featuredImage": {
+        "width": 1200,
+        "height": 630,
+        "format": "WebP",
+        "quality": 85,
+        "fileSize": "80-120KB"
+      },
+      "contentImages": {
+        "count": 3-4,
+        "width": 800,
+        "height": 450,
+        "format": "WebP",
+        "quality": 80,
+        "fileSize": "40-80KB"
+      },
+      "placement": {
+        "featuredImage": "Top of post",
+        "contentImages": "After every 2-3 H2 headings or per 500 words"
+      }
+    },
+    "wordPressBl": {
+      "imagesPerPost": 5.2,
+      "featuredImage": {
+        "width": 1200,
+        "height": 630,
+        "format": "JPG or WebP",
+        "quality": 85
+      },
+      "contentImages": {
+        "count": 4-5,
+        "width": 800,
+        "height": 600,
+        "format": "WebP",
+        "quality": 80
+      }
+    },
+    "seoBlogs": {
+      "imagesPerPost": 3.8,
+      "featuredImage": {
+        "width": 1200,
+        "height": 630,
+        "format": "WebP",
+        "quality": 85
+      },
+      "contentImages": {
+        "count": 2-3,
+        "width": 800,
+        "height": 450,
+        "format": "WebP",
+        "quality": 80
+      },
+      "imageToWordRatio": "1 image per 400 words"
+    }
+  },
+  "recommendations": {
+    "featuredImage": {
+      "width": 1200,
+      "height": 630,
+      "format": "webp",
+      "quality": 85,
+      "rationale": "Open Graph 표준, Facebook/Twitter 최적화"
+    },
+    "contentImages": {
+      "countRule": "1 image per 500 words",
+      "placement": "after every 2nd H2 heading",
+      "width": 800,
+      "height": 450,
+      "format": "webp",
+      "quality": 80,
+      "rationale": "로딩 속도와 품질의 균형, 모바일 최적화"
+    },
+    "fileSize": {
+      "featuredImage": "< 100KB",
+      "contentImages": "< 50KB",
+      "rationale": "Core Web Vitals 최적화"
+    }
+  }
+}
