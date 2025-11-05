@@ -17,6 +17,7 @@ import {
   parseImagePaths,
   replaceImageUrls,
   resolveImagePath,
+  convertMarkdownToHtml,
 } from '@blog/core';
 import { loadConfig } from '../utils/config';
 
@@ -336,7 +337,13 @@ export async function publishCommand(file: string, options: PublishOptions) {
         // 6. 영어 포스트 발행
         spinner.start('영어 포스트 발행 중...');
 
-        const englishContentWithAds = injectAds(translationResult.translatedContent, config.ads);
+        // 번역된 마크다운을 HTML로 변환
+        spinner.text = '번역된 마크다운을 HTML로 변환 중...';
+        const translatedHtmlContent = await convertMarkdownToHtml(translationResult.translatedContent);
+
+        // 광고 삽입
+        spinner.text = '영어 포스트에 광고 코드 삽입 중...';
+        const englishContentWithAds = injectAds(translatedHtmlContent, config.ads);
         const englishPostId = await wpClient.createPost(
           { ...translationResult.translatedMetadata, status: finalStatus },
           englishContentWithAds,

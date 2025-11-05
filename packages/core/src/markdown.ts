@@ -50,7 +50,7 @@ export async function parseMarkdownFile(fileContent: string): Promise<ParsedPost
   };
 }
 
-async function convertMarkdownToHtml(markdown: string): Promise<string> {
+export async function convertMarkdownToHtml(markdown: string): Promise<string> {
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)

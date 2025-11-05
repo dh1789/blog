@@ -2,7 +2,7 @@
 title: "WordPress + Avada 테마로 프리미엄 블로그 완성하기: WordOps 자동 설치부터 성능 최적화까지"
 slug: "wordpress-avada-theme-setup"
 excerpt: "WordOps로 WordPress를 원클릭 설치하고, Avada 프리미엄 테마를 적용하여 블로그를 완성하는 최종 가이드. Redis 캐싱으로 10배 빠른 속도, PageSpeed 90점 달성 방법을 실전 경험을 바탕으로 공유합니다. 시리즈 완결편!"
-status: "draft"
+status: "publish"
 categories:
   - "WordPress"
   - "테마"
