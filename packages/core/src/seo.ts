@@ -26,14 +26,15 @@ export function generateSeoData(options: SeoOptions): SeoData {
     excerpt,
     content: _content,
     keywords,
+    slug: customSlug,
     url,
     imageUrl,
     siteName,
     language = 'ko',
   } = options;
 
-  // Slug 생성 (한글 → 영문 변환)
-  const slug = generateSlug(title);
+  // Slug 생성 (customSlug가 있으면 사용, 없으면 제목에서 생성)
+  const slug = customSlug || generateSlug(title);
 
   // SEO 메타 태그 생성
   const meta = generateMetaTags({

@@ -196,6 +196,7 @@ export interface SeoOptions {
   excerpt: string;
   content: string;
   keywords: string[];
+  slug?: string;
   url?: string;
   imageUrl?: string;
   siteName?: string;

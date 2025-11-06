@@ -292,7 +292,7 @@ export class WordPressClient {
       );
 
       if (!response.ok) {
-        const error = await response.json();
+        const error: any = await response.json();
 
         // 플러그인이 설치되지 않은 경우 (404)
         if (response.status === 404) {
@@ -324,7 +324,7 @@ export class WordPressClient {
         throw new Error(`Failed to link translations: ${error.message || 'Unknown error'}`);
       }
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       // 성공 메시지
       console.log(`✅ 언어 연결 완료: 한글(${koPostId}) ↔ 영문(${enPostId})`);

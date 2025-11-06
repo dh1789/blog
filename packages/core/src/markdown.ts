@@ -39,6 +39,7 @@ export async function parseMarkdownFile(fileContent: string): Promise<ParsedPost
     excerpt: metadata.excerpt || '',
     content: htmlContent,
     keywords: metadata.tags || [],
+    slug: metadata.slug,
     language: metadata.language,
   });
 

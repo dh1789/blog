@@ -268,7 +268,7 @@ function validateTitleLength(translatedMetadata: PostMetadata): ValidationIssue[
  */
 function calculateMetrics(
   originalContent: string,
-  originalMetadata: PostMetadata,
+  _originalMetadata: PostMetadata,
   translatedContent: string,
   translatedMetadata: PostMetadata
 ): TranslationQualityMetrics {

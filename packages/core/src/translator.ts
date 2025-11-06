@@ -92,8 +92,9 @@ async function translateMetadata(
   // 태그 최적화
   const translatedTags = optimizeTags(metadata.tags || []);
 
-  // Slug 생성
-  const translatedSlug = generateEnglishSlug(translatedTitle);
+  // Slug 생성 (원본 slug 기반, 없으면 영문 제목에서 생성)
+  const baseSlug = metadata.slug || generateEnglishSlug(translatedTitle);
+  const translatedSlug = baseSlug.endsWith('-en') ? baseSlug : `${baseSlug}-en`;
 
   return {
     ...metadata,
@@ -296,10 +297,9 @@ function generateEnglishSlug(title: string): string {
 async function translateContent(
   content: string,
   originalMetadata: PostMetadata,
-  translatedMetadata: PostMetadata,
-  options: { targetLang?: string; preserveCodeBlocks: boolean }
+  _translatedMetadata: PostMetadata,
+  _options: { targetLang?: string; preserveCodeBlocks: boolean }
 ): Promise<string> {
-  const targetLang = options.targetLang || 'en';
   const sourceLang = originalMetadata.language || 'ko';
 
   // SEO 키워드 추출 (tags 활용)
