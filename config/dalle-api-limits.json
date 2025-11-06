@@ -1,0 +1,283 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DALL-E 3 API 제약사항 및 최적 설정",
+  "description": "Epic 13.0: AI 기반 포스트 이미지 자동 생성 시스템 - Task 2.7 API 제약사항 저장",
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-05",
+  "source": "OpenAI DALL-E 3 API Documentation + Epic 13.0 Spike 검증 결과",
+  "apiProvider": "OpenAI",
+  "apiModel": "dall-e-3",
+  "rateLimits": {
+    "description": "OpenAI API Rate Limits (Tier 1 기준)",
+    "requestsPerMinute": 5,
+    "requestsPerDay": 10000,
+    "dailyBudget": 100,
+    "dailyBudgetCurrency": "USD",
+    "note": "실제 한도는 계정 Tier에 따라 다름. Tier 1 기준 작성.",
+    "recommendedConcurrency": 3,
+    "recommendedConcurrencyReason": "안전 마진 확보, Rate Limit 초과 방지"
+  },
+  "costLimits": {
+    "description": "DALL-E 3 이미지 생성 비용",
+    "pricing": {
+      "1024x1024_standard": {
+        "cost": 0.04,
+        "currency": "USD",
+        "description": "정사각형, 일반 품질"
+      },
+      "1024x1024_hd": {
+        "cost": 0.08,
+        "currency": "USD",
+        "description": "정사각형, 고품질"
+      },
+      "1792x1024_hd": {
+        "cost": 0.08,
+        "currency": "USD",
+        "description": "와이드, 고품질 (Featured Image 권장)"
+      },
+      "1024x1792_hd": {
+        "cost": 0.08,
+        "currency": "USD",
+        "description": "세로, 고품질 (모바일 최적화)"
+      }
+    },
+    "monthlyEstimate": {
+      "postsPerMonth": 20,
+      "imagesPerPost": 5,
+      "featuredImageCost": 0.08,
+      "contentImageCost": 0.04,
+      "totalFeaturedCost": 1.6,
+      "totalContentCost": 3.2,
+      "monthlyTotal": 4.8,
+      "annualTotal": 57.6,
+      "currency": "USD"
+    }
+  },
+  "supportedSizes": {
+    "description": "DALL-E 3가 지원하는 이미지 크기",
+    "sizes": [
+      {
+        "size": "1024x1024",
+        "aspectRatio": "1:1",
+        "quality": ["standard", "hd"],
+        "useCase": "정사각형 이미지, Content Images (리사이즈 필요)",
+        "recommended": true
+      },
+      {
+        "size": "1792x1024",
+        "aspectRatio": "16:9",
+        "quality": ["hd"],
+        "useCase": "와이드 이미지, Featured Images (리사이즈 필요)",
+        "recommended": true
+      },
+      {
+        "size": "1024x1792",
+        "aspectRatio": "9:16",
+        "quality": ["hd"],
+        "useCase": "세로 이미지, 모바일 최적화",
+        "recommended": false
+      }
+    ],
+    "targetSizes": {
+      "featured": {
+        "target": "1200x630",
+        "source": "1792x1024",
+        "method": "crop/resize with Sharp",
+        "note": "Open Graph 표준"
+      },
+      "content": {
+        "target": "800x450",
+        "source": "1024x1024",
+        "method": "crop/resize with Sharp",
+        "note": "16:9 비율, 모바일 친화적"
+      }
+    }
+  },
+  "supportedFormats": {
+    "description": "DALL-E 3 이미지 포맷",
+    "generatedFormat": "PNG",
+    "targetFormat": "WebP",
+    "conversionRequired": true,
+    "conversionTool": "Sharp",
+    "qualitySettings": {
+      "featuredImage": 85,
+      "contentImage": 80,
+      "note": "WebP quality 85/80은 시각적 손실 거의 없으면서 파일 크기 30% 감소"
+    }
+  },
+  "timeoutSettings": {
+    "description": "이미지 생성 타임아웃 설정",
+    "default": 60000,
+    "defaultReadable": "60초",
+    "maximum": 120000,
+    "maximumReadable": "120초",
+    "measured": {
+      "average": 18500,
+      "averageReadable": "18.5초",
+      "min": 14000,
+      "minReadable": "14초",
+      "max": 25000,
+      "maxReadable": "25초"
+    },
+    "unit": "milliseconds",
+    "note": "실제 측정 평균 18.5초, 안전 마진 고려하여 60초 설정"
+  },
+  "retryPolicy": {
+    "description": "이미지 생성 실패 시 재시도 정책",
+    "maxRetries": 3,
+    "retryOn": ["rate_limit", "timeout", "network_error"],
+    "backoffStrategy": "exponential",
+    "initialDelay": 1000,
+    "initialDelayReadable": "1초",
+    "maxDelay": 8000,
+    "maxDelayReadable": "8초",
+    "multiplier": 2,
+    "example": "1초 → 2초 → 4초 → 8초",
+    "note": "Rate Limit 429 에러 시 Exponential Backoff 적용"
+  },
+  "contentPolicy": {
+    "description": "OpenAI Content Policy 준수 사항",
+    "prohibited": [
+      "성인 콘텐츠",
+      "폭력적 이미지",
+      "혐오 표현",
+      "저작권 위반",
+      "실존 인물 이미지 (동의 없이)",
+      "오해의 소지가 있는 이미지",
+      "불법 활동 관련 이미지"
+    ],
+    "restrictions": {
+      "text": "이미지 내 텍스트 품질 낮음, 프롬프트에서 'No text' 명시 권장",
+      "celebrities": "실존 유명인 이미지 생성 제한",
+      "brands": "상표권 침해 가능성 있는 브랜드 로고 제한"
+    },
+    "referenceURL": "https://openai.com/policies/usage-policies"
+  },
+  "qualityControl": {
+    "description": "이미지 품질 제어 권장사항",
+    "promptBestPractices": {
+      "clarity": "명확하고 구체적인 프롬프트 작성",
+      "noText": "프롬프트에 'No text or words in the image' 명시",
+      "keywords": "키워드 3개 이내로 제한",
+      "style": "스타일 명시 (technical diagram, illustration, screenshot 등)",
+      "colorScheme": "색상 테마 명시 (modern, vibrant colors 등)"
+    },
+    "styleOptions": {
+      "vivid": {
+        "description": "생동감 있고 극적인 이미지",
+        "characteristics": "높은 채도, 강렬한 색상",
+        "useCase": "블로그 배너, 시선 끄는 이미지"
+      },
+      "natural": {
+        "description": "자연스럽고 사실적인 이미지",
+        "characteristics": "낮은 채도, 차분한 색상",
+        "useCase": "기술 문서, 튜토리얼"
+      }
+    },
+    "reviewRequired": true,
+    "reviewNote": "초기 운영 시 생성된 이미지 수동 검토 권장"
+  },
+  "errorHandling": {
+    "description": "에러 처리 전략",
+    "rateLimitExceeded": {
+      "httpStatus": 429,
+      "action": "exponential backoff retry",
+      "maxRetries": 3,
+      "fallback": "경고 메시지 출력, 포스트 발행 계속 진행 (이미지 없이)"
+    },
+    "generationFailed": {
+      "httpStatus": [400, 500, 502, 503],
+      "action": "로그 저장, 경고 메시지 출력",
+      "logPath": "logs/image-generation-failures.log",
+      "fallback": "포스트 발행 계속 진행 (이미지 없이)"
+    },
+    "networkError": {
+      "action": "재시도 (exponential backoff)",
+      "maxRetries": 3,
+      "fallback": "경고 메시지 출력, 포스트 발행 계속 진행"
+    },
+    "contentPolicyViolation": {
+      "httpStatus": 400,
+      "action": "프롬프트 수정 필요, 수동 개입 요청",
+      "fallback": "포스트 발행 중단, 프롬프트 수정 후 재시도"
+    }
+  },
+  "performanceOptimization": {
+    "description": "성능 최적화 권장사항",
+    "caching": {
+      "enabled": true,
+      "imageUrlCacheDuration": 3600,
+      "imageUrlCacheDurationReadable": "1시간",
+      "duplicatePromptPrevention": true,
+      "note": "동일 프롬프트 재사용 방지, 생성 비용 절감"
+    },
+    "concurrency": {
+      "sequential": "권장 (안정성 우선)",
+      "parallel": "최대 3개 동시 생성 (Rate Limit 고려)",
+      "note": "초기 운영 시 순차 생성 권장, 안정화 후 병렬 처리 고려"
+    },
+    "compression": {
+      "enabled": true,
+      "tool": "Sharp",
+      "targetFormat": "WebP",
+      "quality": {
+        "featured": 85,
+        "content": 80
+      },
+      "expectedCompression": "30% 파일 크기 감소 (PNG 대비)"
+    }
+  },
+  "monitoring": {
+    "description": "모니터링 및 알림 설정",
+    "metrics": {
+      "generationTime": "평균 생성 시간 추적",
+      "successRate": "생성 성공률 추적 (목표: ≥90%)",
+      "cost": "일일/월간 비용 추적",
+      "rateLimitHits": "Rate Limit 초과 횟수 추적"
+    },
+    "alerts": {
+      "dailyBudgetExceeded": "일일 예산 $5 초과 시 알림",
+      "successRateLow": "성공률 80% 미만 시 알림",
+      "rateLimitFrequent": "Rate Limit 1시간에 3회 이상 초과 시 알림"
+    },
+    "logging": {
+      "successLog": "logs/image-generation-success.log",
+      "failureLog": "logs/image-generation-failures.log",
+      "format": "JSON",
+      "fields": ["timestamp", "postId", "prompt", "size", "quality", "generationTime", "cost", "status", "error"]
+    }
+  },
+  "recommendations": {
+    "description": "Epic 13.0 구현 시 권장사항",
+    "phase1": {
+      "description": "초기 운영 (1-2주)",
+      "strategy": "보수적 접근",
+      "settings": {
+        "concurrency": "순차 생성",
+        "review": "모든 이미지 수동 검토",
+        "budget": "$5/일 제한",
+        "retries": "최대 2회"
+      }
+    },
+    "phase2": {
+      "description": "안정화 (1개월)",
+      "strategy": "최적화",
+      "settings": {
+        "concurrency": "최대 3개 병렬 생성",
+        "review": "랜덤 샘플링 검토 (20%)",
+        "budget": "$10/일 제한",
+        "retries": "최대 3회"
+      }
+    },
+    "phase3": {
+      "description": "완전 자동화 (3개월+)",
+      "strategy": "효율 극대화",
+      "settings": {
+        "concurrency": "Rate Limit 한도 내 최대",
+        "review": "예외 케이스만 검토",
+        "budget": "$20/일 제한",
+        "caching": "적극 활용"
+      }
+    }
+  }
+}

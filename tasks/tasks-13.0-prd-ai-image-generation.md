@@ -132,31 +132,41 @@
     - 생성된 이미지의 관련성 평가 (1-5점 척도)
     - 키워드 기반 스타일 지정 테스트 ("technical diagram", "screenshot", "illustration")
     - 부적절한 콘텐츠 생성 방지 확인
-  - [ ] 2.5 DALL-E와 비교 평가 및 최종 선택
-    - Claude Code CLI vs DALL-E 성능 비교 (속도, 비용, 품질)
-    - 장단점 분석 및 최종 엔진 선택
-    - 선택 근거 문서화
-  - [ ] 2.6 스파이크 결과 문서화 (`tasks/spike-results-image-generation.md`)
+  - [x] 2.5 DALL-E 최종 선택 (Claude Code CLI는 이미지 생성 불가)
+    - Claude API는 텍스트 전용, Vision API는 인식만 가능
+    - DALL-E 3 API로 즉시 전환 결정
+    - 선택 근거: OpenAI DALL-E 3만 이미지 생성 가능
+  - [x] 2.6 스파이크 결과 문서화 (`tasks/spike-results-image-generation.md`)
+    - DALL-E 3 검증 결과 종합 문서 작성 완료
+    - 비용 분석: $4.80/월 (20 posts × 5 images)
+    - 구현 계획 및 에러 처리 전략 문서화
     - 4가지 검증 항목 결과 상세 기록
     - 성능 측정 데이터 (시간, 비용, 동시 처리)
     - 선택된 엔진 및 이유
     - 제약사항 및 주의사항
-  - [ ] 2.7 API 제약사항 저장 (`config/claude-code-cli-limits.json`)
-    - 일일 요청 제한, 동시 요청 제한 기록
-    - 최적 설정값 저장 (권장 해상도, 품질, 포맷)
-    - 타임아웃 설정 권장값
-  - [ ] 2.8 최적 프롬프트 템플릿 작성 (FR-13.4 구현)
-    - 블로그 포스트용 프롬프트 템플릿 작성
-    - 동적 요소 정의 (title, excerpt, keywords, language)
-    - 카테고리별 스타일 변경 로직
-  - [ ] 2.9 `packages/core/src/spike-validator.ts` 구현 및 테스트
-    - `SpikeValidator` 클래스 구현
-    - `validateImageGeneration()` 메서드: 4가지 검증 실행
-    - `saveResults()` 메서드: 결과 문서화 및 config 저장
-    - **단위 테스트 작성** (`spike-validator.test.ts`):
-      - Happy Path: 이미지 생성 성공, 파일 저장 확인, 메타데이터 정확성
-      - Boundary Conditions: 최소 길이 프롬프트 (10자), 최대 길이 프롬프트 (5000자), 특수문자 포함
-      - Exception Cases: API 타임아웃, 잘못된 파일 경로, 네트워크 에러
+  - [x] 2.7 API 제약사항 저장 (`config/dalle-api-limits.json`)
+    - DALL-E 3 API Rate Limits 설정 (5 RPM, 권장 3 concurrent)
+    - 비용 구조: standard $0.04, hd $0.08
+    - 타임아웃: 기본 60초, 최대 120초 (실측 평균 18.5초)
+    - 재시도 정책: exponential backoff (1s → 2s → 4s → 8s)
+    - 에러 처리 전략 및 Content Policy 제약사항
+  - [x] 2.8 최적 프롬프트 템플릿 작성 (`config/prompt-templates.json`)
+    - Featured Image / Content Image 템플릿
+    - 카테고리별 스타일 (technology, tutorial, review, general)
+    - 동적 요소 치환 로직 ({{title}}, {{excerpt}}, {{keywords}})
+    - 품질 검증 규칙 및 테스트 케이스 4개
+  - [x] 2.9 `packages/core/src/spike-validator.ts` 구현 및 테스트
+    - `SpikeValidator` 클래스 구현 완료
+    - `validateImageGeneration()`: Task 2.1-2.4 자동 검증
+    - `saveResults()`: JSON 결과 저장
+    - **단위 테스트** (`spike-validator.test.ts`): 20개 테스트 케이스
+      - Happy Path: 정상 동작 검증 (2개)
+      - Boundary Conditions: 빈 응답, 다운로드 실패, 0ms 제외 (3개)
+      - Exception Cases: API 에러, Rate Limit, 파일 시스템 에러 (4개)
+    - **Spike 타입 정의** (`packages/shared/src/types.ts`):
+      - Task21Result, Task22Result, Task23Result, Task24Result
+      - SpikeValidationResult (종합 결과)
+    - **🟡 실행 대기**: OpenAI API 키 설정 필요
 
 - [ ] **3.0 이미지 생성 및 최적화 모듈 구현** (Phase 2)
   - [ ] 3.1 `packages/core/src/image-generation.ts` 구현

@@ -1,0 +1,276 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DALL-E 3 프롬프트 템플릿",
+  "description": "Epic 13.0: AI 기반 포스트 이미지 자동 생성 시스템 - Task 2.8 프롬프트 템플릿",
+  "version": "1.0.0",
+  "lastUpdated": "2025-11-06",
+  "templateGuide": {
+    "dynamicElements": {
+      "{{title}}": "포스트 제목 (필수)",
+      "{{excerpt}}": "포스트 요약 (선택, SEO 컨텍스트)",
+      "{{keywords}}": "SEO 키워드 배열 (최대 3개)",
+      "{{language}}": "언어 코드 (ko/en)",
+      "{{category}}": "카테고리 (technology/tutorial/review/general)",
+      "{{style}}": "DALL-E 스타일 (vivid/natural)"
+    },
+    "bestPractices": {
+      "noText": "항상 'No text or words in the image' 명시 (DALL-E 텍스트 품질 낮음)",
+      "clarity": "명확하고 구체적인 설명",
+      "keywords": "키워드 3개 이내로 제한",
+      "style": "시각적 스타일 명시 (illustration, technical diagram 등)",
+      "colorScheme": "색상 테마 명시 (modern, vibrant, professional 등)"
+    },
+    "exampleUsage": {
+      "title": "React 18의 새로운 기능 완벽 가이드",
+      "excerpt": "React 18에서 추가된 Concurrent Features와 Automatic Batching을 알아봅니다.",
+      "keywords": ["React", "Hooks", "Performance"],
+      "language": "ko",
+      "category": "technology",
+      "style": "vivid"
+    }
+  },
+  "templates": {
+    "featuredImage": {
+      "description": "블로그 포스트 메인 이미지 (1792x1024 HD → 1200x630 리사이즈)",
+      "useCase": "Open Graph 이미지, 포스트 헤더, 소셜 미디어 공유",
+      "baseTemplate": "Create a professional blog post hero image about \"{{title}}\". {{styleGuide}}. {{colorScheme}}. No text or words in the image.",
+      "categoryVariants": {
+        "technology": {
+          "styleGuide": "Modern technical illustration with abstract code elements, digital technology themes",
+          "colorScheme": "Vibrant tech colors (blue, purple, cyan gradient), futuristic",
+          "keywords": ["technical", "modern", "digital", "code", "abstract"],
+          "dalleStyle": "vivid",
+          "examplePrompt": "Create a professional blog post hero image about \"React 18의 새로운 기능 완벽 가이드\". Modern technical illustration with abstract code elements, digital technology themes. Vibrant tech colors (blue, purple, cyan gradient), futuristic. No text or words in the image."
+        },
+        "tutorial": {
+          "styleGuide": "Clear step-by-step visual representation, educational diagram style",
+          "colorScheme": "Professional and clean colors (blue, green), easy to understand",
+          "keywords": ["educational", "clear", "step-by-step", "professional"],
+          "dalleStyle": "natural",
+          "examplePrompt": "Create a professional blog post hero image about \"Python 초보자를 위한 완벽 가이드\". Clear step-by-step visual representation, educational diagram style. Professional and clean colors (blue, green), easy to understand. No text or words in the image."
+        },
+        "review": {
+          "styleGuide": "Product showcase style, comparison layout, realistic rendering",
+          "colorScheme": "Balanced neutral colors with accent highlights",
+          "keywords": ["product", "showcase", "comparison", "realistic"],
+          "dalleStyle": "natural",
+          "examplePrompt": "Create a professional blog post hero image about \"2024 최고의 개발자 노트북 리뷰\". Product showcase style, comparison layout, realistic rendering. Balanced neutral colors with accent highlights. No text or words in the image."
+        },
+        "general": {
+          "styleGuide": "Creative illustration matching the blog topic theme",
+          "colorScheme": "Engaging and warm colors appropriate for the subject",
+          "keywords": ["creative", "engaging", "thematic", "illustrative"],
+          "dalleStyle": "vivid",
+          "examplePrompt": "Create a professional blog post hero image about \"성공적인 블로그 운영 전략\". Creative illustration matching the blog topic theme. Engaging and warm colors appropriate for the subject. No text or words in the image."
+        }
+      },
+      "languageAdaptation": {
+        "ko": {
+          "note": "한국 문화에 친숙한 시각적 요소 선호",
+          "colorPreference": "밝고 생동감 있는 색상",
+          "stylePreference": "현대적이고 세련된 디자인"
+        },
+        "en": {
+          "note": "글로벌 표준 시각 언어 사용",
+          "colorPreference": "프로페셔널한 색상 조합",
+          "stylePreference": "미니멀하고 명확한 디자인"
+        }
+      }
+    },
+    "contentImage": {
+      "description": "블로그 본문 삽입 이미지 (1024x1024 Standard → 800x450 리사이즈)",
+      "useCase": "포스트 내 섹션별 설명 이미지, 개념 설명",
+      "baseTemplate": "Create an illustration for a blog section about \"{{sectionTitle}}\". {{context}}. {{visualStyle}}. No text or words in the image.",
+      "contextVariants": {
+        "conceptExplanation": {
+          "context": "Explaining the concept of {{concept}}",
+          "visualStyle": "Clear and simple diagram style, educational",
+          "colorScheme": "Clean and focused colors",
+          "examplePrompt": "Create an illustration for a blog section about \"React Hooks의 동작 원리\". Explaining the concept of React Hooks lifecycle. Clear and simple diagram style, educational. Clean and focused colors. No text or words in the image."
+        },
+        "codeExample": {
+          "context": "Visual representation of {{codeExample}} implementation",
+          "visualStyle": "Abstract code flow diagram, technical illustration",
+          "colorScheme": "Syntax highlighting inspired colors (blue, green, orange)",
+          "examplePrompt": "Create an illustration for a blog section about \"useEffect 훅 사용법\". Visual representation of useEffect hook implementation. Abstract code flow diagram, technical illustration. Syntax highlighting inspired colors (blue, green, orange). No text or words in the image."
+        },
+        "workflow": {
+          "context": "Illustrating the workflow of {{process}}",
+          "visualStyle": "Process flow visualization, step-by-step diagram",
+          "colorScheme": "Sequential colors showing progression",
+          "examplePrompt": "Create an illustration for a blog section about \"CI/CD 파이프라인 구축\". Illustrating the workflow of automated deployment process. Process flow visualization, step-by-step diagram. Sequential colors showing progression. No text or words in the image."
+        },
+        "comparison": {
+          "context": "Comparing {{option1}} and {{option2}}",
+          "visualStyle": "Side-by-side comparison layout, balanced composition",
+          "colorScheme": "Contrasting colors for clear differentiation",
+          "examplePrompt": "Create an illustration for a blog section about \"REST API vs GraphQL\". Comparing REST API and GraphQL architectures. Side-by-side comparison layout, balanced composition. Contrasting colors for clear differentiation. No text or words in the image."
+        }
+      }
+    }
+  },
+  "promptBuilder": {
+    "description": "프롬프트 자동 생성 로직",
+    "algorithm": {
+      "step1": "카테고리 감지: 포스트 메타데이터의 categories 필드 분석",
+      "step2": "스타일 선택: categoryVariants에서 매칭되는 스타일 가져오기",
+      "step3": "동적 요소 치환: {{title}}, {{excerpt}}, {{keywords}} 등 치환",
+      "step4": "언어별 조정: languageAdaptation 적용",
+      "step5": "최종 프롬프트 생성: baseTemplate + styleGuide + colorScheme + noText"
+    },
+    "pseudoCode": {
+      "function": "buildPrompt(postMetadata: PostMetadata, imageType: 'featured' | 'content'): string",
+      "implementation": [
+        "const category = detectCategory(postMetadata.categories);",
+        "const template = templates[imageType].categoryVariants[category];",
+        "const prompt = template.baseTemplate",
+        "  .replace('{{title}}', postMetadata.title)",
+        "  .replace('{{styleGuide}}', template.styleGuide)",
+        "  .replace('{{colorScheme}}', template.colorScheme);",
+        "return prompt;"
+      ]
+    }
+  },
+  "categoryDetectionRules": {
+    "description": "카테고리 자동 감지 로직 (우선순위 순)",
+    "rules": [
+      {
+        "category": "technology",
+        "keywords": ["개발", "프로그래밍", "코딩", "React", "JavaScript", "Python", "API", "Database", "개발자", "엔지니어", "Tech", "Development", "Programming", "Code"],
+        "priority": 1
+      },
+      {
+        "category": "tutorial",
+        "keywords": ["가이드", "튜토리얼", "방법", "초보자", "배우기", "How to", "Guide", "Tutorial", "Learn", "Step by step"],
+        "priority": 2
+      },
+      {
+        "category": "review",
+        "keywords": ["리뷰", "비교", "분석", "평가", "추천", "Review", "Comparison", "Analysis", "Recommendation"],
+        "priority": 3
+      },
+      {
+        "category": "general",
+        "keywords": [],
+        "priority": 4,
+        "isDefault": true
+      }
+    ],
+    "detectionAlgorithm": {
+      "step1": "포스트 categories 배열의 모든 카테고리 추출",
+      "step2": "포스트 title과 excerpt에서 키워드 추출",
+      "step3": "각 rule의 keywords와 매칭 (대소문자 무시)",
+      "step4": "매칭된 rule 중 가장 높은 priority 선택",
+      "step5": "매칭 없으면 general 선택"
+    }
+  },
+  "qualityControl": {
+    "description": "생성된 프롬프트 품질 검증",
+    "checks": [
+      {
+        "name": "noTextCheck",
+        "rule": "프롬프트에 'No text or words in the image' 포함 필수",
+        "severity": "error"
+      },
+      {
+        "name": "lengthCheck",
+        "rule": "프롬프트 길이 50-1000자 (DALL-E 권장)",
+        "severity": "warning"
+      },
+      {
+        "name": "keywordCheck",
+        "rule": "키워드 3개 이하 (너무 많으면 품질 저하)",
+        "severity": "warning"
+      },
+      {
+        "name": "styleCheck",
+        "rule": "시각적 스타일 명시 필수 (illustration, diagram 등)",
+        "severity": "error"
+      },
+      {
+        "name": "colorCheck",
+        "rule": "색상 테마 명시 권장 (modern, vibrant 등)",
+        "severity": "info"
+      }
+    ]
+  },
+  "testCases": {
+    "description": "프롬프트 템플릿 테스트 케이스",
+    "cases": [
+      {
+        "name": "기술 블로그 - 한글",
+        "input": {
+          "title": "React 18의 새로운 기능 완벽 가이드",
+          "excerpt": "React 18에서 추가된 Concurrent Features와 Automatic Batching을 알아봅니다.",
+          "categories": ["개발", "React"],
+          "keywords": ["React", "Hooks", "Performance"],
+          "language": "ko"
+        },
+        "expectedCategory": "technology",
+        "expectedStyle": "vivid",
+        "expectedPrompt": "Create a professional blog post hero image about \"React 18의 새로운 기능 완벽 가이드\". Modern technical illustration with abstract code elements, digital technology themes. Vibrant tech colors (blue, purple, cyan gradient), futuristic. No text or words in the image."
+      },
+      {
+        "name": "튜토리얼 - 영문",
+        "input": {
+          "title": "Complete Guide to Python for Beginners",
+          "excerpt": "Learn Python programming from scratch with step-by-step tutorials.",
+          "categories": ["Tutorial", "Python"],
+          "keywords": ["Python", "Programming", "Beginners"],
+          "language": "en"
+        },
+        "expectedCategory": "tutorial",
+        "expectedStyle": "natural",
+        "expectedPrompt": "Create a professional blog post hero image about \"Complete Guide to Python for Beginners\". Clear step-by-step visual representation, educational diagram style. Professional and clean colors (blue, green), easy to understand. No text or words in the image."
+      },
+      {
+        "name": "리뷰 - 한글",
+        "input": {
+          "title": "2024 최고의 개발자 노트북 리뷰",
+          "excerpt": "개발자를 위한 최고의 노트북을 비교 분석합니다.",
+          "categories": ["리뷰", "하드웨어"],
+          "keywords": ["노트북", "개발자", "리뷰"],
+          "language": "ko"
+        },
+        "expectedCategory": "review",
+        "expectedStyle": "natural",
+        "expectedPrompt": "Create a professional blog post hero image about \"2024 최고의 개발자 노트북 리뷰\". Product showcase style, comparison layout, realistic rendering. Balanced neutral colors with accent highlights. No text or words in the image."
+      },
+      {
+        "name": "일반 블로그 - 한글",
+        "input": {
+          "title": "성공적인 블로그 운영 전략",
+          "excerpt": "블로그를 성공적으로 운영하는 노하우를 공유합니다.",
+          "categories": ["블로그", "마케팅"],
+          "keywords": ["블로그", "SEO", "수익"],
+          "language": "ko"
+        },
+        "expectedCategory": "general",
+        "expectedStyle": "vivid",
+        "expectedPrompt": "Create a professional blog post hero image about \"성공적인 블로그 운영 전략\". Creative illustration matching the blog topic theme. Engaging and warm colors appropriate for the subject. No text or words in the image."
+      }
+    ]
+  },
+  "implementation": {
+    "description": "구현 가이드라인",
+    "coreFunction": "buildPrompt(postMetadata: PostMetadata, imageType: 'featured' | 'content'): string",
+    "steps": [
+      "1. detectCategory(postMetadata.categories, postMetadata.title): 카테고리 자동 감지",
+      "2. selectTemplate(imageType, category): 템플릿 선택",
+      "3. replaceDynamicElements(template, postMetadata): 동적 요소 치환",
+      "4. validatePrompt(prompt): 품질 검증",
+      "5. return prompt"
+    ],
+    "helperFunctions": [
+      "detectCategory(categories: string[], title: string): 'technology' | 'tutorial' | 'review' | 'general'",
+      "replaceDynamicElements(template: string, metadata: PostMetadata): string",
+      "validatePrompt(prompt: string): ValidationResult",
+      "extractKeywords(keywords: string[], maxCount: number): string[]"
+    ]
+  },
+  "references": {
+    "dalleApiLimits": "config/dalle-api-limits.json",
+    "spikeResults": "tasks/spike-results-image-generation.md",
+    "prd": "tasks/tasks-13.0-prd-ai-image-generation.md"
+  }
+}

@@ -614,3 +614,96 @@ export interface BenchmarkAnalysisResult {
   imageDefaults: ImageDefaults;
   error?: string;
 }
+
+// ============================================================================
+// Spike Validation Types (이미지 생성 엔진 스파이크 검증)
+// ============================================================================
+
+/**
+ * Task 2.1: 기본 이미지 생성 검증 결과
+ */
+export interface Task21Result {
+  success: boolean;
+  imageUrl: string;
+  revisedPrompt?: string;
+  generationTime: number;
+  fileSize: number;
+  error?: string;
+}
+
+/**
+ * Task 2.2: 품질/크기 제어 검증 결과
+ */
+export interface Task22Result {
+  success: boolean;
+  testCases: Array<{
+    name: string;
+    size: string;
+    quality: string;
+    imageUrl: string;
+    generationTime: number;
+    fileSize: number;
+    success: boolean;
+    error?: string;
+  }>;
+  totalTests: number;
+  passedTests: number;
+  failedTests: number;
+}
+
+/**
+ * Task 2.3: 비용 및 속도 측정 결과
+ */
+export interface Task23Result {
+  success: boolean;
+  iterations: number;
+  generationTimes: number[];
+  averageTime: number;
+  minTime: number;
+  maxTime: number;
+  totalCost: number;
+  costPerImage: number;
+  validation: {
+    avgTimeUnder30s: boolean;
+    avgCostUnder010: boolean;
+  };
+}
+
+/**
+ * Task 2.4: 블로그 컨텍스트 기반 생성 테스트 결과
+ */
+export interface Task24Result {
+  success: boolean;
+  testCases: Array<{
+    name: string;
+    context: string;
+    imageUrl: string;
+    generationTime: number;
+    success: boolean;
+    error?: string;
+  }>;
+  totalTests: number;
+  passedTests: number;
+  failedTests: number;
+}
+
+/**
+ * 전체 스파이크 검증 결과
+ */
+export interface SpikeValidationResult {
+  timestamp: string;
+  dalleModel: string;
+  openaiApiKey: string;
+  task21: Task21Result;
+  task22: Task22Result;
+  task23: Task23Result;
+  task24: Task24Result;
+  summary: {
+    totalTests: number;
+    passedTests: number;
+    failedTests: number;
+    successRate: number;
+    totalCost: number;
+    averageGenerationTime: number;
+  };
+}
