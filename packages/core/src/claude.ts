@@ -29,9 +29,10 @@ const DEFAULT_TIMEOUT = 120000; // 2분
 
 /**
  * 단어당 타임아웃 계산 (밀리초)
- * 1000 단어당 약 60초 = 단어당 60ms (Claude Code가 더 느릴 수 있음)
+ * 1000 단어당 약 100초 = 단어당 100ms (Claude Code가 더 느릴 수 있음)
+ * 긴 포스트(2000+ 단어)는 3-4분 필요
  */
-const TIMEOUT_PER_WORD = 60;
+const TIMEOUT_PER_WORD = 100;
 
 /**
  * content/drafts 디렉토리

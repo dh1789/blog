@@ -244,14 +244,36 @@ export async function publishCommand(file: string, options: PublishOptions) {
     spinner.text = '광고 코드 삽입 중...';
     const contentWithAds = injectAds(finalHtmlContent, config.ads);
 
-    spinner.text = 'WordPress에 업로드 중 (SEO 메타데이터 포함)...';
-    const postId = await wpClient.createPost(
-      { ...metadata, status: finalStatus },
-      contentWithAds,
-      seoData
+    // 기존 포스트 찾기 (slug + language 기반)
+    spinner.text = '기존 포스트 확인 중...';
+    const existingPostId = await wpClient.findPostBySlug(
+      seoData.slug,
+      metadata.language
     );
 
-    spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
+    let postId: number;
+    if (existingPostId) {
+      // 기존 포스트 업데이트
+      spinner.text = 'WordPress에 업데이트 중 (SEO 메타데이터 포함)...';
+      await wpClient.updatePost(
+        existingPostId,
+        { ...metadata, status: finalStatus },
+        contentWithAds,
+        seoData
+      );
+      postId = existingPostId;
+      spinner.succeed(chalk.green(`포스트 업데이트 완료! (ID: ${postId})`));
+    } else {
+      // 새 포스트 생성
+      spinner.text = 'WordPress에 업로드 중 (SEO 메타데이터 포함)...';
+      postId = await wpClient.createPost(
+        { ...metadata, status: finalStatus },
+        contentWithAds,
+        seoData
+      );
+      spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
+    }
+
     console.log(chalk.blue(`URL: ${config.wordpress.url}/?p=${postId}`));
 
     // 자동 번역 워크플로우 (한글 포스트이고 --no-translate가 아닌 경우)
@@ -260,8 +282,8 @@ export async function publishCommand(file: string, options: PublishOptions) {
       spinner.start('한글 포스트 번역 중 (Claude Code)...');
 
       try {
-        // 1. 포스트 번역
-        const translationResult = await translatePost(fileContent, metadata, {
+        // 1. 포스트 번역 (frontmatter 제외, content만 번역)
+        const translationResult = await translatePost(content, metadata, {
           targetLang: 'en',
           optimizeSeo: true,
           preserveCodeBlocks: true,
@@ -269,9 +291,9 @@ export async function publishCommand(file: string, options: PublishOptions) {
 
         spinner.text = '번역 품질 검증 중...';
 
-        // 2. 품질 검증
+        // 2. 품질 검증 (frontmatter 제외, content만 검증)
         const validationResult = await validateTranslation(
-          fileContent,
+          content,
           metadata,
           translationResult.translatedContent,
           translationResult.translatedMetadata
@@ -344,32 +366,58 @@ export async function publishCommand(file: string, options: PublishOptions) {
         // 광고 삽입
         spinner.text = '영어 포스트에 광고 코드 삽입 중...';
         const englishContentWithAds = injectAds(translatedHtmlContent, config.ads);
-        const englishPostId = await wpClient.createPost(
-          { ...translationResult.translatedMetadata, status: finalStatus },
-          englishContentWithAds,
-          // SEO 데이터는 번역된 메타데이터에서 생성
-          {
-            slug: translationResult.translatedMetadata.slug || '',
-            meta: {
-              title: translationResult.translatedMetadata.title,
-              description: translationResult.translatedMetadata.excerpt || '',
-              keywords: translationResult.translatedMetadata.tags || [],
-            },
-            openGraph: {
-              'og:title': translationResult.translatedMetadata.title,
-              'og:description': translationResult.translatedMetadata.excerpt || '',
-              'og:type': 'article',
-              'og:locale': 'en_US',
-            },
-            twitterCard: {
-              'twitter:card': 'summary_large_image',
-              'twitter:title': translationResult.translatedMetadata.title,
-              'twitter:description': translationResult.translatedMetadata.excerpt || '',
-            },
-          }
+
+        // 영문 SEO 데이터 생성
+        const englishSeoData = {
+          slug: translationResult.translatedMetadata.slug || '',
+          meta: {
+            title: translationResult.translatedMetadata.title,
+            description: translationResult.translatedMetadata.excerpt || '',
+            keywords: translationResult.translatedMetadata.tags || [],
+          },
+          openGraph: {
+            'og:title': translationResult.translatedMetadata.title,
+            'og:description': translationResult.translatedMetadata.excerpt || '',
+            'og:type': 'article',
+            'og:locale': 'en_US',
+          },
+          twitterCard: {
+            'twitter:card': 'summary_large_image',
+            'twitter:title': translationResult.translatedMetadata.title,
+            'twitter:description': translationResult.translatedMetadata.excerpt || '',
+          },
+        };
+
+        // 기존 영문 포스트 찾기
+        spinner.text = '기존 영문 포스트 확인 중...';
+        const existingEnglishPostId = await wpClient.findPostBySlug(
+          translationResult.translatedMetadata.slug || '',
+          'en'
         );
 
-        spinner.succeed(chalk.green(`영어 포스트 발행 완료! (ID: ${englishPostId})`));
+        let englishPostId: number;
+        if (existingEnglishPostId) {
+          // 기존 영문 포스트 업데이트
+          spinner.text = '영어 포스트 업데이트 중...';
+          await wpClient.updatePost(
+            existingEnglishPostId,
+            { ...translationResult.translatedMetadata, status: finalStatus },
+            englishContentWithAds,
+            englishSeoData
+          );
+          englishPostId = existingEnglishPostId;
+          spinner.succeed(chalk.green(`영어 포스트 업데이트 완료! (ID: ${englishPostId})`));
+        } else {
+          // 새 영문 포스트 생성
+          spinner.text = '영어 포스트 발행 중...';
+          englishPostId = await wpClient.createPost(
+            { ...translationResult.translatedMetadata, status: finalStatus },
+            englishContentWithAds,
+            englishSeoData
+          );
+          spinner.succeed(chalk.green(`영어 포스트 발행 완료! (ID: ${englishPostId})`));
+        }
+
         console.log(chalk.blue(`URL: ${config.wordpress.url}/?p=${englishPostId}`));
 
         // 7. Polylang 언어 연결

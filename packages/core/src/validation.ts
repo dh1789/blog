@@ -77,12 +77,14 @@ function validateBasics(
   // 2. 코드 블록 개수 일치 (``` 개수)
   const originalCodeBlocks = (originalContent.match(/```/g) || []).length;
   const translatedCodeBlocks = (translatedContent.match(/```/g) || []).length;
+  const originalBlocks = Math.floor(originalCodeBlocks / 2);
+  const translatedBlocks = Math.floor(translatedCodeBlocks / 2);
 
-  if (originalCodeBlocks !== translatedCodeBlocks) {
+  if (originalBlocks !== translatedBlocks) {
     issues.push({
       type: 'content',
       severity: 'error',
-      message: `Code block count mismatch: original has ${originalCodeBlocks / 2} blocks, translated has ${translatedCodeBlocks / 2} blocks`,
+      message: `Code block count mismatch: original has ${originalBlocks} blocks, translated has ${translatedBlocks} blocks`,
       field: 'code_blocks',
     });
   }
@@ -279,8 +281,8 @@ function calculateMetrics(
   const lineCountDiffPercent = (lineCountDiff / originalLines) * 100;
 
   // 코드 블록 개수
-  const originalCodeBlocks = (originalContent.match(/```/g) || []).length / 2;
-  const translatedCodeBlocks = (translatedContent.match(/```/g) || []).length / 2;
+  const originalCodeBlocks = Math.floor((originalContent.match(/```/g) || []).length / 2);
+  const translatedCodeBlocks = Math.floor((translatedContent.match(/```/g) || []).length / 2);
   const preservedCodeBlocks = Math.min(originalCodeBlocks, translatedCodeBlocks);
 
   // 메타데이터 완전성

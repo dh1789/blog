@@ -125,6 +125,35 @@ export class WordPressClient {
     }
   }
 
+  /**
+   * slug로 포스트 검색
+   *
+   * @param slug 포스트 슬러그
+   * @param language 언어 코드 (선택사항, Polylang)
+   * @returns 포스트 ID 또는 null
+   */
+  async findPostBySlug(slug: string, language?: string): Promise<number | null> {
+    try {
+      let query = this.wp.posts().slug(slug);
+
+      // Polylang 언어 필터
+      if (language) {
+        query = query.param('lang', language);
+      }
+
+      const posts = await query.get();
+
+      if (posts && posts.length > 0) {
+        return posts[0].id;
+      }
+
+      return null;
+    } catch (error) {
+      // 포스트가 없거나 에러 발생 시 null 반환
+      return null;
+    }
+  }
+
   async deletePost(postId: number): Promise<void> {
     try {
       await this.wp.posts().id(postId).delete({ force: true });
