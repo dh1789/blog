@@ -740,4 +740,4 @@ dotenv + Zod + TypeScript 3단계 방어선으로 **타입 안전성과 보안�
 
 **질문이나 피드백**은 댓글로 남겨주세요!
 
-**실제 프로젝트 코드**: [GitHub Repository](#) (공개 예정)
+**실제 프로젝트 코드**: [GitHub Repository](https://github.com/dh1789/blog) - WordPress 자동화 도구 오픈소스

@@ -745,4 +745,4 @@ Secure **type safety and security simultaneously** with the dotenv + Zod + TypeS
 
 **Questions or feedback?** Leave a comment!
 
-**Real project code**: [GitHub Repository](#) (coming soon)
+**Real project code**: [GitHub Repository](https://github.com/dh1789/blog) - WordPress automation tool open source

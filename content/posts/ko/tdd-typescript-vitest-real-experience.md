@@ -702,4 +702,4 @@ vitest + TDD로 **안전하고 자신 있는 개발**을 시작하세요.
 
 **질문이나 피드백**은 댓글로 남겨주세요!
 
-**실제 프로젝트 코드**: [GitHub Repository](#) (75개 테스트 포함)
+**실제 프로젝트 코드**: [GitHub Repository](https://github.com/dh1789/blog) - 75개 테스트, 94% 커버리지
