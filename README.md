@@ -55,7 +55,7 @@ WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최�
 
 ### 1. 저장소 클론
 ```bash
-git clone https://github.com/your-username/blog.git
+git clone https://github.com/dh1789/blog.git
 cd blog
 ```
 
@@ -692,7 +692,7 @@ pnpm format
 
 ## 📄 라이선스
 
-MIT
+MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일 참조
 
 ## 🤝 기여
 
