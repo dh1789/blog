@@ -1,6 +1,39 @@
 # @blog/cli - AI-Powered WordPress Blog Automation Platform
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
+
 WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최적화까지 완전 자동화하는 CLI 도구
+
+## 📂 프로젝트 구조
+
+```
+blog/
+├── packages/          # 소스 코드 (TypeScript, monorepo)
+│   ├── cli/          # CLI 도구 (사용자 인터페이스)
+│   ├── core/         # 핵심 로직 (WordPress API, 번역, 이미지)
+│   └── shared/       # 공유 타입 및 유틸리티
+│
+├── content/          # 블로그 콘텐츠 (마크다운)
+│   ├── posts/        # 블로그 포스트 (ko/, en/)
+│   ├── pages/        # 고정 페이지
+│   └── templates/    # 포스트 템플릿
+│
+├── docs/             # 프로젝트 문서
+│   ├── guides/       # 사용 가이드
+│   ├── specs/        # 기술 스펙
+│   ├── planning/     # 기획 문서
+│   ├── prompts/      # AI 프롬프트 템플릿
+│   └── archive/      # 완료된 작업 문서
+│
+├── scripts/          # 스크립트 (WordPress 설정)
+├── config/           # 설정 파일
+├── wordpress-plugin/ # WordPress 플러그인
+├── CLAUDE.md         # Claude Code 작업 가이드
+├── CHANGELOG.md      # 변경 로그
+└── README.md         # 이 파일
+```
 
 ## ✨ 주요 기능
 
