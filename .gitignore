@@ -62,3 +62,8 @@ scripts/wordpress-setup/avada.zip
 scripts/wordpress-setup/cert.pem
 scripts/wordpress-setup/key.pem
 scripts/wordpress-setup.tar.gz
+
+# Personal workflow documents (local only)
+create-prd.md
+generate-tasks.md
+process-task-list.md
