@@ -723,6 +723,17 @@ pnpm format
 - [ ] 추가 언어 지원 (일본어, 중국어)
 - [ ] GitHub Actions CI/CD
 
+## 📜 Credits
+
+This project uses workflow templates from [ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks) licensed under Apache-2.0.
+
+**Modified files**:
+- `create-prd.md` - PRD generation guide adapted for Korean blog automation with AskUserQuestion tool integration
+- `generate-tasks.md` - Task generation guide with enhanced testing requirements
+- `process-task-list.md` - Task management guide with strengthened test execution policy
+
+Original license: [Apache-2.0](https://github.com/snarktank/ai-dev-tasks/blob/main/LICENSE)
+
 ## 📄 라이선스
 
 MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일 참조
