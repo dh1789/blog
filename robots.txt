@@ -1,0 +1,17 @@
+# robots.txt for WordPress Blog (beomanro.com)
+
+User-agent: *
+
+# 시스템 파일 크롤링 차단
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /wp-content/themes/
+Disallow: /readme.html
+Disallow: /license.txt
+Disallow: /wp-admin/
+
+# 업로드 파일은 허용 (이미지, 미디어)
+Allow: /wp-content/uploads/
+
+# Sitemap
+Sitemap: https://beomanro.com/sitemap.xml
