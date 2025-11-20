@@ -49,12 +49,6 @@ blog/
 - **SEO 최적화**: 영문 SEO에 최적화된 제목/요약 자동 생성
 - **Polylang 자동 연결**: 한영 포스트 자동 연결로 언어 전환 지원
 
-### 🖼️ 이미지 생성 (DALL-E 3)
-- **AI 이미지 생성**: DALL-E 3를 사용한 블로그 이미지 생성
-- **다양한 크기 지원**: 1024x1024, 1792x1024, 1024x1792
-- **품질 옵션**: Standard / HD
-- **자동 다운로드**: 로컬 저장 및 WordPress 업로드 준비
-
 ### 🚀 WordPress 자동화
 - **원클릭 발행**: 마크다운 → WordPress 자동 변환 및 업로드
 - **🖼️ 이미지 자동 업로드 (Epic 12.0)**: 로컬 이미지를 WordPress 미디어 라이브러리에 자동 업로드
@@ -84,7 +78,6 @@ blog/
 - Node.js 20 이상
 - pnpm 9 이상
 - WordPress 사이트 (REST API 활성화)
-- OpenAI API 키 (이미지 생성 기능 사용 시)
 
 ### 1. 저장소 클론
 ```bash
@@ -115,12 +108,6 @@ ANTHROPIC_API_KEY=sk-ant-xxxxx
 # Google AdSense
 ADSENSE_CLIENT_ID=ca-pub-xxxxxxxxxx
 ADSENSE_SLOT_ID=xxxxxxxxxx
-
-# OpenAI (이미지 생성)
-OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxx
-
-# Twitter API (선택사항 - 트렌드 모니터링)
-TWITTER_BEARER_TOKEN=AAAAAAAAAxxxxxxxxxx
 
 # Google Ads API (선택사항 - Epic 8.0 키워드 수익성 분석)
 GOOGLE_ADS_DEVELOPER_TOKEN=ABcdEFghIJklMNopQRst
@@ -227,19 +214,6 @@ blog draft create "제품 리뷰" "리뷰, 평가" --template review
 
 # 초안 수정
 blog draft refine content/drafts/my-post.md "SEO 키워드 추가 및 더 전문적인 톤으로 수정"
-```
-
-### DALL-E 이미지 생성
-```bash
-# 기본 이미지 생성
-blog image generate "Modern minimalist blog header with tech theme"
-
-# HD 품질, 가로 이미지
-blog image generate "Beautiful landscape for blog header" \
-  --size 1792x1024 \
-  --quality hd \
-  --style natural \
-  --output ./images
 ```
 
 ### 실시간 프리뷰
@@ -544,7 +518,6 @@ blog/
 │   │   │   ├── commands/    # 각 명령어 구현
 │   │   │   │   ├── draft/   # AI 초안 생성
 │   │   │   │   ├── analytics.ts
-│   │   │   │   ├── image.ts
 │   │   │   │   ├── trending.ts
 │   │   │   │   ├── preview.ts
 │   │   │   │   └── publish.ts
@@ -556,7 +529,6 @@ blog/
 │   │   │   ├── markdown.ts  # 마크다운 처리
 │   │   │   ├── claude.ts    # AI 초안 생성
 │   │   │   ├── seo.ts       # SEO 자동화
-│   │   │   ├── image.ts     # DALL-E 이미지
 │   │   │   ├── trending.ts  # 트렌드 모니터링
 │   │   │   ├── analytics.ts # 분석 대시보드
 │   │   │   ├── preview.ts   # 프리뷰 서버
@@ -626,7 +598,7 @@ pnpm format
 - **Package Manager**: pnpm (workspace)
 - **Testing**: Vitest
 - **WordPress**: WordPress REST API, WPAPI
-- **AI**: Claude (초안 생성), DALL-E 3 (이미지)
+- **AI**: Claude (초안 생성, 번역)
 - **Framework**: Commander.js (CLI)
 - **Preview**: Express, Socket.io, Chokidar
 - **SEO**: Marked, transliteration
@@ -652,7 +624,6 @@ pnpm format
 - [x] Slug 자동 변환
 
 ### ✅ Epic 4.0 - Extended MVP
-- [x] DALL-E 이미지 생성
 - [x] 트렌드 모니터링 (Reddit, HN, Twitter)
 - [x] 분석 대시보드
 
