@@ -1,6 +1,6 @@
 # 프로젝트 이슈 추적 (Issues Tracking)
 
-**최종 업데이트**: 2025-11-04
+**최종 업데이트**: 2025-12-02
 **프로젝트**: WordPress Content Automation CLI
 
 ---
@@ -280,6 +280,59 @@ async function optimizeKeywordDensity(
 
 ---
 
+#### 🟢 [TECH-004] WordPress 코드 블록 렌더링 실패
+
+**상태**: ✅ 해결 완료
+**우선순위**: Low (해결됨)
+**발견일**: 2025-12-02
+**해결일**: 2025-12-02
+
+**문제 설명**:
+- 코드 블록이 WordPress에서 일반 텍스트로 표시됨
+- SyntaxHighlighter Evolved 형식 (`<pre class="brush: xxx">`)이 작동하지 않음
+- 플러그인 미설치 또는 미활성화 상태
+
+**발견된 오류**:
+```
+코드 블록이 표시되지 않고 일반 글자처럼 보임
+<pre class="brush: typescript; title: ; notranslate">
+→ 렌더링 실패, 일반 텍스트로 표시
+```
+
+**원인 분석**:
+1. SyntaxHighlighter Evolved 플러그인이 WordPress에 설치/활성화되지 않음
+2. `<pre class="brush: xxx">` 형식은 플러그인 의존적
+3. WordPress shortcode `[code language="xxx"]`는 remark 파서와 호환 안 됨
+
+**해결 방법**:
+- 표준 마크다운 코드 펜스 (```) 사용
+- unified/remark가 `<pre><code class="language-xxx">` 형태로 변환
+- WordPress가 기본적으로 지원하는 표준 HTML 형식
+- Avada 테마에서 정상 렌더링됨
+
+**코드 변경 예시**:
+```diff
+- <pre class="brush: typescript; title: ; notranslate">
+- const example = "code";
+- </pre>
++ ```typescript
++ const example = "code";
++ ```
+```
+
+**영향받은 파일**:
+- `content/posts/ko/2025-12-02-mcp-day3-practical-project-analyzer.md`
+- `content/posts/en/2025-12-02-mcp-day3-practical-project-analyzer-en.md`
+
+**재발 방지**:
+- CLAUDE.md에 "코드 블록 작성 규칙" 섹션 추가
+- 절대 사용 금지: SyntaxHighlighter 형식, WordPress shortcode
+- 반드시 사용: 표준 마크다운 코드 펜스 (```)
+
+**테스트 결과**: ✅ 재발행 후 코드 블록 정상 렌더링
+
+---
+
 #### 🟢 [TECH-003] 번역 디스클레이머 수동 추가
 
 **상태**: ✅ 해결 완료
@@ -371,18 +424,18 @@ function generateTranslationDisclaimer(
 ## 📈 이슈 통계
 
 ### 상태별 통계
-- ✅ **해결 완료**: 4개 (WF-001, TECH-001, TECH-003, WF-003)
+- ✅ **해결 완료**: 5개 (WF-001, TECH-001, TECH-003, TECH-004, WF-003)
 - ⚠️ **개선 중**: 4개 (WF-002, TECH-002, UX-001, UX-002)
 - ❌ **미해결**: 0개
 
 ### 우선순위별 통계
 - 🔴 **Critical**: 0개
 - 🟡 **Medium**: 4개
-- 🟢 **Low**: 4개
+- 🟢 **Low**: 5개
 
 ### 카테고리별 통계
 - 워크플로우 이슈: 3개
-- 기술적 이슈: 3개
+- 기술적 이슈: 4개
 - UX 이슈: 2개
 
 ---
