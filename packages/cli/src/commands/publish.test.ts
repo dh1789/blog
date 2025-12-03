@@ -5,6 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { writeFileSync, rmSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { Command } from 'commander';
 
 // 테스트용 임시 디렉토리
 const TEST_DIR = join(process.cwd(), '.test-tmp-publish');
@@ -155,5 +156,56 @@ This is the content of the post.
       // Note: 요약 표시 테스트는 통합 테스트에서 검증
       expect(true).toBe(true);
     }, { skip: true });
+  });
+});
+
+describe('--no-translate 옵션 파싱', () => {
+  it('--no-translate 옵션 사용 시 options.translate가 false여야 한다', () => {
+    // Commander.js의 --no-xxx 패턴 테스트
+    const program = new Command();
+    let capturedOptions: Record<string, unknown> = {};
+
+    program
+      .command('publish <file>')
+      .option('--no-translate', '자동 번역 비활성화')
+      .action((file, options) => {
+        capturedOptions = options;
+      });
+
+    program.parse(['node', 'test', 'publish', 'test.md', '--no-translate']);
+
+    // Commander.js에서 --no-translate는 options.translate = false를 생성
+    expect(capturedOptions.translate).toBe(false);
+  });
+
+  it('옵션 없이 사용 시 options.translate가 true여야 한다', () => {
+    const program = new Command();
+    let capturedOptions: Record<string, unknown> = {};
+
+    program
+      .command('publish <file>')
+      .option('--no-translate', '자동 번역 비활성화')
+      .action((file, options) => {
+        capturedOptions = options;
+      });
+
+    program.parse(['node', 'test', 'publish', 'test.md']);
+
+    // --no-translate 없이 실행하면 options.translate = true
+    expect(capturedOptions.translate).toBe(true);
+  });
+
+  it('번역 비활성화 조건을 올바르게 판단해야 한다', () => {
+    // 현재 버그: options.noTranslate를 체크하지만 실제로는 options.translate가 생성됨
+    // 수정 후: options.translate === false일 때 번역 비활성화
+    const shouldSkipTranslation = (options: { translate?: boolean }) => {
+      return options.translate === false;
+    };
+
+    // --no-translate 사용 시
+    expect(shouldSkipTranslation({ translate: false })).toBe(true);
+
+    // 옵션 없이 사용 시
+    expect(shouldSkipTranslation({ translate: true })).toBe(false);
   });
 });

@@ -18,6 +18,7 @@ import {
   replaceImageUrls,
   resolveImagePath,
   convertMarkdownToHtml,
+  convertToSyntaxHighlighter,
 } from '@blog/core';
 import { loadConfig } from '../utils/config';
 
@@ -26,7 +27,7 @@ interface PublishOptions {
   language: 'ko' | 'en';
   dryRun: boolean;
   linkTo?: string;  // 연결할 포스트 ID (영문 발행 시 사용)
-  noTranslate?: boolean;  // 자동 번역 비활성화 (기본값: false)
+  translate?: boolean;  // Commander.js --no-translate 옵션 (기본값: true, --no-translate 시 false)
   uploadImages?: boolean;  // 이미지 자동 업로드 (기본값: false)
 }
 
@@ -244,6 +245,10 @@ export async function publishCommand(file: string, options: PublishOptions) {
     spinner.text = '광고 코드 삽입 중...';
     const contentWithAds = injectAds(finalHtmlContent, config.ads);
 
+    // SyntaxHighlighter Evolved 형식으로 코드 블록 변환
+    spinner.text = '코드 블록 변환 중 (SyntaxHighlighter Evolved)...';
+    const finalContentForWP = convertToSyntaxHighlighter(contentWithAds);
+
     // 기존 포스트 찾기 (slug + language 기반)
     spinner.text = '기존 포스트 확인 중...';
     const existingPostId = await wpClient.findPostBySlug(
@@ -258,7 +263,7 @@ export async function publishCommand(file: string, options: PublishOptions) {
       await wpClient.updatePost(
         existingPostId,
         { ...metadata, status: finalStatus },
-        contentWithAds,
+        finalContentForWP,
         seoData
       );
       postId = existingPostId;
@@ -268,7 +273,7 @@ export async function publishCommand(file: string, options: PublishOptions) {
       spinner.text = 'WordPress에 업로드 중 (SEO 메타데이터 포함)...';
       postId = await wpClient.createPost(
         { ...metadata, status: finalStatus },
-        contentWithAds,
+        finalContentForWP,
         seoData
       );
       spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
@@ -277,7 +282,8 @@ export async function publishCommand(file: string, options: PublishOptions) {
     console.log(chalk.blue(`URL: ${config.wordpress.url}/?p=${postId}`));
 
     // 자동 번역 워크플로우 (한글 포스트이고 --no-translate가 아닌 경우)
-    if (metadata.language === 'ko' && !options.noTranslate && !options.dryRun) {
+    // Commander.js에서 --no-translate 옵션은 options.translate = false로 설정됨
+    if (metadata.language === 'ko' && options.translate !== false && !options.dryRun) {
       console.log(chalk.cyan('\n=== 자동 번역 시작 ==='));
       spinner.start('한글 포스트 번역 중 (Claude Code)...');
 
@@ -367,6 +373,10 @@ export async function publishCommand(file: string, options: PublishOptions) {
         spinner.text = '영어 포스트에 광고 코드 삽입 중...';
         const englishContentWithAds = injectAds(translatedHtmlContent, config.ads);
 
+        // SyntaxHighlighter Evolved 형식으로 코드 블록 변환
+        spinner.text = '영어 포스트 코드 블록 변환 중 (SyntaxHighlighter Evolved)...';
+        const englishFinalContentForWP = convertToSyntaxHighlighter(englishContentWithAds);
+
         // 영문 SEO 데이터 생성
         const englishSeoData = {
           slug: translationResult.translatedMetadata.slug || '',
@@ -402,7 +412,7 @@ export async function publishCommand(file: string, options: PublishOptions) {
           await wpClient.updatePost(
             existingEnglishPostId,
             { ...translationResult.translatedMetadata, status: finalStatus },
-            englishContentWithAds,
+            englishFinalContentForWP,
             englishSeoData
           );
           englishPostId = existingEnglishPostId;
@@ -412,7 +422,7 @@ export async function publishCommand(file: string, options: PublishOptions) {
           spinner.text = '영어 포스트 발행 중...';
           englishPostId = await wpClient.createPost(
             { ...translationResult.translatedMetadata, status: finalStatus },
-            englishContentWithAds,
+            englishFinalContentForWP,
             englishSeoData
           );
           spinner.succeed(chalk.green(`영어 포스트 발행 완료! (ID: ${englishPostId})`));
@@ -449,7 +459,7 @@ export async function publishCommand(file: string, options: PublishOptions) {
         console.log(chalk.yellow('\n한글 포스트만 발행되었습니다.'));
         console.log(chalk.gray('나중에 수동으로 번역하거나, 문제를 해결한 후 다시 시도하세요.'));
       }
-    } else if (metadata.language === 'ko' && options.noTranslate) {
+    } else if (metadata.language === 'ko' && options.translate === false) {
       console.log(chalk.gray('\n자동 번역이 비활성화되었습니다. (--no-translate)'));
     }
 
