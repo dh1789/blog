@@ -13,7 +13,6 @@ tags:
   - "TypeScript"
   - "npm publish"
   - "Claude Code"
-  - "MCP"
   - "배포"
 language: "ko"
 ---
@@ -591,8 +590,8 @@ Claude: [calculate Tool 호출]
 
 ## 시리즈 네비게이션
 
-- [Day 1: MCP란? 개념과 첫 서버 만들기](/mcp-day1-introduction-and-first-server)
-- [Day 2: Resource와 Prompt 완전 정복](/mcp-day2-resource-and-prompt)
-- [Day 3: 실전 프로젝트 - 프로젝트 분석 MCP 서버](/mcp-day3-practical-project-analyzer)
+- [Day 1: MCP란? 개념과 첫 서버 만들기](/ko/mcp-day1-introduction-and-first-server)
+- [Day 2: Resource와 Prompt 완전 정복](/ko/mcp-day2-resource-and-prompt)
+- [Day 3: 실전 프로젝트 - 프로젝트 분석 MCP 서버](/ko/mcp-day3-practical-project-analyzer)
 - **Day 4: npm 패키지로 배포하기** (현재 글)
 - Day 5: 고급 패턴과 최적화 (예정)
