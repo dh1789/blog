@@ -19,8 +19,17 @@ import {
   resolveImagePath,
   convertMarkdownToHtml,
   convertToSyntaxHighlighter,
+  // 시리즈 기능 (PRD 0014)
+  detectSeriesFromFilename,
+  findSeriesDocument,
+  parseSeriesDocument,
+  generateSeriesNavigation,
+  convertLinksToEnglish,
+  insertTranslationBanner,
+  insertGitHubLink,
 } from '@blog/core';
 import { loadConfig } from '../utils/config';
+import { confirm } from '@inquirer/prompts';
 
 interface PublishOptions {
   draft: boolean;
@@ -29,6 +38,7 @@ interface PublishOptions {
   linkTo?: string;  // 연결할 포스트 ID (영문 발행 시 사용)
   translate?: boolean;  // Commander.js --no-translate 옵션 (기본값: true, --no-translate 시 false)
   uploadImages?: boolean;  // 이미지 자동 업로드 (기본값: false)
+  force?: boolean;  // 기존 포스트 업데이트 시 확인 없이 강제 진행 (PRD 0014)
 }
 
 export async function publishCommand(file: string, options: PublishOptions) {
@@ -249,6 +259,63 @@ export async function publishCommand(file: string, options: PublishOptions) {
     spinner.text = '코드 블록 변환 중 (SyntaxHighlighter Evolved)...';
     const finalContentForWP = convertToSyntaxHighlighter(contentWithAds);
 
+    // ===========================================================================
+    // 시리즈 기능 통합 (PRD 0014)
+    // ===========================================================================
+    spinner.text = '시리즈 정보 감지 중...';
+
+    // 시리즈 감지
+    const seriesInfo = detectSeriesFromFilename(filePath);
+    let seriesDoc = null;
+    let enhancedContent = finalContentForWP;
+
+    if (seriesInfo) {
+      console.log(chalk.cyan('\n=== 시리즈 감지됨 ==='));
+      console.log(chalk.white('시리즈명:'), chalk.green(seriesInfo.name));
+      console.log(chalk.white('Day 번호:'), chalk.green(seriesInfo.dayNumber));
+
+      // 시리즈 문서 탐색
+      const docsDir = path.resolve(process.cwd(), 'docs');
+      const docPath = findSeriesDocument(seriesInfo.name, docsDir);
+
+      if (docPath) {
+        console.log(chalk.white('시리즈 문서:'), chalk.gray(docPath));
+        seriesDoc = parseSeriesDocument(docPath);
+
+        if (seriesDoc) {
+          console.log(chalk.white('총 Day 수:'), chalk.gray(seriesDoc.totalDays));
+          if (seriesDoc.githubUrl) {
+            console.log(chalk.white('GitHub:'), chalk.blue(seriesDoc.githubUrl));
+          }
+        }
+      } else {
+        console.log(chalk.yellow('시리즈 문서를 찾을 수 없습니다. 최소 네비게이션만 생성됩니다.'));
+      }
+
+      // 시리즈 네비게이션 생성 및 삽입
+      const seriesNavMarkdown = generateSeriesNavigation({
+        seriesName: seriesInfo.name.toUpperCase(),
+        currentDay: seriesInfo.dayNumber,
+        seriesDoc,
+        language: metadata.language as 'ko' | 'en',
+      });
+
+      // 시리즈 네비게이션 마크다운을 HTML로 변환
+      const seriesNavHtml = await convertMarkdownToHtml(seriesNavMarkdown);
+
+      // 네비게이션을 콘텐츠 끝에 삽입 (HTML로 변환된 상태)
+      enhancedContent = enhancedContent + '\n\n' + seriesNavHtml;
+      console.log(chalk.green('✓ 시리즈 네비게이션 삽입됨'));
+
+      // GitHub 링크 삽입 (TL;DR 섹션 뒤에)
+      if (seriesDoc?.githubUrl) {
+        enhancedContent = insertGitHubLink(enhancedContent, seriesDoc.githubUrl);
+        console.log(chalk.green('✓ GitHub 링크 삽입됨'));
+      }
+
+      console.log(chalk.cyan('==================\n'));
+    }
+
     // 기존 포스트 찾기 (slug + language 기반)
     spinner.text = '기존 포스트 확인 중...';
     const existingPostId = await wpClient.findPostBySlug(
@@ -258,12 +325,29 @@ export async function publishCommand(file: string, options: PublishOptions) {
 
     let postId: number;
     if (existingPostId) {
+      // Task 4.2: 기존 포스트 감지 시 확인 프롬프트 (--force가 아닌 경우)
+      if (!options.force && !options.dryRun) {
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  기존 포스트가 발견되었습니다 (ID: ${existingPostId})`));
+
+        const shouldUpdate = await confirm({
+          message: '기존 포스트를 업데이트하시겠습니까?',
+          default: true,
+        });
+
+        if (!shouldUpdate) {
+          console.log(chalk.gray('발행이 취소되었습니다.'));
+          return;
+        }
+        spinner.start();
+      }
+
       // 기존 포스트 업데이트
       spinner.text = 'WordPress에 업데이트 중 (SEO 메타데이터 포함)...';
       await wpClient.updatePost(
         existingPostId,
         { ...metadata, status: finalStatus },
-        finalContentForWP,
+        enhancedContent,
         seoData
       );
       postId = existingPostId;
@@ -273,7 +357,7 @@ export async function publishCommand(file: string, options: PublishOptions) {
       spinner.text = 'WordPress에 업로드 중 (SEO 메타데이터 포함)...';
       postId = await wpClient.createPost(
         { ...metadata, status: finalStatus },
-        finalContentForWP,
+        enhancedContent,
         seoData
       );
       spinner.succeed(chalk.green(`포스트 발행 완료! (ID: ${postId})`));
@@ -375,7 +459,45 @@ export async function publishCommand(file: string, options: PublishOptions) {
 
         // SyntaxHighlighter Evolved 형식으로 코드 블록 변환
         spinner.text = '영어 포스트 코드 블록 변환 중 (SyntaxHighlighter Evolved)...';
-        const englishFinalContentForWP = convertToSyntaxHighlighter(englishContentWithAds);
+        let englishFinalContentForWP = convertToSyntaxHighlighter(englishContentWithAds);
+
+        // ===========================================================================
+        // 영문 포스트 시리즈 기능 통합 (PRD 0014)
+        // ===========================================================================
+
+        // 번역 배너 삽입 (원본 한글 포스트 링크)
+        spinner.text = '번역 배너 삽입 중...';
+        const originalKoreanUrl = `${config.wordpress.url}/?p=${postId}`;
+        englishFinalContentForWP = insertTranslationBanner(englishFinalContentForWP, {
+          language: 'en',
+          originalUrl: originalKoreanUrl,
+        });
+
+        // 시리즈 정보가 있는 경우 추가 강화
+        if (seriesInfo && seriesDoc) {
+          // 한글 링크를 영문 링크로 변환
+          spinner.text = '한영 링크 변환 중...';
+          englishFinalContentForWP = convertLinksToEnglish(englishFinalContentForWP, seriesDoc);
+
+          // 영문 시리즈 네비게이션 생성 및 삽입
+          const englishSeriesNavMarkdown = generateSeriesNavigation({
+            seriesName: seriesInfo.name.toUpperCase(),
+            currentDay: seriesInfo.dayNumber,
+            seriesDoc,
+            language: 'en',
+          });
+
+          // 영문 시리즈 네비게이션 마크다운을 HTML로 변환
+          const englishSeriesNavHtml = await convertMarkdownToHtml(englishSeriesNavMarkdown);
+          englishFinalContentForWP = englishFinalContentForWP + '\n\n' + englishSeriesNavHtml;
+
+          // GitHub 링크 삽입
+          if (seriesDoc.githubUrl) {
+            englishFinalContentForWP = insertGitHubLink(englishFinalContentForWP, seriesDoc.githubUrl);
+          }
+
+          console.log(chalk.green('✓ 영문 포스트 시리즈 기능 적용됨'));
+        }
 
         // 영문 SEO 데이터 생성
         const englishSeoData = {

@@ -126,7 +126,7 @@ export class WordPressClient {
   }
 
   /**
-   * slug로 포스트 검색
+   * slug로 포스트 검색 (ID만 반환)
    *
    * @param slug 포스트 슬러그
    * @param language 언어 코드 (선택사항, Polylang)
@@ -134,7 +134,8 @@ export class WordPressClient {
    */
   async findPostBySlug(slug: string, language?: string): Promise<number | null> {
     try {
-      let query = this.wp.posts().slug(slug);
+      // status: 'any'로 draft, publish, pending 등 모든 상태의 포스트 검색
+      let query = this.wp.posts().slug(slug).param('status', 'any');
 
       // Polylang 언어 필터
       if (language) {
@@ -148,6 +149,62 @@ export class WordPressClient {
       }
 
       return null;
+    } catch (error) {
+      // 포스트가 없거나 에러 발생 시 null 반환
+      return null;
+    }
+  }
+
+  /**
+   * slug로 포스트 상세 정보 조회
+   *
+   * @param slug 포스트 슬러그
+   * @param language 언어 코드 (선택사항, Polylang)
+   * @returns 포스트 상세 정보 또는 null
+   *
+   * @example
+   * ```typescript
+   * const post = await wp.getPostBySlug('my-post-slug');
+   * if (post) {
+   *   console.log(post.title, post.status);
+   * }
+   * ```
+   */
+  async getPostBySlug(slug: string, language?: string): Promise<{
+    id: number;
+    title: string;
+    slug: string;
+    status: string;
+    date: string;
+    excerpt: string;
+    link: string;
+  } | null> {
+    try {
+      // status: 'any'로 draft, publish, pending 등 모든 상태의 포스트 검색
+      let query = this.wp.posts().slug(slug).param('status', 'any');
+
+      // Polylang 언어 필터
+      if (language) {
+        query = query.param('lang', language);
+      }
+
+      const posts = await query.get();
+
+      if (!posts || posts.length === 0) {
+        return null;
+      }
+
+      const post = posts[0];
+
+      return {
+        id: post.id,
+        title: post.title?.rendered || '',
+        slug: post.slug,
+        status: post.status,
+        date: post.date,
+        excerpt: post.excerpt?.rendered || '',
+        link: post.link,
+      };
     } catch (error) {
       // 포스트가 없거나 에러 발생 시 null 반환
       return null;
@@ -266,6 +323,67 @@ export class WordPressClient {
       };
     } catch (error) {
       throw new Error(`Failed to search media: ${error}`);
+    }
+  }
+
+  /**
+   * 포스트 상태를 변경합니다.
+   *
+   * @param postId - 포스트 ID
+   * @param newStatus - 새 상태 ('publish' | 'draft' | 'pending' | 'private')
+   * @returns 상태 변경 결과
+   * @throws {Error} 포스트가 없거나 상태 변경 실패 시
+   *
+   * @example
+   * ```typescript
+   * // 드래프트를 발행으로 변경
+   * const result = await wp.changePostStatus(123, 'publish');
+   * console.log(result.previousStatus); // 'draft'
+   * console.log(result.newStatus); // 'publish'
+   *
+   * // 이미 같은 상태면 unchanged: true
+   * const result2 = await wp.changePostStatus(123, 'publish');
+   * console.log(result2.unchanged); // true
+   * ```
+   */
+  async changePostStatus(
+    postId: number,
+    newStatus: 'publish' | 'draft' | 'pending' | 'private'
+  ): Promise<{
+    id: number;
+    previousStatus: string;
+    newStatus: string;
+    unchanged?: boolean;
+  }> {
+    try {
+      // 현재 포스트 상태 조회
+      const post = await this.wp.posts().id(postId).get();
+      const previousStatus = post.status;
+
+      // 이미 같은 상태면 업데이트 안 함
+      if (previousStatus === newStatus) {
+        return {
+          id: postId,
+          previousStatus,
+          newStatus,
+          unchanged: true,
+        };
+      }
+
+      // 상태 업데이트
+      await this.wp.posts().id(postId).update({ status: newStatus });
+
+      return {
+        id: postId,
+        previousStatus,
+        newStatus,
+      };
+    } catch (error: any) {
+      // 포스트가 없는 경우
+      if (error.message?.includes('rest_post_invalid_id') || error.message?.includes('not found')) {
+        throw new Error(`Post not found: ${postId}`);
+      }
+      throw new Error(`Failed to change post status: ${error.message || error}`);
     }
   }
 
