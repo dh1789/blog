@@ -24,6 +24,7 @@ import {
   findSeriesDocument,
   parseSeriesDocument,
   generateSeriesNavigation,
+  removeExistingSeriesNavigation,
   convertLinksToEnglish,
   insertTranslationBanner,
   insertGitHubLink,
@@ -39,6 +40,7 @@ interface PublishOptions {
   translate?: boolean;  // Commander.js --no-translate 옵션 (기본값: true, --no-translate 시 false)
   uploadImages?: boolean;  // 이미지 자동 업로드 (기본값: false)
   force?: boolean;  // 기존 포스트 업데이트 시 확인 없이 강제 진행 (PRD 0014)
+  seriesNav?: boolean;  // Commander.js --no-series-nav 옵션 (기본값: true, --no-series-nav 시 false)
 }
 
 export async function publishCommand(file: string, options: PublishOptions) {
@@ -292,25 +294,32 @@ export async function publishCommand(file: string, options: PublishOptions) {
         console.log(chalk.yellow('시리즈 문서를 찾을 수 없습니다. 최소 네비게이션만 생성됩니다.'));
       }
 
-      // 시리즈 네비게이션 생성 및 삽입
-      const seriesNavMarkdown = generateSeriesNavigation({
-        seriesName: seriesInfo.name.toUpperCase(),
-        currentDay: seriesInfo.dayNumber,
-        seriesDoc,
-        language: metadata.language as 'ko' | 'en',
-      });
+      // 시리즈 네비게이션 생성 및 삽입 (--no-series-nav 시 건너뜀)
+      if (options.seriesNav !== false) {
+        // 기존 시리즈 네비게이션 제거 (중복 방지)
+        enhancedContent = removeExistingSeriesNavigation(enhancedContent);
 
-      // 시리즈 네비게이션 마크다운을 HTML로 변환
-      const seriesNavHtml = await convertMarkdownToHtml(seriesNavMarkdown);
+        const seriesNavMarkdown = generateSeriesNavigation({
+          seriesName: seriesInfo.name.toUpperCase(),
+          currentDay: seriesInfo.dayNumber,
+          seriesDoc,
+          language: metadata.language as 'ko' | 'en',
+        });
 
-      // 네비게이션을 콘텐츠 끝에 삽입 (HTML로 변환된 상태)
-      enhancedContent = enhancedContent + '\n\n' + seriesNavHtml;
-      console.log(chalk.green('✓ 시리즈 네비게이션 삽입됨'));
+        // 시리즈 네비게이션 마크다운을 HTML로 변환
+        const seriesNavHtml = await convertMarkdownToHtml(seriesNavMarkdown);
 
-      // GitHub 링크 삽입 (TL;DR 섹션 뒤에)
-      if (seriesDoc?.githubUrl) {
-        enhancedContent = insertGitHubLink(enhancedContent, seriesDoc.githubUrl);
-        console.log(chalk.green('✓ GitHub 링크 삽입됨'));
+        // 네비게이션을 콘텐츠 끝에 삽입 (HTML로 변환된 상태)
+        enhancedContent = enhancedContent + '\n\n' + seriesNavHtml;
+        console.log(chalk.green('✓ 시리즈 네비게이션 삽입됨 (기존 제거 후 새로 생성)'));
+
+        // GitHub 링크 삽입 (TL;DR 섹션 뒤에)
+        if (seriesDoc?.githubUrl) {
+          enhancedContent = insertGitHubLink(enhancedContent, seriesDoc.githubUrl);
+          console.log(chalk.green('✓ GitHub 링크 삽입됨'));
+        }
+      } else {
+        console.log(chalk.gray('✓ 시리즈 네비게이션 건너뜀 (--no-series-nav)'));
       }
 
       console.log(chalk.cyan('==================\n'));
@@ -473,11 +482,14 @@ export async function publishCommand(file: string, options: PublishOptions) {
           originalUrl: originalKoreanUrl,
         });
 
-        // 시리즈 정보가 있는 경우 추가 강화
-        if (seriesInfo && seriesDoc) {
+        // 시리즈 정보가 있는 경우 추가 강화 (--no-series-nav 시 건너뜀)
+        if (seriesInfo && seriesDoc && options.seriesNav !== false) {
           // 한글 링크를 영문 링크로 변환
           spinner.text = '한영 링크 변환 중...';
           englishFinalContentForWP = convertLinksToEnglish(englishFinalContentForWP, seriesDoc);
+
+          // 기존 시리즈 네비게이션 제거 (중복 방지)
+          englishFinalContentForWP = removeExistingSeriesNavigation(englishFinalContentForWP);
 
           // 영문 시리즈 네비게이션 생성 및 삽입
           const englishSeriesNavMarkdown = generateSeriesNavigation({
@@ -497,6 +509,8 @@ export async function publishCommand(file: string, options: PublishOptions) {
           }
 
           console.log(chalk.green('✓ 영문 포스트 시리즈 기능 적용됨'));
+        } else if (options.seriesNav === false) {
+          console.log(chalk.gray('✓ 영문 포스트 시리즈 네비게이션 건너뜀 (--no-series-nav)'));
         }
 
         // 영문 SEO 데이터 생성
