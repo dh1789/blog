@@ -285,6 +285,32 @@ describe('hasExistingSeriesNavigation', () => {
 `;
       expect(hasExistingSeriesNavigation(content)).toBe(true);
     });
+
+    it('"시리즈 네비게이션" 패턴을 감지한다', () => {
+      const content = `
+본문 내용
+
+---
+
+## 시리즈 네비게이션
+
+**MCP 시리즈** (3/5)
+`;
+      expect(hasExistingSeriesNavigation(content)).toBe(true);
+    });
+
+    it('"Series Navigation" 패턴을 감지한다', () => {
+      const content = `
+Content here
+
+---
+
+## Series Navigation
+
+**MCP Series** (3/5)
+`;
+      expect(hasExistingSeriesNavigation(content)).toBe(true);
+    });
   });
 
   // =========================================================================
@@ -388,6 +414,50 @@ describe('removeExistingSeriesNavigation', () => {
       const result = removeExistingSeriesNavigation(content);
 
       expect(result).toBe(content);
+    });
+
+    it('"시리즈 네비게이션" 패턴을 제거한다', () => {
+      const content = `본문 내용입니다.
+
+---
+
+## 시리즈 네비게이션
+
+**MCP 시리즈** (3/5)
+
+1. [Day 1](https://blog.com/ko/day1)
+2. **👉 Day 2** (현재 글)
+3. Day 3 *(준비 중)*
+
+---`;
+
+      const result = removeExistingSeriesNavigation(content);
+
+      expect(result).not.toContain('시리즈 네비게이션');
+      expect(result).not.toContain('Day 1');
+      expect(result).toContain('본문 내용입니다');
+    });
+
+    it('"Series Navigation" 패턴을 제거한다', () => {
+      const content = `Content here.
+
+---
+
+## Series Navigation
+
+**MCP Series** (3/5)
+
+1. [Day 1](https://blog.com/en/day1)
+2. **👉 Day 2** (Current)
+3. Day 3 *(Coming Soon)*
+
+---`;
+
+      const result = removeExistingSeriesNavigation(content);
+
+      expect(result).not.toContain('Series Navigation');
+      expect(result).not.toContain('Day 1');
+      expect(result).toContain('Content here');
     });
   });
 

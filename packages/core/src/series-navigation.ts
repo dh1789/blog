@@ -134,11 +134,14 @@ function generateMinimalNavigation(
 
 /**
  * 시리즈 네비게이션 감지 패턴
- * 한글: "📚 시리즈 목차" 또는 영문: "📚 Series Index"
+ * - 한글: "📚 시리즈 목차" 또는 "시리즈 네비게이션"
+ * - 영문: "📚 Series Index" 또는 "Series Navigation"
  */
 const SERIES_NAV_PATTERNS = [
   /📚\s*시리즈\s*목차/i,
   /📚\s*Series\s*Index/i,
+  /##\s*시리즈\s*네비게이션/i,
+  /##\s*Series\s*Navigation/i,
 ];
 
 /**
@@ -207,6 +210,10 @@ export function removeExistingSeriesNavigation(content: string): string {
     /##\s*📚\s*시리즈\s*목차[\s\S]*?(?=---|\n##|$)/gi,
     // 영문 (--- 없는 경우)
     /##\s*📚\s*Series\s*Index[\s\S]*?(?=---|\n##|$)/gi,
+    // "시리즈 네비게이션" 패턴 (한글)
+    /##\s*시리즈\s*네비게이션[\s\S]*?(?=---|\n##|$)/gi,
+    // "Series Navigation" 패턴 (영문)
+    /##\s*Series\s*Navigation[\s\S]*?(?=---|\n##|$)/gi,
   ];
 
   for (const pattern of markdownPatterns) {
