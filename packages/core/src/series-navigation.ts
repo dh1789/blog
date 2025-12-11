@@ -136,12 +136,17 @@ function generateMinimalNavigation(
  * 시리즈 네비게이션 감지 패턴
  * - 한글: "📚 시리즈 목차" 또는 "시리즈 네비게이션"
  * - 영문: "📚 Series Index" 또는 "Series Navigation"
+ * - 마크다운 형식 (##) 및 HTML 형식 (<h2>) 모두 지원
  */
 const SERIES_NAV_PATTERNS = [
+  // 마크다운/텍스트 형식
   /📚\s*시리즈\s*목차/i,
   /📚\s*Series\s*Index/i,
   /##\s*시리즈\s*네비게이션/i,
   /##\s*Series\s*Navigation/i,
+  // HTML 형식
+  /<h2[^>]*>시리즈\s*네비게이션<\/h2>/i,
+  /<h2[^>]*>Series\s*Navigation<\/h2>/i,
 ];
 
 /**
@@ -193,6 +198,14 @@ export function removeExistingSeriesNavigation(content: string): string {
     /<h2[^>]*>📚\s*시리즈\s*목차<\/h2>[\s\S]*?(?=<hr\s*\/?>|$)/gi,
     // 영문 Series Index (hr 없는 경우)
     /<h2[^>]*>📚\s*Series\s*Index<\/h2>[\s\S]*?(?=<hr\s*\/?>|$)/gi,
+    // "시리즈 네비게이션" HTML 패턴 (hr로 감싸진 경우)
+    /<hr\s*\/?>\s*\n?\s*<h2[^>]*>시리즈\s*네비게이션<\/h2>[\s\S]*?<hr\s*\/?>/gi,
+    // "Series Navigation" HTML 패턴 (hr로 감싸진 경우)
+    /<hr\s*\/?>\s*\n?\s*<h2[^>]*>Series\s*Navigation<\/h2>[\s\S]*?<hr\s*\/?>/gi,
+    // "시리즈 네비게이션" HTML 패턴 (hr 없는 경우 - 끝까지 또는 다음 hr까지)
+    /<h2[^>]*>시리즈\s*네비게이션<\/h2>[\s\S]*$/gi,
+    // "Series Navigation" HTML 패턴 (hr 없는 경우 - 끝까지 또는 다음 hr까지)
+    /<h2[^>]*>Series\s*Navigation<\/h2>[\s\S]*$/gi,
   ];
 
   for (const pattern of htmlPatterns) {

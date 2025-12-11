@@ -311,6 +311,16 @@ Content here
 `;
       expect(hasExistingSeriesNavigation(content)).toBe(true);
     });
+
+    it('HTML 형식의 "시리즈 네비게이션"을 감지한다', () => {
+      const content = `<p>본문 내용</p><h2>시리즈 네비게이션</h2><p>내용</p>`;
+      expect(hasExistingSeriesNavigation(content)).toBe(true);
+    });
+
+    it('HTML 형식의 "Series Navigation"을 감지한다', () => {
+      const content = `<p>Content</p><h2>Series Navigation</h2><p>Items</p>`;
+      expect(hasExistingSeriesNavigation(content)).toBe(true);
+    });
   });
 
   // =========================================================================
@@ -452,6 +462,38 @@ describe('removeExistingSeriesNavigation', () => {
 3. Day 3 *(Coming Soon)*
 
 ---`;
+
+      const result = removeExistingSeriesNavigation(content);
+
+      expect(result).not.toContain('Series Navigation');
+      expect(result).not.toContain('Day 1');
+      expect(result).toContain('Content here');
+    });
+
+    it('HTML 형식의 "시리즈 네비게이션"을 제거한다', () => {
+      const content = `<p>본문 내용입니다.</p>
+<h2>시리즈 네비게이션</h2>
+<p><strong>MCP 시리즈</strong> (3/5)</p>
+<ul>
+<li><a href="https://blog.com/ko/day1">Day 1</a></li>
+<li><strong>👉 Day 2</strong> (현재 글)</li>
+</ul>`;
+
+      const result = removeExistingSeriesNavigation(content);
+
+      expect(result).not.toContain('시리즈 네비게이션');
+      expect(result).not.toContain('Day 1');
+      expect(result).toContain('본문 내용입니다');
+    });
+
+    it('HTML 형식의 "Series Navigation"을 제거한다', () => {
+      const content = `<p>Content here.</p>
+<h2>Series Navigation</h2>
+<p><strong>MCP Series</strong> (3/5)</p>
+<ul>
+<li><a href="https://blog.com/en/day1">Day 1</a></li>
+<li><strong>👉 Day 2</strong> (Current)</li>
+</ul>`;
 
       const result = removeExistingSeriesNavigation(content);
 
