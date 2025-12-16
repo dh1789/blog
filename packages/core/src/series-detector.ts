@@ -351,7 +351,7 @@ function extractTableUrls(content: string, result: SeriesDocument): void {
 
       // Korean URL
       if (koreanColIndex > 0 && cols[koreanColIndex]) {
-        const url = cols[koreanColIndex].trim();
+        const url = normalizeUrl(cols[koreanColIndex]);
         if (isValidUrl(url)) {
           result.koreanUrls[dayNumber] = url;
         }
@@ -359,7 +359,7 @@ function extractTableUrls(content: string, result: SeriesDocument): void {
 
       // English URL
       if (englishColIndex > 0 && cols[englishColIndex]) {
-        const url = cols[englishColIndex].trim();
+        const url = normalizeUrl(cols[englishColIndex]);
         if (isValidUrl(url)) {
           result.englishUrls[dayNumber] = url;
         }
@@ -367,7 +367,7 @@ function extractTableUrls(content: string, result: SeriesDocument): void {
 
       // 일반 URL 컬럼 (섹션에 따라 분류)
       if (urlColIndex > 0 && cols[urlColIndex] && currentSection) {
-        const url = cols[urlColIndex].trim();
+        const url = normalizeUrl(cols[urlColIndex]);
         if (isValidUrl(url)) {
           if (currentSection === 'korean') {
             result.koreanUrls[dayNumber] = url;
@@ -381,19 +381,31 @@ function extractTableUrls(content: string, result: SeriesDocument): void {
 }
 
 /**
+ * URL 정규화 (백틱, 공백 등 제거)
+ */
+function normalizeUrl(url: string): string {
+  if (!url) return '';
+  // 백틱, 따옴표 제거
+  return url.replace(/[`'"]/g, '').trim();
+}
+
+/**
  * URL 유효성 검사
  * - 절대 URL: http://, https://
  * - 상대 URL: /ko/, /en/
  */
 function isValidUrl(url: string): boolean {
+  const normalized = normalizeUrl(url);
+  if (!normalized) return false;
+
   // 상대 경로 허용 (/ko/, /en/)
-  if (url.startsWith('/ko/') || url.startsWith('/en/')) {
+  if (normalized.startsWith('/ko/') || normalized.startsWith('/en/')) {
     return true;
   }
 
   try {
-    new URL(url);
-    return url.startsWith('http://') || url.startsWith('https://');
+    new URL(normalized);
+    return normalized.startsWith('http://') || normalized.startsWith('https://');
   } catch {
     return false;
   }
