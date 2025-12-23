@@ -166,6 +166,8 @@ export function parseSeriesDocument(docPath: string): SeriesDocument | null {
     const result: SeriesDocument = {
       koreanUrls: {},
       englishUrls: {},
+      koreanTitles: {},
+      englishTitles: {},
       githubUrl: null,
       totalDays: 1,
     };
@@ -176,11 +178,14 @@ export function parseSeriesDocument(docPath: string): SeriesDocument | null {
     // 2. totalDays 추출
     const explicitTotalDays = extractTotalDays(content);
 
-    // 3. URL 매핑 추출 (리스트 형식)
-    extractListUrls(content, result);
+    // 3. URL 및 제목 추출 (리스트 형식)
+    extractListUrlsAndTitles(content, result);
 
-    // 4. URL 매핑 추출 (테이블 형식)
-    extractTableUrls(content, result);
+    // 4. URL 및 제목 추출 (테이블 형식)
+    extractTableUrlsAndTitles(content, result);
+
+    // 5. 헤딩 형식에서 제목 추출 (### Day N: 제목)
+    extractHeadingTitles(content, result);
 
     // 5. totalDays 결정 (명시적 값 우선, 없으면 URL 개수에서 유추)
     if (explicitTotalDays !== null) {
@@ -255,33 +260,57 @@ function extractTotalDays(content: string): number | null {
 }
 
 /**
- * 리스트 형식의 URL을 추출합니다.
- * - Day N: https://...
+ * 리스트 형식의 URL과 제목을 추출합니다.
+ * 형식 1: - [Day N: 제목](URL)
+ * 형식 2: - Day N: 제목
  */
-function extractListUrls(content: string, result: SeriesDocument): void {
+function extractListUrlsAndTitles(content: string, result: SeriesDocument): void {
   const lines = content.split('\n');
   let currentSection: 'korean' | 'english' | null = null;
 
   for (const line of lines) {
     // 섹션 감지
     const lowerLine = line.toLowerCase();
-    if (lowerLine.includes('한글') || lowerLine.includes('korean')) {
+    if (lowerLine.includes('한글') || lowerLine.includes('korean') || lowerLine.includes('한국어')) {
       currentSection = 'korean';
       continue;
     }
-    if (lowerLine.includes('영문') || lowerLine.includes('english')) {
+    if (lowerLine.includes('영문') || lowerLine.includes('english') || lowerLine.includes('영어')) {
       currentSection = 'english';
       continue;
     }
 
-    // URL 라인 파싱: - Day N: https://...
-    const urlPattern = /[-*]\s*Day\s*(\d+):\s*(https?:\/\/[^\s]+)/i;
-    const match = line.match(urlPattern);
-    if (match && currentSection) {
-      const dayNumber = parseInt(match[1], 10);
-      const url = match[2];
+    // 패턴 1: [Day N: 제목](URL) - 마크다운 링크 형식
+    const linkPattern = /[-*]\s*\[Day\s*(\d+):\s*([^\]]+)\]\(([^)]+)\)/i;
+    const linkMatch = line.match(linkPattern);
+    if (linkMatch && currentSection) {
+      const dayNumber = parseInt(linkMatch[1], 10);
+      const title = linkMatch[2].trim();
+      const url = normalizeUrl(linkMatch[3]);
 
-      // URL 유효성 검사
+      if (isValidUrl(url)) {
+        if (currentSection === 'korean') {
+          result.koreanUrls[dayNumber] = url;
+          if (title && !result.koreanTitles[dayNumber]) {
+            result.koreanTitles[dayNumber] = title;
+          }
+        } else {
+          result.englishUrls[dayNumber] = url;
+          if (title && !result.englishTitles[dayNumber]) {
+            result.englishTitles[dayNumber] = title;
+          }
+        }
+      }
+      continue;
+    }
+
+    // 패턴 2: Day N: URL (URL만 있는 경우)
+    const urlPattern = /[-*]\s*Day\s*(\d+):\s*(https?:\/\/[^\s]+)/i;
+    const urlMatch = line.match(urlPattern);
+    if (urlMatch && currentSection) {
+      const dayNumber = parseInt(urlMatch[1], 10);
+      const url = urlMatch[2];
+
       if (isValidUrl(url)) {
         if (currentSection === 'korean') {
           result.koreanUrls[dayNumber] = url;
@@ -294,11 +323,11 @@ function extractListUrls(content: string, result: SeriesDocument): void {
 }
 
 /**
- * 테이블 형식의 URL을 추출합니다.
+ * 테이블 형식의 URL과 제목을 추출합니다.
  * | Day | Korean | English |
  * | 1 | https://ko/... | https://en/... |
  */
-function extractTableUrls(content: string, result: SeriesDocument): void {
+function extractTableUrlsAndTitles(content: string, result: SeriesDocument): void {
   const lines = content.split('\n');
   let isInTable = false;
   let koreanColIndex = -1;
@@ -375,6 +404,68 @@ function extractTableUrls(content: string, result: SeriesDocument): void {
             result.englishUrls[dayNumber] = url;
           }
         }
+      }
+    }
+  }
+}
+
+/**
+ * 헤딩 형식에서 Day 제목을 추출합니다.
+ * ### Day N: 제목
+ * **한국어 제목**: "... Day N: 제목"
+ * **영어 제목**: "... Day N: Title"
+ */
+function extractHeadingTitles(content: string, result: SeriesDocument): void {
+  const lines = content.split('\n');
+  let currentLanguage: 'korean' | 'english' | null = null;
+
+  for (const line of lines) {
+    // 언어 섹션 감지
+    const lowerLine = line.toLowerCase();
+    if (lowerLine.includes('한글') || lowerLine.includes('korean') || lowerLine.includes('한국어')) {
+      currentLanguage = 'korean';
+    }
+    if (lowerLine.includes('영문') || lowerLine.includes('english') || lowerLine.includes('영어')) {
+      currentLanguage = 'english';
+    }
+
+    // 패턴 1: ### Day N: 제목 (헤딩 형식)
+    const headingPattern = /^#{1,4}\s*Day\s*(\d+):\s*(.+)/i;
+    const headingMatch = line.match(headingPattern);
+    if (headingMatch) {
+      const dayNumber = parseInt(headingMatch[1], 10);
+      const title = headingMatch[2].trim();
+
+      // 언어가 감지되었으면 해당 언어에 저장, 아니면 기본적으로 한글로
+      const targetLang = currentLanguage || 'korean';
+      if (targetLang === 'korean' && !result.koreanTitles[dayNumber]) {
+        result.koreanTitles[dayNumber] = title;
+      } else if (targetLang === 'english' && !result.englishTitles[dayNumber]) {
+        result.englishTitles[dayNumber] = title;
+      }
+      continue;
+    }
+
+    // 패턴 2: **한국어 제목**: "Claude Agent SDK Day 1: Agent 개념과 첫 번째 Agent 만들기"
+    const koreanTitlePattern = /\*\*한국어 제목\*\*:\s*"[^"]*Day\s*(\d+):\s*([^"]+)"/i;
+    const koreanMatch = line.match(koreanTitlePattern);
+    if (koreanMatch) {
+      const dayNumber = parseInt(koreanMatch[1], 10);
+      const title = koreanMatch[2].trim();
+      if (!result.koreanTitles[dayNumber]) {
+        result.koreanTitles[dayNumber] = title;
+      }
+      continue;
+    }
+
+    // 패턴 3: **영어 제목**: "Claude Agent SDK Day 1: Agent Concepts and Building Your First Agent"
+    const englishTitlePattern = /\*\*영어 제목\*\*:\s*"[^"]*Day\s*(\d+):\s*([^"]+)"/i;
+    const englishMatch = line.match(englishTitlePattern);
+    if (englishMatch) {
+      const dayNumber = parseInt(englishMatch[1], 10);
+      const title = englishMatch[2].trim();
+      if (!result.englishTitles[dayNumber]) {
+        result.englishTitles[dayNumber] = title;
       }
     }
   }

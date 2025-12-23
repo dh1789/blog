@@ -54,8 +54,9 @@ export function generateSeriesNavigation(options: SeriesNavigationOptions): stri
     return generateMinimalNavigation(displayName, safeCurrentDay, language);
   }
 
-  // URL 매핑 선택 (언어에 따라)
+  // URL 및 제목 매핑 선택 (언어에 따라)
   const urls = language === 'en' ? seriesDoc.englishUrls : seriesDoc.koreanUrls;
+  const titles = language === 'en' ? seriesDoc.englishTitles : seriesDoc.koreanTitles;
 
   // totalDays 결정 (명시적 값 또는 currentDay 중 큰 값)
   const totalDays = Math.max(seriesDoc.totalDays, safeCurrentDay);
@@ -77,19 +78,21 @@ export function generateSeriesNavigation(options: SeriesNavigationOptions): stri
   // 각 Day 항목 생성
   for (let day = 1; day <= totalDays; day++) {
     const url = urls[day];
+    const title = titles?.[day] || '';
     const isCurrentDay = day === safeCurrentDay;
+    const dayLabel = title ? `Day ${day}: ${title}` : `Day ${day}`;
 
     if (isCurrentDay) {
       // 현재 Day: 굵게 + 아이콘
       const currentLabel = language === 'ko' ? '현재 글' : 'Current';
-      lines.push(`${day}. **👉 Day ${day}** (${currentLabel})`);
+      lines.push(`${day}. **👉 ${dayLabel}** (${currentLabel})`);
     } else if (url) {
       // 발행된 Day: 링크
-      lines.push(`${day}. [Day ${day}](${url})`);
+      lines.push(`${day}. [${dayLabel}](${url})`);
     } else {
       // 미발행 Day: 준비 중 표시
       const comingSoon = language === 'ko' ? '준비 중' : 'Coming Soon';
-      lines.push(`${day}. Day ${day} *(${comingSoon})*`);
+      lines.push(`${day}. ${dayLabel} *(${comingSoon})*`);
     }
   }
 

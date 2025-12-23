@@ -419,6 +419,42 @@ export interface RevenueAnalysisOptions {
 }
 
 // ============================================================================
+// Series Types (PRD 0014: 시리즈 포스트 기능)
+// ============================================================================
+
+/**
+ * 시리즈 정보
+ * 파일명이나 frontmatter에서 추출된 시리즈 메타데이터
+ */
+export interface SeriesInfo {
+  /** 시리즈명 (예: "mcp", "claude-agent-sdk") */
+  name: string;
+  /** Day 번호 (예: 1, 2, 3) */
+  dayNumber: number;
+  /** 매칭된 문서 경로 (없으면 null) */
+  docPath: string | null;
+}
+
+/**
+ * 시리즈 문서 데이터
+ * docs/ 폴더의 시리즈 계획 문서에서 추출된 정보
+ */
+export interface SeriesDocument {
+  /** Day 번호 → 한글 URL 매핑 */
+  koreanUrls: Record<number, string>;
+  /** Day 번호 → 영문 URL 매핑 */
+  englishUrls: Record<number, string>;
+  /** Day 번호 → 한글 제목 매핑 */
+  koreanTitles: Record<number, string>;
+  /** Day 번호 → 영문 제목 매핑 */
+  englishTitles: Record<number, string>;
+  /** GitHub 저장소 URL (없으면 null) */
+  githubUrl: string | null;
+  /** 전체 Day 수 */
+  totalDays: number;
+}
+
+// ============================================================================
 // Translation Types (자동 번역 시스템)
 // ============================================================================
 
