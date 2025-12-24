@@ -89,7 +89,29 @@ content/posts/en/2025-12-23-rag-day6-production-en.md
 
 ---
 
-## 📋 시리즈 네비게이션 템플릿
+## 📋 시리즈 네비게이션
+
+### 한국어 URL 및 제목 매핑
+
+- [Day 1: RAG 개념과 아키텍처](/ko/rag-day1-introduction)
+- [Day 2: 문서 처리와 청킹 전략](/ko/rag-day2-document-processing)
+- [Day 3: 임베딩과 벡터 데이터베이스](/ko/rag-day3-embedding-vectordb)
+- [Day 4: 검색 최적화와 리랭킹](/ko/rag-day4-search-optimization)
+- [Day 5: Claude 통합과 답변 생성](/ko/rag-day5-claude-integration)
+- [Day 6: 프로덕션 배포와 최적화](/ko/rag-day6-production)
+
+### 영어 URL 및 제목 매핑
+
+- [Day 1: RAG Concepts and Architecture](/en/rag-day1-introduction-en)
+- [Day 2: Document Processing and Chunking](/en/rag-day2-document-processing-en)
+- [Day 3: Embeddings and Vector Database](/en/rag-day3-embedding-vectordb-en)
+- [Day 4: Search Optimization and Reranking](/en/rag-day4-search-optimization-en)
+- [Day 5: Claude Integration and Answer Generation](/en/rag-day5-claude-integration-en)
+- [Day 6: Production Deployment and Optimization](/en/rag-day6-production-en)
+
+---
+
+## 📋 시리즈 네비게이션 템플릿 (복사용)
 
 ### 한국어 네비게이션 (복사용)
 ```markdown

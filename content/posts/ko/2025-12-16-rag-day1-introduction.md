@@ -2,7 +2,7 @@
 title: "RAG Day 1: RAG 개념과 아키텍처 - 내 문서를 아는 AI 만들기"
 slug: "rag-day1-introduction"
 excerpt: "RAG(Retrieval Augmented Generation)란 무엇인가? LLM의 환각 문제를 해결하고 벡터 데이터베이스를 활용해 내 문서 기반으로 답변하는 AI 챗봇 시스템의 RAG 아키텍처를 TypeScript로 구현합니다."
-status: "draft"
+status: "publish"
 categories:
   - "RAG"
   - "AI Development"
@@ -426,13 +426,3 @@ npx tsx src/index.ts
 **전체 코드는 GitHub에서 확인하세요:**
 [https://github.com/dh1789/my-first-rag](https://github.com/dh1789/my-first-rag)
 
----
-
-## 시리즈 네비게이션
-
-- **Day 1: RAG 개념과 아키텍처** (현재 글)
-- [Day 2: 문서 처리와 청킹 전략](/ko/rag-day2-document-processing)
-- [Day 3: 임베딩과 벡터 데이터베이스](/ko/rag-day3-embedding-vectordb)
-- [Day 4: 검색 최적화와 리랭킹](/ko/rag-day4-search-optimization)
-- [Day 5: Claude 통합과 답변 생성](/ko/rag-day5-claude-integration)
-- [Day 6: 프로덕션 배포와 최적화](/ko/rag-day6-production)
