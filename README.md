@@ -1,10 +1,10 @@
-# @blog/cli - AI-Powered WordPress Blog Automation Platform
+# @blog/cli - WordPress Content Publishing CLI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
 
-WordPress + Avada 테마 기반 블로그의 콘텐츠 작성부터 수익 최적화까지 완전 자동화하는 CLI 도구
+WordPress + Avada 테마 기반 블로그의 마크다운 콘텐츠 발행 및 관리를 위한 CLI 도구
 
 ## 📂 프로젝트 구조
 
@@ -24,7 +24,7 @@ blog/
 │   ├── guides/       # 사용 가이드
 │   ├── specs/        # 기술 스펙
 │   ├── planning/     # 기획 문서
-│   ├── prompts/      # AI 프롬프트 템플릿
+│   ├── prompts/      # 프롬프트 템플릿
 │   └── archive/      # 완료된 작업 문서
 │
 ├── scripts/          # 스크립트 (WordPress 설정)
@@ -37,26 +37,33 @@ blog/
 
 ## ✨ 주요 기능
 
-### 📝 AI 콘텐츠 생성
-- **AI 초안 생성**: Claude를 활용한 고품질 블로그 포스트 자동 생성
-- **초안 수정**: AI 기반 콘텐츠 개선 및 리파인
+### 📝 콘텐츠 작성 도구
+- **초안 생성**: 템플릿 기반 블로그 포스트 초안 작성
+- **초안 수정**: 콘텐츠 개선 및 리파인
 - **템플릿 시스템**: 다양한 콘텐츠 유형별 맞춤 템플릿
 
-### 🌐 AI 자동 번역 (Epic 11.0)
-- **원클릭 번역 & 발행**: 한글 포스트 발행 시 자동으로 영문 번역 및 발행
-- **Claude Code 통합**: 고품질 AI 번역 엔진
-- **8단계 품질 검증**: 라인 수, 코드 블록, SEO 키워드, 제목 길이 자동 검증
-- **SEO 최적화**: 영문 SEO에 최적화된 제목/요약 자동 생성
-- **Polylang 자동 연결**: 한영 포스트 자동 연결로 언어 전환 지원
+### 🌐 다국어 번역 지원 (Epic 11.0)
+- **한영 번역 & 발행**: 한글 포스트 발행 시 영문 번역 및 발행 지원
+- **번역 엔진 통합**: 고품질 번역 지원
+- **8단계 품질 검증**: 라인 수, 코드 블록, SEO 키워드, 제목 길이 검증
+- **SEO 최적화**: 영문 SEO에 최적화된 제목/요약 생성
+- **Polylang 연결**: 한영 포스트 연결로 언어 전환 지원
 
-### 🚀 WordPress 자동화
-- **원클릭 발행**: 마크다운 → WordPress 자동 변환 및 업로드
-- **🖼️ 이미지 자동 업로드 (Epic 12.0)**: 로컬 이미지를 WordPress 미디어 라이브러리에 자동 업로드
-  - 중복 이미지 자동 감지 및 재사용
-  - 마크다운 경로 자동 변환 (로컬 → WordPress CDN URL)
+### 🚀 WordPress 발행
+- **마크다운 발행**: 마크다운 → WordPress HTML 변환 및 업로드
+- **🖼️ 이미지 업로드 (Epic 12.0)**: 로컬 이미지를 WordPress 미디어 라이브러리에 업로드
+  - 중복 이미지 감지 및 재사용
+  - 마크다운 경로 변환 (로컬 → WordPress CDN URL)
   - 업로드 진행률 및 결과 리포트
-- **SEO 자동화**: 메타 태그, Open Graph, Twitter Card 자동 생성
-- **광고 자동 삽입**: Google AdSense 코드 최적 위치 자동 삽입
+- **📚 시리즈 관리 (PRD 0014)**: 시리즈 포스트 발행 시 네비게이션 생성
+  - 파일명에서 시리즈 정보 감지 (`day1`, `day-2` 등)
+  - docs/ 폴더 시리즈 계획서 탐색 및 파싱
+  - 시리즈 목차 마크다운 생성 및 삽입
+  - 한영 링크 변환 (영문 발행 시 URL 치환)
+  - 번역 배너 삽입 (영문 포스트 상단)
+  - GitHub 링크 삽입 (TL;DR 섹션 뒤)
+- **SEO 지원**: 메타 태그, Open Graph, Twitter Card 생성
+- **광고 삽입**: Google AdSense 코드 최적 위치 삽입
 - **포스트 관리**: 목록 조회, 삭제, 상태 변경
 
 ### 📊 분석 & 모니터링
@@ -102,7 +109,7 @@ WORDPRESS_URL=https://your-blog.com
 WORDPRESS_USERNAME=your-username
 WORDPRESS_APP_PASSWORD=your-application-password
 
-# Claude AI (콘텐츠 생성)
+# LLM API Key (번역 지원)
 ANTHROPIC_API_KEY=sk-ant-xxxxx
 
 # Google AdSense
@@ -201,7 +208,7 @@ sudo bash setup.sh
 
 ## 🎯 사용법
 
-### AI 초안 생성
+### 초안 작성
 ```bash
 # 기본 초안 생성
 blog draft create "Next.js 14 완벽 가이드" "Next.js, React, SSR" --words 2000
@@ -245,6 +252,10 @@ blog publish content/posts/en/guide.md --language en
 # 영어 포스트 발행 + 자동 언어 연결 (Polylang)
 blog publish content/posts/en/guide.md --link-to 29
 # 한글 Post ID 29와 자동으로 연결됨
+
+# 🆕 기존 포스트 강제 업데이트 (PRD 0014)
+blog publish content/posts/my-post.md --force
+# 기존 포스트 발견 시 확인 프롬프트 없이 바로 업데이트
 
 # 🆕 로컬 이미지 자동 업로드 (Epic 12.0)
 blog publish content/posts/my-post.md --upload-images
@@ -294,25 +305,35 @@ blog delete 123
 
 # 강제 삭제 (확인 없이)
 blog delete 123 --force
+
+# 🆕 포스트 상태 조회 (PRD 0014)
+blog status my-post-slug
+
+# 포스트 상태 변경
+blog status my-post-slug --publish  # 발행
+blog status my-post-slug --draft    # 초안으로 변경
+
+# 언어별 조회
+blog status my-post-slug --language ko
 ```
 
-### AI 자동 번역 (Epic 11.0)
+### 다국어 번역 발행 (Epic 11.0)
 
-한글 포스트 발행 시 Claude Code를 활용해 자동으로 영문 번역 및 발행합니다.
+한글 포스트 발행 시 영문 번역 및 발행을 지원합니다.
 
 ```bash
-# 기본 사용: 한글 포스트 발행 → 자동 번역 → 영문 발행 → 언어 연결
+# 기본 사용: 한글 포스트 발행 → 번역 → 영문 발행 → 언어 연결
 blog publish content/posts/ko/my-post.md
 
 # 실행 흐름:
 # 1. 한글 포스트 파싱 및 SEO 검증
 # 2. WordPress에 한글 포스트 발행 (ID: 29)
-# 3. ✨ 자동 번역 시작 (Claude Code)
+# 3. ✨ 번역 시작
 # 4. 번역 품질 검증 (8단계)
 # 5. 검증 통과 시 영문 포스트 발행 (ID: 26)
 # 6. Polylang으로 언어 연결: 한글(29) ↔ 영문(26)
 
-# 자동 번역 비활성화 (한글만 발행)
+# 번역 비활성화 (한글만 발행)
 blog publish content/posts/ko/my-post.md --no-translate
 
 # 초안으로 저장 (번역도 초안)
@@ -330,7 +351,7 @@ blog publish content/posts/ko/my-post.md --draft
 **출력 예시**:
 ```
 === 자동 번역 시작 ===
-⠹ 한글 포스트 번역 중 (Claude Code)...
+⠹ 한글 포스트 번역 중...
 ✔ 번역 품질 검증 통과
 
 === 번역 품질 메트릭 ===
@@ -541,11 +562,11 @@ blog/
 │       │   └── schemas.ts   # Zod 스키마
 │       └── package.json
 ├── content/
-│   ├── drafts/              # AI 생성 초안
+│   ├── drafts/              # 초안 저장
 │   └── posts/               # 발행 준비된 포스트
 │       ├── ko/              # 한국어
 │       └── en/              # 영어
-├── prompts/                 # AI 프롬프트 템플릿
+├── prompts/                 # 프롬프트 템플릿
 │   ├── blog-post.txt
 │   ├── review.txt
 │   └── tutorial.txt
@@ -598,7 +619,6 @@ pnpm format
 - **Package Manager**: pnpm (workspace)
 - **Testing**: Vitest
 - **WordPress**: WordPress REST API, WPAPI
-- **AI**: Claude (초안 생성, 번역)
 - **Framework**: Commander.js (CLI)
 - **Preview**: Express, Socket.io, Chokidar
 - **SEO**: Marked, transliteration
@@ -608,7 +628,7 @@ pnpm format
 ## 🗺️ 로드맵
 
 ### ✅ Epic 1.0 - Core MVP
-- [x] AI 초안 생성 (draft create, draft refine)
+- [x] 초안 생성 (draft create, draft refine)
 - [x] WordPress 발행 (publish)
 - [x] 기본 CLI 구조
 
@@ -657,8 +677,8 @@ pnpm format
 - [x] WordPress REST API 기반 양방향 연결
 - [x] 완전 자동화 워크플로우
 
-### ✅ Epic 11.0 - AI Auto-Translation System
-- [x] Claude Code 통합 번역 엔진
+### ✅ Epic 11.0 - Translation System
+- [x] 번역 엔진 통합
 - [x] 8단계 품질 검증 시스템
   - [x] 라인 수 검증 (50-150% 범위)
   - [x] 코드 블록 보존
@@ -666,9 +686,9 @@ pnpm format
   - [x] 키워드 밀도 검증 (0.5-2.5%)
   - [x] 제목 길이 검증 (≤60자)
   - [x] 링크/헤딩 구조 보존
-- [x] SEO 최적화 영문 제목/요약 자동 생성
+- [x] SEO 최적화 영문 제목/요약 생성
 - [x] `publish --no-translate` 플래그
-- [x] 자동 번역 → 발행 → Polylang 연결 완전 자동화
+- [x] 번역 → 발행 → Polylang 연결 워크플로우
 - [x] 종합 테스트 (39 tests: translator 12, validation 19, wordpress 8)
 - [x] 문서화 및 사용 가이드
 

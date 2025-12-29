@@ -1,15 +1,16 @@
 {
-  "name": "wordpress-automation",
+  "name": "wordpress-publishing-cli",
   "version": "0.1.0",
   "private": true,
-  "description": "WordPress + Avada 블로그 콘텐츠 관리 및 광고 수익 최적화 자동화 도구",
+  "description": "WordPress + Avada 블로그 마크다운 콘텐츠 발행 및 관리 CLI 도구",
   "keywords": [
     "wordpress",
-    "automation",
+    "publishing",
     "blog",
     "cli",
     "avada",
-    "content-management"
+    "content-management",
+    "markdown"
   ],
   "author": "idongho",
   "license": "MIT",
@@ -35,5 +36,14 @@
     "prettier": "^3.1.0",
     "typescript": "^5.3.0",
     "vitest": "^1.1.0"
+  },
+  "dependencies": {
+    "rehype-raw": "^7.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-html": "^16.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5"
   }
 }
