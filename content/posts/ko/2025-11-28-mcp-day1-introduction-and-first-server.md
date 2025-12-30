@@ -30,7 +30,7 @@ seo_description: "MCP(Model Context Protocol)의 핵심 개념을 이해하고 T
 
 **MCP(Model Context Protocol)** 는 AI도구가 외부 데이터와 기능에 접근할 수 있게 해주는 표준 프로토콜입니다. AI개발에서 가장 중요한 외부 연동 문제를 해결합니다.
 
-이 글에서 배우는 것:
+**다루는 내용**
 - Model Context Protocol이 왜 필요한지, 어떤 문제를 해결하는지
 - Host, Client, MCP서버 아키텍처 이해
 - TypeScript로 MCP서버 직접 구현과 Tool구현 방법

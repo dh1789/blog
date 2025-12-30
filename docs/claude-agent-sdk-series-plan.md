@@ -61,18 +61,21 @@ content/posts/en/YYYY-MM-DD-claude-agent-sdk-dayN-{topic}.md
 ```
 
 ### 예상 파일 목록
-```
-content/posts/ko/2025-12-06-claude-agent-sdk-day1-introduction.md
-content/posts/ko/2025-12-07-claude-agent-sdk-day2-tool-use-mcp.md
-content/posts/ko/2025-12-08-claude-agent-sdk-day3-memory-context.md
-content/posts/ko/2025-12-09-claude-agent-sdk-day4-multi-agent.md
-content/posts/ko/2025-12-10-claude-agent-sdk-day5-production.md
 
-content/posts/en/2025-12-06-claude-agent-sdk-day1-introduction.md
-content/posts/en/2025-12-07-claude-agent-sdk-day2-tool-use-mcp.md
-content/posts/en/2025-12-08-claude-agent-sdk-day3-memory-context.md
-content/posts/en/2025-12-09-claude-agent-sdk-day4-multi-agent.md
-content/posts/en/2025-12-10-claude-agent-sdk-day5-production.md
+**일정 규칙**: 주중(월~금)만 작업, 주말 제외
+
+```
+content/posts/ko/2025-12-08-claude-agent-sdk-day1-introduction.md      # 월 12/8
+content/posts/ko/2025-12-09-claude-agent-sdk-day2-tool-use-mcp.md      # 화 12/9
+content/posts/ko/2025-12-10-claude-agent-sdk-day3-memory-context.md    # 수 12/10
+content/posts/ko/2025-12-11-claude-agent-sdk-day4-multi-agent.md       # 목 12/11
+content/posts/ko/2025-12-12-claude-agent-sdk-day5-production.md        # 금 12/12
+
+content/posts/en/2025-12-08-claude-agent-sdk-day1-introduction.md
+content/posts/en/2025-12-09-claude-agent-sdk-day2-tool-use-mcp.md
+content/posts/en/2025-12-10-claude-agent-sdk-day3-memory-context.md
+content/posts/en/2025-12-11-claude-agent-sdk-day4-multi-agent.md
+content/posts/en/2025-12-12-claude-agent-sdk-day5-production.md
 ```
 
 ---

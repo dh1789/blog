@@ -24,7 +24,7 @@ language: "ko"
 - **3단계**: package.json 설정 → npm publish → README 작성
 - 오늘 만든 **MCP 패키지**가 전 세계 개발자들에게 공유됩니다
 
-이 글에서 배우는 것:
+**실습 단계**
 - **npm 패키지 구조화**: bin, main, files 설정
 - **MCP 서버 배포**: npm publish 전체 과정
 - **사용자 가이드 작성**: Claude Code 연결 방법

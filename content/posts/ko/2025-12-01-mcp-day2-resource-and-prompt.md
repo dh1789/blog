@@ -30,7 +30,7 @@ seo_description: "MCP 서버의 Resource와 Prompt를 TypeScript로 구현하는
 
 **MCP(Model Context Protocol)** 서버는 Tool 외에도 **Resource** 와 **Prompt** 기능을 제공합니다. 이 글에서는 MCP서버에 Resource구현과 Prompt구현을 추가하는 방법을 다룹니다. AI개발에서 Model Context Protocol의 전체 기능을 활용하려면 이 세 가지를 모두 이해해야 합니다.
 
-이 글에서 배우는 것:
+**핵심 주제**
 - MCP개발 핵심 - Resource구현으로 AI도구에 데이터 제공하기
 - MCP개발 핵심 - Prompt구현으로 재사용 가능한 템플릿 만들기
 - 정적 Resource와 동적 Resource(Template)의 차이와 활용법

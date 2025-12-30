@@ -19,7 +19,7 @@ tags:
   - 도구 사용
   - TypeScript
 featured_image: ""
-status: "draft"
+status: "publish"
 language: "ko"
 seo_title: "Claude Agent SDK Tool Use 가이드: Function Calling과 MCP 연동 완벽 정리"
 seo_description: "Claude Agent SDK로 AI Agent의 Tool Use 기능을 구현하는 방법. Function Calling 개념, 커스텀 Tool 구현, MCP 서버 연동까지 실전 예제와 함께."
@@ -29,7 +29,7 @@ seo_description: "Claude Agent SDK로 AI Agent의 Tool Use 기능을 구현하�
 
 **Claude Agent SDK**의 **Tool Use**(도구 사용) 기능으로 **AI Agent**가 실제 작업을 수행할 수 있게 합니다. Day 2에서는 **Function Calling**의 개념을 이해하고, **TypeScript**로 커스텀 **Agent Tool**을 구현하며, **MCP 서버를 Agent 도구로 연동**하는 방법을 배웁니다. **도구 사용** 기능은 **AI 에이전트**가 외부 세계와 상호작용하는 핵심 메커니즘입니다.
 
-이 글에서 배우는 것:
+**구현 목표**
 - **Tool Use**(도구 사용)란 무엇인가: **AI Agent**가 도구를 사용하는 **Function Calling** 메커니즘
 - **커스텀 Tool 구현**: Claude Agent SDK에서 **TypeScript**로 **Agent Tool** 정의 및 실행
 - **Agent 루프**: **도구 사용** 요청을 처리하는 **AI 에이전트** 반복 실행 패턴

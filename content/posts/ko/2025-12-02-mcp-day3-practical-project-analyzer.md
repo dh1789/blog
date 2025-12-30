@@ -30,7 +30,7 @@ seo_description: "MCP 서버로 프로젝트 분석 도구를 만드는 실전 �
 
 **MCP (Model Context Protocol)** 서버로 실제 개발에 유용한 **프로젝트분석** 도구를 만듭니다. Day 1에서 MCP서버 개념을, Day 2에서 Resource와 Prompt를 배웠다면, 이제 AI개발 현장에서 바로 사용할 수 있는 실전 Tool을 구현합니다.
 
-이 글에서 배우는 것:
+**무엇을 만드나요?**
 - AI개발 실전 - MCP개발로 파일시스템 접근 Tool 구현
 - MCP서버로 프로젝트분석 자동화하는 AI개발 워크플로우
 - 디렉토리 구조 분석, 의존성 분석, 코드 통계 Tool을 TypeScript로 개발
