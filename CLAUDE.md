@@ -150,14 +150,24 @@ blog publish content/posts/ko/my-post.md --draft
 # 시뮬레이션 모드 (실제 업로드 안 함)
 blog publish content/posts/ko/my-post.md --dry-run
 
+# 기존 포스트 강제 업데이트 (확인 프롬프트 스킵)
+blog publish content/posts/ko/my-post.md --force
+
 # WordPress 연결 설정
 blog config
 
-# 포스트 목록 조회 (개발 예정)
+# 포스트 목록 조회
 blog list
 
-# 포스트 삭제 (개발 예정)
+# 포스트 삭제
 blog delete <post-id>
+
+# 포스트 상태 조회
+blog status my-post-slug
+
+# 포스트 상태 변경 (발행/초안)
+blog status my-post-slug --publish
+blog status my-post-slug --draft
 ```
 
 ### 마크다운 파일 형식
@@ -218,6 +228,17 @@ language: "ko"  # or "en"
 - [x] **진행률 표시**: 실시간 업로드 진행률 및 최종 리포트
 - [x] **종합 테스트**: 42 tests (findMediaByFilename: 5, markdown: 29, 기존 유지)
 - [x] **문서화**: README.md, CLAUDE.md
+
+### ✅ PRD 0014 - WordPress 포스트 생성 기능 개선 (완료)
+- [x] **시리즈 감지**: 파일명에서 시리즈 정보 자동 감지 (`detectSeriesFromFilename`)
+- [x] **시리즈 문서 파싱**: docs/ 폴더 시리즈 계획서 자동 탐색 및 파싱 (`findSeriesDocument`, `parseSeriesDocument`)
+- [x] **시리즈 네비게이션**: 자동 목차 마크다운 생성 (`generateSeriesNavigation`)
+- [x] **한영 링크 변환**: 영문 포스트 발행 시 한글 URL → 영문 URL 자동 변환 (`convertLinksToEnglish`)
+- [x] **번역 배너 삽입**: 영문 포스트 상단 원본 링크 배너 (`insertTranslationBanner`)
+- [x] **GitHub 링크 삽입**: TL;DR 섹션 뒤 GitHub 저장소 링크 (`insertGitHubLink`)
+- [x] **포스트 상태 CLI**: `blog status <slug>` 명령어 추가
+- [x] **강제 업데이트**: `publish --force` 옵션 추가 (확인 프롬프트 스킵)
+- [x] **종합 테스트**: 134 tests (core: 101, cli: 18, system: 15)
 
 ### 🚧 Phase 2 - 자동화 강화 (예정)
 - [ ] 일괄 업로드/업데이트
@@ -349,6 +370,54 @@ Polylang 언어 연결 (Epic 11.0)
 
 **WordPress 플러그인**: `/wordpress-plugin/polylang-rest-api-helper.php` (Polylang Free 버전 지원)
 
+#### 시리즈 기능 (PRD 0014)
+
+**`detectSeriesFromFilename(filePath: string): SeriesInfo | null`** (packages/core/src/series-detector.ts)
+파일명에서 시리즈 정보 자동 감지
+
+**패턴 인식**:
+- `YYYY-MM-DD-시리즈명-dayN-제목.md` → 시리즈명, N번째 회차
+- 대소문자 무관: `Day1`, `day-1`, `DAY_1` 모두 인식
+
+**`findSeriesDocument(seriesName: string, docsDir: string): string | null`**
+docs/ 폴더에서 시리즈 계획 문서 탐색
+
+**탐색 패턴**: `{seriesName}-series-plan.md`, `{seriesName}-series.md` 등
+
+**`parseSeriesDocument(docPath: string): SeriesDocument`**
+시리즈 문서에서 URL 매핑 및 GitHub 정보 추출
+
+**추출 정보**:
+- `totalDays`: 시리즈 총 회차 수
+- `koreanUrls`: Day별 한글 포스트 URL 맵
+- `englishUrls`: Day별 영문 포스트 URL 맵
+- `githubUrl`: GitHub 저장소 URL
+
+**`generateSeriesNavigation(options): string`** (packages/core/src/series-navigation.ts)
+시리즈 네비게이션 마크다운 생성
+
+**출력 예시**:
+```markdown
+## 📚 시리즈 목차
+**MCP 시리즈**
+- [Day 1: 시작하기](https://...)
+- 👉 Day 2: 고급 활용 (현재 글)
+- Day 3: 실전 프로젝트 (작성 예정)
+
+🔗 [GitHub Repository](https://github.com/...)
+```
+
+**`convertLinksToEnglish(content: string, seriesDoc: SeriesDocument | null): string`** (packages/core/src/link-converter.ts)
+영문 포스트 내 한글 URL → 영문 URL 변환
+
+**`insertTranslationBanner(content: string, options): string`** (packages/core/src/content-enhancer.ts)
+영문 포스트 상단에 번역 출처 배너 삽입
+
+**배너 형식**: `> 🌐 **Translation**: This post was translated from [Korean original](URL).`
+
+**`insertGitHubLink(content: string, githubUrl: string | null): string`**
+TL;DR 섹션 뒤에 GitHub 저장소 링크 삽입
+
 ### 타입 시스템
 모든 핵심 타입은 `packages/shared/src/types.ts`에 정의되어 있으며, Zod 스키마(`packages/shared/src/schemas.ts`)로 런타임 검증됩니다.
 
@@ -361,6 +430,15 @@ Polylang 언어 연결 (Epic 11.0)
 - `AdConfig`: 광고 설정
 - `PublishOptions`: 발행 옵션
   - `uploadImages?: boolean`: 이미지 자동 업로드 (Epic 12.0)
+  - `force?: boolean`: 기존 포스트 업데이트 시 확인 스킵 (PRD 0014)
+- `SeriesInfo`: 시리즈 감지 결과 (PRD 0014)
+  - `name`: 시리즈명 (예: "mcp", "remote-claude")
+  - `dayNumber`: 회차 번호
+- `SeriesDocument`: 시리즈 문서 파싱 결과 (PRD 0014)
+  - `totalDays`: 총 회차 수
+  - `koreanUrls`: `{ [day: number]: string }` - 한글 URL 맵
+  - `englishUrls`: `{ [day: number]: string }` - 영문 URL 맵
+  - `githubUrl`: GitHub 저장소 URL
 
 ---
 

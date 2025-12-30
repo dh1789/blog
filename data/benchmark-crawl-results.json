@@ -9,75 +9,82 @@
         "imageCount": 9,
         "images": [
           {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/10/trig-tangent-graph.png",
-            "width": 1800,
-            "height": 900,
+            "src": "https://css-tricks.com/wp-content/uploads/2025/12/thank-you-2025-scaled.png",
+            "width": 2560,
+            "height": 1280,
+            "format": "png",
+            "alt": "Hand-drawn, illustrated snowflakes against a vibrant blue background. The CSS-Tricks logo is prominent in orange surrounded by text saying Thank you from CSS-Tricks."
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/12/Screenshot-2025-12-22-at-7.41.21-AM.png",
+            "width": 1562,
+            "height": 738,
             "format": "png",
             "alt": ""
           },
           {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/10/s_E63F027435C482D5813799164A830B3E060276A78A7A02CCD5EC79D53323A5B8_1761081109189_2025-10-21-8.webp",
+            "src": "https://css-tricks.com/wp-content/uploads/2020/05/css-masonry.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/12/luZQsrO2qg-1070.png",
+            "width": 1070,
+            "height": 476,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/12/css-wrapped.png",
+            "width": 2000,
+            "height": 1250,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/11/Screenshot-2025-11-24-at-9.32.20-AM.png",
+            "width": 1954,
+            "height": 1078,
+            "format": "png",
+            "alt": "Two rows of circular avatar images. The images overlap with one another. Teach row has six images."
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/11/scroll-animations-range-not-set.png",
+            "width": 1982,
+            "height": 888,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/11/apple-css.webp",
+            "width": 1200,
+            "height": 600,
+            "format": "webp",
+            "alt": "An illustrated red apple with CSS written in whiter in the center."
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/11/s_56AFCBE7DCEED351817E3696EEEE003B5BEE9737CDC6205474FB62E233A2CF20_1763072955406_2025-11-13-1.webp",
             "width": 1920,
             "height": 1080,
             "format": "webp",
             "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/10/details-tabs-subgrid.webp",
-            "width": 1200,
-            "height": 600,
-            "format": "webp",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2020/10/motion-blur.png",
-            "width": 1200,
-            "height": 600,
-            "format": "png",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/10/javascript-for-everyone-scaled.png",
-            "width": 2560,
-            "height": 1440,
-            "format": "png",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2021/04/sticky-header.png",
-            "width": 1200,
-            "height": 600,
-            "format": "png",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/10/sequential-thumb.png",
-            "width": 1400,
-            "height": 750,
-            "format": "png",
-            "alt": "A series of six dits in a single row. Five are the same size and colored dark gray. The fifth item is scaled slightly smaller and colored gold."
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2019/08/css-tricks-logo-blur.png",
-            "width": 1200,
-            "height": 600,
-            "format": "png",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2019/11/percentage-padding-width.png",
-            "width": 1200,
-            "height": 600,
-            "format": "png",
-            "alt": ""
           }
         ],
-        "wordCount": 757
+        "wordCount": 861
       },
       {
         "url": "https://css-tricks.com/category/notes/",
         "imageCount": 9,
         "images": [
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2022/10/container-style-queries.png",
+            "width": 1200,
+            "height": 600,
+            "format": "png",
+            "alt": ""
+          },
           {
             "src": "https://css-tricks.com/wp-content/uploads/2017/05/user-facing-state.png",
             "width": 1000,
@@ -133,21 +140,70 @@
             "height": 600,
             "format": "jpg",
             "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2019/02/image-alt-attribute.png",
-            "width": 1200,
-            "height": 600,
-            "format": "png",
-            "alt": ""
           }
         ],
-        "wordCount": 852
+        "wordCount": 878
       },
       {
         "url": "https://css-tricks.com/category/links/",
-        "imageCount": 9,
+        "imageCount": 10,
         "images": [
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/12/favicon-production.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/08/stuff-nonsense-icon.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2024/12/icon-chrome.svg",
+            "width": null,
+            "height": null,
+            "format": "svg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/02/adam-argyle-icon.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/12/w3c-icon.svg",
+            "width": null,
+            "height": null,
+            "format": "svg",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/01/bramus.webp",
+            "width": null,
+            "height": null,
+            "format": "webp",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/11/sketch-icon.png",
+            "width": null,
+            "height": null,
+            "format": "png",
+            "alt": ""
+          },
+          {
+            "src": "https://css-tricks.com/wp-content/uploads/2025/11/quiet-ui-icon.svg",
+            "width": null,
+            "height": null,
+            "format": "svg",
+            "alt": ""
+          },
           {
             "src": "https://css-tricks.com/wp-content/uploads/2025/08/stuff-nonsense-icon.png",
             "width": null,
@@ -161,58 +217,9 @@
             "height": null,
             "format": "png",
             "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2024/09/jim-neilsen.svg",
-            "width": null,
-            "height": null,
-            "format": "svg",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/08/css-questions-logo.png",
-            "width": null,
-            "height": null,
-            "format": "png",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/08/stuff-nonsense-icon.png",
-            "width": null,
-            "height": null,
-            "format": "png",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/07/atomic-design-icon.svg",
-            "width": null,
-            "height": null,
-            "format": "svg",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/07/layout-maestro-icon.svg",
-            "width": null,
-            "height": null,
-            "format": "svg",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/06/kelp-icon.webp",
-            "width": null,
-            "height": null,
-            "format": "webp",
-            "alt": ""
-          },
-          {
-            "src": "https://css-tricks.com/wp-content/uploads/2025/06/faviconV2.png",
-            "width": null,
-            "height": null,
-            "format": "png",
-            "alt": ""
           }
         ],
-        "wordCount": 1366
+        "wordCount": 1196
       },
       {
         "url": "https://css-tricks.com/picks/",
@@ -226,139 +233,62 @@
             "alt": ""
           }
         ],
-        "wordCount": 1690
+        "wordCount": 971
       },
       {
-        "url": "https://css-tricks.com/the-most-hated-css-feature-tan/",
-        "imageCount": 11,
+        "url": "https://css-tricks.com/thank-you-2025-edition/",
+        "imageCount": 5,
         "images": [
           {
-            "src": "https://secure.gravatar.com/avatar/165ac177dc80e530919963bbe0c419e5e05604ac178f5a7c64b0bcb67288d2a8?s=80&d=retro&r=pg",
+            "src": "https://secure.gravatar.com/avatar/a8e040142716a4b44d014d80fbcf99c635b1d8faabfe469b6954a8ef2f168595?s=80&d=retro&r=pg",
             "width": null,
             "height": null,
-            "format": "com/avatar/165ac177dc80e530919963bbe0c419e5e05604ac178f5a7c64b0bcb67288d2a8",
+            "format": "com/avatar/a8e040142716a4b44d014d80fbcf99c635b1d8faabfe469b6954a8ef2f168595",
             "alt": ""
           },
           {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/most_hated_feature.jpg?resize=1920%2C1080&ssl=1",
-            "width": 1920,
-            "height": 1080,
-            "format": "jpg",
-            "alt": "Most Hated Feature: trigonometric functions"
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/12/Screenshot-2025-12-18-at-11.27.36-AM.png?resize=2238%2C1732",
+            "width": 2238,
+            "height": 1732,
+            "format": "png",
+            "alt": "The CSS-Tricks publishing schedule for December 2025 in calendar format in Notion."
           },
           {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/formula_tan_b1klgj.png?resize=1920%2C1080&ssl=1",
-            "width": 1920,
-            "height": 1080,
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/12/Screenshot-2025-12-18-at-10.27.18-AM.png?resize=1844%2C940&ssl=1",
+            "width": 1844,
+            "height": 940,
             "format": "png",
-            "alt": "Tangent equals sine over cosine."
+            "alt": ""
           },
           {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/right-angled-triangle_rmo35a.png?resize=1920%2C1080&ssl=1",
-            "width": 1920,
-            "height": 1080,
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/12/Screenshot-2025-12-18-at-10.28.24-AM.png?resize=1848%2C956&ssl=1",
+            "width": 1848,
+            "height": 956,
             "format": "png",
-            "alt": "Right angled triangle"
+            "alt": ""
           },
           {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/tan_formula_2_fpi7fx.png?resize=1920%2C1080&ssl=1",
-            "width": 1920,
-            "height": 1080,
+            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/12/Screenshot-2025-12-18-at-10.29.24-AM.png?resize=1852%2C1392&ssl=1",
+            "width": 1852,
+            "height": 1392,
             "format": "png",
-            "alt": "Tangent is equal to opposite over adjacent"
-          },
-          {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/octagon_ndidwt.png?resize=1394%2C1347&ssl=1",
-            "width": 1394,
-            "height": 1347,
-            "format": "png",
-            "alt": "An octagon shape made out of eight converging triangles in various colors. Each triangle is labeled 1 through 8."
-          },
-          {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/square_wcgvlx.png?resize=1392%2C1362&ssl=1",
-            "width": 1392,
-            "height": 1362,
-            "format": "png",
-            "alt": "Sectioned list as square"
-          },
-          {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/explanation_polygon_p8xg81.png?resize=1920%2C1080&ssl=1",
-            "width": 1920,
-            "height": 1080,
-            "format": "png",
-            "alt": "Diagramming a right triangle in the middle of an item. The width, height, and angle are labeled."
-          },
-          {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/11/tan_formula_3_jtstpe.png?resize=1920%2C1080&ssl=1",
-            "width": 1920,
-            "height": 1080,
-            "format": "png",
-            "alt": "Tangent equals height times one half divided by width. Height equals two times tangent times width."
-          },
-          {
-            "src": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2025/10/gta-5-character-switching.png?resize=410%2C398&ssl=1",
-            "width": 410,
-            "height": 398,
-            "format": "png",
-            "alt": "Circle divided into four quadrants with different stern-looking male characters in each quadrant."
+            "alt": ""
           }
         ],
-        "wordCount": 2449
+        "wordCount": 2567
       }
     ]
   },
   {
     "blog": "Smashing Magazine",
     "url": "https://www.smashingmagazine.com",
-    "totalPosts": 2,
+    "totalPosts": 1,
     "posts": [
       {
         "url": "https://www.smashingmagazine.com/the-smashing-newsletter/",
         "imageCount": 0,
         "images": [],
-        "wordCount": 669
-      },
-      {
-        "url": "https://www.smashingmagazine.com/2020/03/smart-interface-design-patterns-checklists/",
-        "imageCount": 5,
-        "images": [
-          {
-            "src": "https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/f8829123-e4b0-43b3-861a-66a4b8554086/rachel-andrew-tw-profile.jpg",
-            "width": 100,
-            "height": 100,
-            "format": "jpg",
-            "alt": "Rachel Andrew"
-          },
-          {
-            "src": "https://res.cloudinary.com/indysigner/image/fetch/f_auto,q_80/w_400/https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/08320642-4a3d-450a-b0d9-bbaf3c03845a/checklists.png",
-            "width": null,
-            "height": null,
-            "format": "png",
-            "alt": "The cover of the PDF deck on “Smart Interface Design Patterns”"
-          },
-          {
-            "src": "https://res.cloudinary.com/indysigner/image/fetch/f_auto,q_80/w_400/https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/860dbb85-f722-4094-8829-ef9f0b01283d/hamburger-checklist.png",
-            "width": null,
-            "height": null,
-            "format": "png",
-            "alt": "A screenshot of the Hamburger Design Checklist with 13 questions to discuss when designing and building a good navigation"
-          },
-          {
-            "src": "https://res.cloudinary.com/indysigner/image/fetch/f_auto,q_80/w_400/https://archive.smashing.media/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/b84eb5dc-4f7d-4768-b621-5492a5628730/03-no-hamburgers-smart-interface-design-patterns-checklists.png",
-            "width": null,
-            "height": null,
-            "format": "png",
-            "alt": "Three different design patterns without hamburger navigation on three mobile devices"
-          },
-          {
-            "src": "https://www.smashingmagazine.com/images/logo/logo--red.png",
-            "width": 35,
-            "height": 46,
-            "format": "png",
-            "alt": "Smashing Editorial"
-          }
-        ],
-        "wordCount": 1167
+        "wordCount": 689
       }
     ]
   },
@@ -407,7 +337,7 @@
             "alt": "A Book Apart. Brief books for people who design, write, and code."
           }
         ],
-        "wordCount": 1074
+        "wordCount": 957
       },
       {
         "url": "https://alistapart.com/articles/",
@@ -449,7 +379,7 @@
             "alt": "A Book Apart. Brief books for people who design, write, and code."
           }
         ],
-        "wordCount": 804
+        "wordCount": 770
       },
       {
         "url": "https://alistapart.com/events/",
@@ -477,7 +407,7 @@
             "alt": "A Book Apart. Brief books for people who design, write, and code."
           }
         ],
-        "wordCount": 826
+        "wordCount": 709
       },
       {
         "url": "https://alistapart.com/topics/",
@@ -547,7 +477,7 @@
             "alt": "A Book Apart. Brief books for people who design, write, and code."
           }
         ],
-        "wordCount": 655
+        "wordCount": 538
       },
       {
         "url": "https://alistapart.com/about/contribute/",
@@ -589,7 +519,7 @@
             "alt": "A Book Apart. Brief books for people who design, write, and code."
           }
         ],
-        "wordCount": 1093
+        "wordCount": 921
       }
     ]
   }
