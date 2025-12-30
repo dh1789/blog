@@ -86,6 +86,40 @@ export const RevenueAnalysisOptionsSchema = z.object({
 });
 
 // ============================================================================
+// Series Schemas (PRD 0014: 시리즈 포스트 기능)
+// ============================================================================
+
+/**
+ * 시리즈 정보 스키마
+ * 파일명이나 frontmatter에서 추출된 시리즈 메타데이터 검증
+ */
+export const SeriesInfoSchema = z.object({
+  name: z.string().min(1, '시리즈명은 필수입니다'),
+  dayNumber: z.number().int('Day 번호는 정수여야 합니다').min(1, 'Day 번호는 1 이상이어야 합니다'),
+  docPath: z.string().nullable(),
+});
+
+/**
+ * URL 매핑 스키마 (Day 번호 → URL)
+ * 숫자 키와 문자열 키 모두 허용
+ */
+const UrlMappingSchema = z.record(
+  z.union([z.string(), z.number()]).transform((val) => Number(val)),
+  z.string()
+);
+
+/**
+ * 시리즈 문서 스키마
+ * docs/ 폴더의 시리즈 계획 문서에서 추출된 정보 검증
+ */
+export const SeriesDocumentSchema = z.object({
+  koreanUrls: UrlMappingSchema,
+  englishUrls: UrlMappingSchema,
+  githubUrl: z.string().url('유효한 URL 형식이어야 합니다').nullable(),
+  totalDays: z.number().int('총 Day 수는 정수여야 합니다').min(1, '총 Day 수는 1 이상이어야 합니다'),
+});
+
+// ============================================================================
 // Translation Schemas (자동 번역 시스템)
 // ============================================================================
 

@@ -248,6 +248,395 @@ describe('WordPressClient', () => {
     });
   });
 
+  // ===========================================================================
+  // Task 3.2-3.4: changePostStatus() 테스트
+  // ===========================================================================
+
+  describe('changePostStatus', () => {
+    // =========================================================================
+    // Task 3.2: Happy Path - 상태 변경
+    // =========================================================================
+
+    describe('Happy Path: 상태 변경', () => {
+      it('draft 상태의 포스트를 publish로 변경한다', async () => {
+        const mockGetPost = vi.fn().mockResolvedValue({
+          id: 123,
+          status: 'draft',
+          title: { rendered: 'Test Post' },
+        });
+        const mockUpdatePost = vi.fn().mockResolvedValue({
+          id: 123,
+          status: 'publish',
+        });
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                  update: mockUpdatePost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.changePostStatus(123, 'publish');
+
+        expect(mockUpdatePost).toHaveBeenCalledWith({ status: 'publish' });
+        expect(result).toEqual({
+          id: 123,
+          previousStatus: 'draft',
+          newStatus: 'publish',
+        });
+      });
+
+      it('publish 상태의 포스트를 draft로 변경한다', async () => {
+        const mockGetPost = vi.fn().mockResolvedValue({
+          id: 456,
+          status: 'publish',
+          title: { rendered: 'Published Post' },
+        });
+        const mockUpdatePost = vi.fn().mockResolvedValue({
+          id: 456,
+          status: 'draft',
+        });
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                  update: mockUpdatePost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.changePostStatus(456, 'draft');
+
+        expect(mockUpdatePost).toHaveBeenCalledWith({ status: 'draft' });
+        expect(result.previousStatus).toBe('publish');
+        expect(result.newStatus).toBe('draft');
+      });
+    });
+
+    // =========================================================================
+    // Task 3.3: Boundary Condition - 이미 같은 상태
+    // =========================================================================
+
+    describe('Boundary Condition: 이미 같은 상태', () => {
+      it('이미 publish 상태인 포스트에 publish 요청 시 업데이트 없이 반환', async () => {
+        const mockGetPost = vi.fn().mockResolvedValue({
+          id: 789,
+          status: 'publish',
+          title: { rendered: 'Already Published' },
+        });
+        const mockUpdatePost = vi.fn();
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                  update: mockUpdatePost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.changePostStatus(789, 'publish');
+
+        // update가 호출되지 않아야 함
+        expect(mockUpdatePost).not.toHaveBeenCalled();
+        expect(result).toEqual({
+          id: 789,
+          previousStatus: 'publish',
+          newStatus: 'publish',
+          unchanged: true,
+        });
+      });
+
+      it('이미 draft 상태인 포스트에 draft 요청 시 업데이트 없이 반환', async () => {
+        const mockGetPost = vi.fn().mockResolvedValue({
+          id: 101,
+          status: 'draft',
+          title: { rendered: 'Draft Post' },
+        });
+        const mockUpdatePost = vi.fn();
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                  update: mockUpdatePost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.changePostStatus(101, 'draft');
+
+        expect(mockUpdatePost).not.toHaveBeenCalled();
+        expect(result.unchanged).toBe(true);
+      });
+    });
+
+    // =========================================================================
+    // Task 3.4: Exception Cases - 포스트 없음
+    // =========================================================================
+
+    describe('Exception Cases: 예외 상황', () => {
+      it('존재하지 않는 포스트 ID에 대해 에러를 던진다', async () => {
+        const mockGetPost = vi.fn().mockRejectedValue(new Error('rest_post_invalid_id'));
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        await expect(testClient.changePostStatus(99999, 'publish')).rejects.toThrow(
+          /Post not found/
+        );
+      });
+
+      it('네트워크 에러 시 적절한 에러 메시지를 던진다', async () => {
+        const mockGetPost = vi.fn().mockRejectedValue(new Error('Network error'));
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        await expect(testClient.changePostStatus(123, 'publish')).rejects.toThrow(
+          /Failed to change post status/
+        );
+      });
+
+      it('업데이트 실패 시 적절한 에러를 던진다', async () => {
+        const mockGetPost = vi.fn().mockResolvedValue({
+          id: 123,
+          status: 'draft',
+        });
+        const mockUpdatePost = vi.fn().mockRejectedValue(new Error('Update failed'));
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                id: (id: number) => ({
+                  get: mockGetPost,
+                  update: mockUpdatePost,
+                }),
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        await expect(testClient.changePostStatus(123, 'publish')).rejects.toThrow(
+          /Failed to change post status/
+        );
+      });
+    });
+  });
+
+  // ===========================================================================
+  // Task 3.5-3.6: getPostBySlug() 테스트
+  // ===========================================================================
+
+  describe('getPostBySlug', () => {
+    // =========================================================================
+    // Task 3.5: Happy Path - 포스트 상세 조회
+    // =========================================================================
+
+    describe('Happy Path: 포스트 상세 조회', () => {
+      it('slug로 포스트 상세 정보를 조회한다', async () => {
+        const mockSlugQuery = vi.fn().mockReturnThis();
+        const mockParamQuery = vi.fn().mockReturnThis();
+        const mockGetQuery = vi.fn().mockResolvedValue([
+          {
+            id: 123,
+            title: { rendered: 'Test Post Title' },
+            slug: 'test-post',
+            status: 'publish',
+            date: '2024-12-05T10:00:00',
+            excerpt: { rendered: 'This is the excerpt.' },
+            link: 'https://example.com/test-post',
+          },
+        ]);
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                slug: mockSlugQuery,
+                param: mockParamQuery,
+                get: mockGetQuery,
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.getPostBySlug('test-post');
+
+        expect(result).not.toBeNull();
+        expect(result?.id).toBe(123);
+        expect(result?.title).toBe('Test Post Title');
+        expect(result?.slug).toBe('test-post');
+        expect(result?.status).toBe('publish');
+        expect(result?.link).toBe('https://example.com/test-post');
+      });
+
+      it('언어 파라미터로 필터링하여 조회한다', async () => {
+        const mockSlugQuery = vi.fn().mockReturnThis();
+        const mockParamQuery = vi.fn().mockReturnThis();
+        const mockGetQuery = vi.fn().mockResolvedValue([
+          {
+            id: 456,
+            title: { rendered: 'English Post' },
+            slug: 'test-post-en',
+            status: 'publish',
+            date: '2024-12-05T10:00:00',
+            link: 'https://example.com/en/test-post-en',
+          },
+        ]);
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                slug: mockSlugQuery,
+                param: mockParamQuery,
+                get: mockGetQuery,
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.getPostBySlug('test-post-en', 'en');
+
+        expect(mockParamQuery).toHaveBeenCalledWith('lang', 'en');
+        expect(result?.id).toBe(456);
+      });
+    });
+
+    // =========================================================================
+    // Task 3.6: Boundary & Exception Cases
+    // =========================================================================
+
+    describe('Boundary & Exception: 예외 상황', () => {
+      it('존재하지 않는 slug는 null을 반환한다', async () => {
+        const mockSlugQuery = vi.fn().mockReturnThis();
+        const mockParamQuery = vi.fn().mockReturnThis();
+        const mockGetQuery = vi.fn().mockResolvedValue([]);
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                slug: mockSlugQuery,
+                param: mockParamQuery,
+                get: mockGetQuery,
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.getPostBySlug('non-existent-slug');
+
+        expect(result).toBeNull();
+      });
+
+      it('API 에러 발생 시 null을 반환한다', async () => {
+        const mockSlugQuery = vi.fn().mockReturnThis();
+        const mockParamQuery = vi.fn().mockReturnThis();
+        const mockGetQuery = vi.fn().mockRejectedValue(new Error('Network error'));
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                slug: mockSlugQuery,
+                param: mockParamQuery,
+                get: mockGetQuery,
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.getPostBySlug('test-post');
+
+        expect(result).toBeNull();
+      });
+
+      it('excerpt가 없는 포스트도 정상 처리한다', async () => {
+        const mockSlugQuery = vi.fn().mockReturnThis();
+        const mockParamQuery = vi.fn().mockReturnThis();
+        const mockGetQuery = vi.fn().mockResolvedValue([
+          {
+            id: 789,
+            title: { rendered: 'No Excerpt Post' },
+            slug: 'no-excerpt',
+            status: 'draft',
+            date: '2024-12-05T10:00:00',
+            link: 'https://example.com/no-excerpt',
+          },
+        ]);
+
+        const testClient = new (class extends WordPressClient {
+          constructor(config: WordPressConfig) {
+            super(config);
+            this.wp = {
+              posts: () => ({
+                slug: mockSlugQuery,
+                param: mockParamQuery,
+                get: mockGetQuery,
+              }),
+            } as any;
+          }
+        })(mockConfig);
+
+        const result = await testClient.getPostBySlug('no-excerpt');
+
+        expect(result?.id).toBe(789);
+        expect(result?.excerpt).toBe('');
+      });
+    });
+  });
+
   describe('findMediaByFilename', () => {
     it('should find existing media by exact filename', async () => {
       // Mock WPAPI media search response

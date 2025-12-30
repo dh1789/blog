@@ -9,6 +9,8 @@ import {
   RevenueScoreSchema,
   TopicSuggestionSchema,
   RevenueAnalysisOptionsSchema,
+  SeriesInfoSchema,
+  SeriesDocumentSchema,
 } from './schemas';
 import type {
   KeywordData,
@@ -16,6 +18,8 @@ import type {
   RevenueScore,
   TopicSuggestion,
   RevenueAnalysisOptions,
+  SeriesInfo,
+  SeriesDocument,
 } from './types';
 
 describe('Epic 8.0 Schema Validation', () => {
@@ -451,6 +455,225 @@ describe('Epic 8.0 Schema Validation', () => {
 
       const result = RevenueAnalysisOptionsSchema.safeParse(invalidOptions);
       expect(result.success).toBe(false);
+    });
+  });
+});
+
+// ============================================================================
+// PRD 0014: WordPress 포스트 생성 기능 개선 - 시리즈 관련 스키마 테스트
+// ============================================================================
+
+describe('PRD 0014 Series Schema Validation', () => {
+  describe('SeriesInfoSchema', () => {
+    // Happy Path: 정상적인 시리즈 정보 검증
+    it('시리즈명, Day 번호, 문서 경로가 모두 포함된 데이터를 검증한다', () => {
+      const validData: SeriesInfo = {
+        name: 'mcp',
+        dayNumber: 1,
+        docPath: 'docs/mcp-series-plan.md',
+      };
+
+      const result = SeriesInfoSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual(validData);
+      }
+    });
+
+    // Happy Path: docPath가 null인 경우 (문서 없음)
+    it('docPath가 null인 경우도 유효하다', () => {
+      const validData: SeriesInfo = {
+        name: 'claude-agent-sdk',
+        dayNumber: 3,
+        docPath: null,
+      };
+
+      const result = SeriesInfoSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.docPath).toBeNull();
+      }
+    });
+
+    // Boundary Condition: 최소 Day 번호 (1)
+    it('Day 번호 최소값 1을 허용한다', () => {
+      const validData: SeriesInfo = {
+        name: 'test',
+        dayNumber: 1,
+        docPath: null,
+      };
+
+      const result = SeriesInfoSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+    });
+
+    // Boundary Condition: Day 번호 0 거부
+    it('Day 번호 0을 거부한다', () => {
+      const invalidData = {
+        name: 'test',
+        dayNumber: 0,
+        docPath: null,
+      };
+
+      const result = SeriesInfoSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+
+    // Exception Case: 빈 시리즈명
+    it('빈 시리즈명을 거부한다', () => {
+      const invalidData = {
+        name: '',
+        dayNumber: 1,
+        docPath: null,
+      };
+
+      const result = SeriesInfoSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+
+    // Exception Case: 음수 Day 번호
+    it('음수 Day 번호를 거부한다', () => {
+      const invalidData = {
+        name: 'test',
+        dayNumber: -1,
+        docPath: null,
+      };
+
+      const result = SeriesInfoSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+
+    // Exception Case: 소수점 Day 번호
+    it('소수점 Day 번호를 거부한다', () => {
+      const invalidData = {
+        name: 'test',
+        dayNumber: 1.5,
+        docPath: null,
+      };
+
+      const result = SeriesInfoSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('SeriesDocumentSchema', () => {
+    // Happy Path: 완전한 시리즈 문서 데이터
+    it('한글/영문 URL, GitHub URL, 총 Day 수가 포함된 데이터를 검증한다', () => {
+      const validData: SeriesDocument = {
+        koreanUrls: {
+          1: '/ko/mcp-day1-introduction',
+          2: '/ko/mcp-day2-tools',
+          3: '/ko/mcp-day3-resources',
+        },
+        englishUrls: {
+          1: '/en/mcp-day1-introduction-en',
+          2: '/en/mcp-day2-tools-en',
+          3: '/en/mcp-day3-resources-en',
+        },
+        githubUrl: 'https://github.com/dh1789/my-first-mcp',
+        totalDays: 5,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.totalDays).toBe(5);
+        expect(result.data.koreanUrls[1]).toBe('/ko/mcp-day1-introduction');
+      }
+    });
+
+    // Happy Path: GitHub URL이 null인 경우
+    it('githubUrl이 null인 경우도 유효하다', () => {
+      const validData: SeriesDocument = {
+        koreanUrls: { 1: '/ko/test-day1' },
+        englishUrls: { 1: '/en/test-day1-en' },
+        githubUrl: null,
+        totalDays: 1,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.githubUrl).toBeNull();
+      }
+    });
+
+    // Boundary Condition: 빈 URL 객체
+    it('빈 URL 객체를 허용한다 (아직 작성된 포스트 없음)', () => {
+      const validData: SeriesDocument = {
+        koreanUrls: {},
+        englishUrls: {},
+        githubUrl: null,
+        totalDays: 5,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+    });
+
+    // Boundary Condition: totalDays 최소값 1
+    it('totalDays 최소값 1을 허용한다', () => {
+      const validData: SeriesDocument = {
+        koreanUrls: {},
+        englishUrls: {},
+        githubUrl: null,
+        totalDays: 1,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(validData);
+      expect(result.success).toBe(true);
+    });
+
+    // Exception Case: totalDays 0 거부
+    it('totalDays 0을 거부한다', () => {
+      const invalidData = {
+        koreanUrls: {},
+        englishUrls: {},
+        githubUrl: null,
+        totalDays: 0,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+
+    // Exception Case: 음수 totalDays 거부
+    it('음수 totalDays를 거부한다', () => {
+      const invalidData = {
+        koreanUrls: {},
+        englishUrls: {},
+        githubUrl: null,
+        totalDays: -1,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+
+    // Exception Case: 유효하지 않은 GitHub URL
+    it('유효하지 않은 GitHub URL을 거부한다', () => {
+      const invalidData = {
+        koreanUrls: {},
+        englishUrls: {},
+        githubUrl: 'not-a-valid-url',
+        totalDays: 5,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(invalidData);
+      expect(result.success).toBe(false);
+    });
+
+    // Side Effect: URL 키가 문자열로 변환되는지 확인
+    it('숫자 키가 문자열로 변환되어도 정상 동작한다', () => {
+      const validData = {
+        koreanUrls: { '1': '/ko/test-day1', '2': '/ko/test-day2' },
+        englishUrls: { '1': '/en/test-day1-en' },
+        githubUrl: null,
+        totalDays: 3,
+      };
+
+      const result = SeriesDocumentSchema.safeParse(validData);
+      expect(result.success).toBe(true);
     });
   });
 });

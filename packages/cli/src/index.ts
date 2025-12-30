@@ -18,6 +18,8 @@ import { analyticsCommand } from './commands/analytics';
 import { analyzeSeoCommand } from './commands/analyze-seo';
 import { translateCommand } from './commands/translate';
 import { linkTranslationsCommand } from './commands/link-translations';
+import { statusCommand } from './commands/status';
+import { reviewCommand } from './commands/review';
 
 const program = new Command();
 
@@ -34,7 +36,9 @@ program
   .option('--dry-run', '실제 업로드 없이 시뮬레이션', false)
   .option('--link-to <id>', '연결할 한글 포스트 ID (영문 발행 시)')
   .option('--no-translate', '자동 번역 비활성화 (한글 포스트만 발행)')
+  .option('--no-series-nav', '시리즈 네비게이션 자동 삽입 비활성화')
   .option('--upload-images', '로컬 이미지를 WordPress 미디어 라이브러리에 자동 업로드', false)
+  .option('-f, --force', '기존 포스트 업데이트 시 확인 없이 강제 진행', false)
   .action(publishCommand);
 
 program
@@ -134,5 +138,20 @@ program
   .requiredOption('--en <id>', '영어 포스트 ID')
   .option('--auto', '자동 매칭 (slug 기반, 향후 구현)')
   .action(linkTranslationsCommand);
+
+program
+  .command('status <slug>')
+  .description('WordPress 포스트 상태 조회 및 변경')
+  .option('-p, --publish', '발행 상태로 변경', false)
+  .option('-d, --draft', '초안 상태로 변경', false)
+  .option('-l, --language <lang>', '언어 필터 (ko|en)')
+  .action(statusCommand);
+
+program
+  .command('review <file>')
+  .description('마크다운 파일의 품질 검토 및 개선 제안')
+  .option('-v, --verbose', '상세 정보 출력', false)
+  .option('--json', 'JSON 형식으로 출력', false)
+  .action(reviewCommand);
 
 program.parse();

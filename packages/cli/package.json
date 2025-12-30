@@ -18,12 +18,20 @@
   "dependencies": {
     "@blog/core": "workspace:*",
     "@blog/shared": "workspace:*",
+    "@inquirer/prompts": "^8.0.2",
+    "chalk": "^5.3.0",
     "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "gray-matter": "^4.0.3",
     "inquirer": "^9.2.12",
     "ora": "^7.0.1",
-    "chalk": "^5.3.0",
-    "dotenv": "^16.3.1",
-    "gray-matter": "^4.0.3"
+    "rehype-raw": "^7.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-html": "^16.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
