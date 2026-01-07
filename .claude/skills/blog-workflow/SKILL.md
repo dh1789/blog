@@ -1,26 +1,68 @@
 ---
 name: blog-workflow
 description: 이 스킬은 사용자가 "블로그 발행", "포스트 작성", "SEO 분석", "번역", "WordPress 업로드" 등 블로그 관련 작업을 요청할 때 사용됩니다. 블로그 CLI 도구의 전체 워크플로우를 안내합니다.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Blog Workflow Skill
 
 WordPress 블로그 콘텐츠 자동화 CLI 도구 사용 가이드입니다.
 
-## 프로젝트 구조
+## 핵심 UX 기능
+
+### 1. 자동화된 발행 파이프라인
 
 ```
-blog/
-├── packages/
-│   ├── cli/           # CLI 도구 (@blog/cli)
-│   ├── core/          # 핵심 로직 (@blog/core)
-│   └── shared/        # 공유 타입/스키마 (@blog/shared)
-├── content/posts/     # 마크다운 콘텐츠
-│   ├── ko/            # 한국어 포스트
-│   └── en/            # 영어 포스트
-└── .claude/commands/  # Claude Code 스킬
+[마크다운] → [SEO 분석] → [광고 삽입] → [코드 변환] → [시리즈 감지]
+                                                         ↓
+[Polylang 연결] ← [영문 발행] ← [품질 검증] ← [AI 번역] ← [한글 발행]
 ```
+
+### 2. 시리즈 자동 감지 (PRD 0014)
+
+파일명에서 시리즈 정보를 자동 감지하여 네비게이션을 생성합니다:
+
+- **파일명 패턴**: `YYYY-MM-DD-{series}-day{N}-*.md`
+- **시리즈 문서**: `docs/{series}-series-plan.md` 자동 탐색
+- **자동 생성 항목**:
+  - 시리즈 네비게이션 (이전/다음 링크)
+  - GitHub 링크 삽입
+  - 영문 포스트 링크 변환
+
+### 3. 8단계 번역 품질 검증
+
+| 검증 항목 | 기준 |
+|----------|------|
+| 라인 수 차이 | ±20% 이내 |
+| 코드 블록 수 | 정확히 일치 |
+| 링크 수 | 일치 |
+| 메타데이터 완전성 | title, excerpt, tags 필수 |
+| SEO 최적화 | 제목 60자, excerpt 300자 이하 |
+| 키워드 밀도 | 0.5-2.5% |
+| 코드 보존 | 코드 블록 내용 불변 |
+| 이미지 경로 | 정확히 보존 |
+
+### 4. 자동 콘텐츠 강화
+
+| 기능 | 설명 |
+|------|------|
+| **광고 삽입** | AdSense 코드 자동 삽입 (설정 기반 위치) |
+| **SyntaxHighlighter 변환** | 코드 블록을 WordPress 플러그인 형식으로 변환 |
+| **이미지 업로드** | 로컬 이미지 → WordPress 미디어 라이브러리 (중복 체크) |
+| **번역 배너** | 영문 포스트에 원본 한글 링크 배너 삽입 |
+| **GitHub 링크** | TL;DR 섹션 뒤에 GitHub 저장소 링크 삽입 |
+
+### 5. 스마트 업데이트
+
+- **기존 포스트 감지**: slug + language로 중복 체크
+- **업데이트 확인**: `--force` 없으면 확인 프롬프트 표시
+- **Polylang 자동 연결**: 한글/영문 포스트 양방향 연결
+
+### 6. 실시간 피드백
+
+- **ora 스피너**: 진행 상황 실시간 표시
+- **chalk 컬러 출력**: 성공(녹색), 경고(노란색), 에러(빨간색)
+- **상세 리포트**: SEO 점수, 키워드 밀도, 번역 품질 메트릭
 
 ## CLI 실행 방법
 
@@ -34,7 +76,7 @@ node packages/cli/dist/index.mjs <command> [options]
 
 **절대 규칙:**
 1. SEO 분석 먼저 실행 (70점 이상 필수)
-2. 사용자 승인 요청
+2. 사용자 승인 요청 ("발행해도 될까요?")
 3. 승인 후에만 발행
 
 ```bash
@@ -47,18 +89,38 @@ node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md
 
 ### 2. 주요 명령어
 
-| 명령어 | 설명 |
-|--------|------|
-| `publish <file>` | WordPress 발행 (자동 번역 포함) |
-| `analyze-seo <file>` | SEO 점수 분석 |
-| `translate <file>` | 한→영 번역 |
-| `list` | 포스트 목록 |
-| `status <slug>` | 상태 조회/변경 |
-| `preview <file>` | 실시간 프리뷰 |
-| `draft-create` | AI 초안 생성 |
-| `link-translations` | Polylang 연결 |
+| 명령어 | 설명 | UX 기능 |
+|--------|------|---------|
+| `publish` | WordPress 발행 | 자동 번역, 시리즈 감지, 광고 삽입 |
+| `analyze-seo` | SEO 점수 분석 | 시각적 점수 바, 개선 제안 |
+| `translate` | AI 번역 | 8단계 품질 검증, SEO 최적화 |
+| `preview` | 실시간 프리뷰 | Hot Reload, 광고 위치 표시 |
+| `draft-create` | AI 초안 생성 | 가이드라인 기반 생성 |
+| `draft-refine` | AI 초안 수정 | 기존 콘텐츠 개선 |
+| `trending` | 트렌드 모니터링 | Reddit, HackerNews 스캔 |
+| `analytics` | 분석 대시보드 | 조회수, 댓글 통계 |
+| `image generate` | DALL-E 이미지 | 블로그 이미지 생성 |
 
-### 3. publish 옵션
+### 3. publish 자동 실행 흐름
+
+```bash
+node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md
+```
+
+**내부 실행 순서:**
+1. 마크다운 파싱 및 frontmatter 검증
+2. SEO 점수 계산 및 키워드 밀도 분석
+3. 광고 코드 삽입
+4. SyntaxHighlighter 형식 변환
+5. 시리즈 감지 및 네비게이션 생성
+6. GitHub 링크 삽입
+7. WordPress 업로드 (기존 포스트면 업데이트)
+8. AI 번역 (Claude)
+9. 번역 품질 검증 (8단계)
+10. 영문 포스트 발행
+11. Polylang 언어 연결
+
+### 4. 옵션
 
 ```bash
 # 기본 (자동 번역 포함)
@@ -67,14 +129,20 @@ node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md
 # 초안으로 저장
 node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md --draft
 
-# 시뮬레이션
+# 시뮬레이션 (업로드 안 함)
 node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md --dry-run
 
 # 번역 없이 (한글만)
 node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md --no-translate
 
+# 시리즈 네비게이션 비활성화
+node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md --no-series-nav
+
 # 이미지 자동 업로드
 node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md --upload-images
+
+# 확인 프롬프트 스킵
+node packages/cli/dist/index.mjs publish content/posts/ko/my-post.md --force
 ```
 
 ## Frontmatter 형식
@@ -91,11 +159,20 @@ language: "ko"
 ---
 ```
 
-## SEO 점수 기준
+## SEO 점수 체계
+
+| 항목 | 최대 점수 | 기준 |
+|------|----------|------|
+| 제목 길이 | 5 | 60자 이하 |
+| 요약 길이 | 5 | 10-300자 |
+| 콘텐츠 길이 | 10 | 적정 길이 |
+| 키워드 밀도 | 30 | 각 태그 0.5-2.5% |
+| 섹션 분포 | 20 | 50%+ 섹션에 키워드 |
+| 제목 키워드 | 15 | 제목에 키워드 포함 |
+| 요약 키워드 | 15 | 요약에 키워드 포함 |
 
 - **70점 이상**: 발행 가능
-- **70점 미만**: 발행 금지 (개선 필요)
-- **키워드 밀도**: 각 태그 0.5-2.5%
+- **70점 미만**: 발행 금지
 
 ## 자동 번역 실패 시
 
@@ -107,6 +184,21 @@ node packages/cli/dist/index.mjs publish content/posts/en/my-post.md --no-transl
 node packages/cli/dist/index.mjs link-translations --ko <한글ID> --en <영문ID>
 ```
 
+## 프로젝트 구조
+
+```
+blog/
+├── packages/
+│   ├── cli/           # CLI 도구 (@blog/cli)
+│   ├── core/          # 핵심 로직 (@blog/core)
+│   └── shared/        # 공유 타입/스키마 (@blog/shared)
+├── content/posts/     # 마크다운 콘텐츠
+│   ├── ko/            # 한국어 포스트
+│   └── en/            # 영어 포스트
+├── docs/              # 시리즈 계획 문서
+└── .claude/           # Claude Code 스킬
+```
+
 ## Core 모듈
 
 | 모듈 | 역할 |
@@ -114,7 +206,12 @@ node packages/cli/dist/index.mjs link-translations --ko <한글ID> --en <영문I
 | `WordPressClient` | REST API 통신, Polylang 연결 |
 | `parseMarkdownFile` | frontmatter 파싱, HTML 변환 |
 | `calculateSeoScore` | SEO 점수 계산 |
+| `validateKeywordDensity` | 키워드 밀도 검증 |
 | `translatePost` | AI 번역 (Claude) |
 | `validateTranslation` | 8단계 품질 검증 |
 | `injectAds` | 광고 코드 삽입 |
+| `convertToSyntaxHighlighter` | 코드 블록 변환 |
 | `detectSeriesFromFilename` | 시리즈 자동 감지 |
+| `generateSeriesNavigation` | 시리즈 목차 생성 |
+| `insertGitHubLink` | GitHub 링크 삽입 |
+| `insertTranslationBanner` | 번역 배너 삽입 |
