@@ -11,15 +11,12 @@ categories:
   - AI Development
 tags:
   - RAG
-  - 시맨틱 검색
-  - 하이브리드 검색
-  - 리랭킹
-  - 검색 최적화
+  - Semantic Search
+  - Hybrid Search
+  - Reranking
+  - Search Optimization
   - BM25
 language: en
----
-> **🌐 Translation**: Translated from [Korean](/ko/rag-day4-search-optimization).
-
 ---
 
 ## TL;DR

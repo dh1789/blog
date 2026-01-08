@@ -89,8 +89,8 @@ async function translateMetadata(
   // 카테고리 매핑
   const translatedCategories = translateCategories(metadata.categories || []);
 
-  // 태그 최적화
-  const translatedTags = optimizeTags(metadata.tags || []);
+  // 태그 AI 번역
+  const translatedTags = await translateTags(metadata.tags || []);
 
   // Slug 생성 (원본 slug 기반, 없으면 영문 제목에서 생성)
   const baseSlug = metadata.slug || generateEnglishSlug(translatedTitle);
@@ -255,27 +255,83 @@ function translateCategories(categories: string[]): string[] {
 }
 
 /**
- * 태그 최적화 (SEO 친화적 영어 태그)
+ * 태그 AI 번역 (SEO 친화적 영어 태그)
  */
-function optimizeTags(tags: string[]): string[] {
-  const tagMap: Record<string, string> = {
-    'CLI': 'CLI',
-    'Node.js': 'Node.js',
-    'TypeScript': 'TypeScript',
-    '자동화': 'Automation',
-    '개발도구': 'Development Tools',
-    'REST API': 'REST API',
-    '워드프레스': 'WordPress',
-    'AI': 'AI',
-    '컨텐츠': 'Content',
-    '블로그': 'Blog',
-    'SEO': 'SEO'
-  };
+async function translateTags(tags: string[]): Promise<string[]> {
+  if (tags.length === 0) return [];
 
-  return tags
-    .map(tag => tagMap[tag] || tag)
-    .filter((tag, index, self) => self.indexOf(tag) === index) // 중복 제거
-    .slice(0, 10); // 최대 10개
+  // 이미 영어인 태그는 그대로 유지
+  const englishPattern = /^[a-zA-Z0-9\s\-_.]+$/;
+  const koreanTags = tags.filter(tag => !englishPattern.test(tag));
+  const englishTags = tags.filter(tag => englishPattern.test(tag));
+
+  // 한국어 태그가 없으면 영어 태그만 반환
+  if (koreanTags.length === 0) {
+    return englishTags
+      .filter((tag, index, self) => self.indexOf(tag) === index)
+      .slice(0, 10);
+  }
+
+  const prompt = `You are an SEO expert translating blog tags from Korean to English.
+
+**Task:** Translate the following Korean tags to SEO-optimized English tags.
+
+**Korean Tags:**
+${koreanTags.map((tag, i) => `${i + 1}. ${tag}`).join('\n')}
+
+**Translation Requirements:**
+1. Use commonly searched English terms
+2. Keep technical terms accurate (e.g., 시맨틱 검색 → Semantic Search)
+3. Use Title Case for multi-word tags
+4. Keep abbreviations as-is (e.g., RAG, API, AI)
+5. Be concise (1-3 words per tag)
+
+**Output Format:**
+Output ONLY the translated tags, one per line, in the same order.
+No numbers, no explanations, no quotes.
+
+**Example:**
+Input:
+1. 시맨틱 검색
+2. 하이브리드 검색
+3. 검색 최적화
+
+Output:
+Semantic Search
+Hybrid Search
+Search Optimization
+
+**Translate now:**`;
+
+  try {
+    const response = await executeClaude({
+      prompt,
+      timeout: calculateTimeout(50),
+    });
+
+    if (!response.success) {
+      console.warn(`Tag translation failed: ${response.error}. Using original tags.`);
+      return tags.slice(0, 10);
+    }
+
+    // 번역된 태그 파싱
+    const translatedKoreanTags = response.content
+      .trim()
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+
+    // 영어 태그 + 번역된 태그 합치기
+    const allTags = [...englishTags, ...translatedKoreanTags];
+
+    return allTags
+      .filter((tag, index, self) => self.indexOf(tag) === index) // 중복 제거
+      .slice(0, 10); // 최대 10개
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error(`Failed to translate tags: ${errorMessage}`);
+    return tags.slice(0, 10);
+  }
 }
 
 /**
@@ -366,35 +422,12 @@ ${content}
       throw new Error(`Translation failed: ${response.error || 'Unknown error'}`);
     }
 
-    // 번역된 콘텐츠
-    let translatedContent = response.content.trim();
-
-    // 번역 디스클레이머 추가
-    const disclaimer = generateTranslationDisclaimer(
-      originalMetadata.slug || 'original-post',
-      sourceLang
-    );
-
-    return `${disclaimer}\n\n${translatedContent}`;
+    // 번역된 콘텐츠 반환 (디스클레이머 없이)
+    return response.content.trim();
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to translate content: ${errorMessage}`);
   }
-}
-
-/**
- * 번역 디스클레이머 생성
- */
-function generateTranslationDisclaimer(
-  originalSlug: string,
-  sourceLang: string = 'ko'
-): string {
-  const langMap: Record<string, string> = {
-    ko: 'Korean',
-    en: 'English'
-  };
-
-  return `> **🌐 Translation**: Translated from [${langMap[sourceLang]}](/${sourceLang}/${originalSlug}).`;
 }
 
 /**
