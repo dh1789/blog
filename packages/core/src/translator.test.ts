@@ -125,8 +125,8 @@ const example = 'test';
       vi.restoreAllMocks();
     });
 
-    it('should generate translation disclaimer', async () => {
-      // 번역 디스클레이머 생성 확인
+    it('should NOT include translation disclaimer (removed feature)', async () => {
+      // 번역 디스클레이머가 제거되었는지 확인
       vi.spyOn(claudeModule, 'executeClaude').mockResolvedValue({
         success: true,
         content: '# Complete Guide to WordPress Automation\n\nTranslated content here.',
@@ -135,9 +135,9 @@ const example = 'test';
 
       const result = await translatePost(mockContent, mockMetadata);
 
-      // 디스클레이머 포함 확인
-      expect(result.translatedContent).toContain('🌐 Translation');
-      expect(result.translatedContent).toContain('Korean');
+      // 디스클레이머가 포함되지 않아야 함
+      expect(result.translatedContent).not.toContain('🌐 Translation');
+      expect(result.translatedContent).not.toContain('Translated from');
 
       vi.restoreAllMocks();
     });
@@ -226,6 +226,119 @@ const example = 'test';
       expect(result.translatedContent).toContain('WordPress');
       expect(result.translatedContent).toContain('REST API');
       expect(result.translatedContent).toContain('TypeScript');
+    });
+  });
+
+  describe('Tag Translation', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should translate Korean tags to English using AI', async () => {
+      // 한국어 태그를 AI로 번역
+      const metadataWithKoreanTags: PostMetadata = {
+        ...mockMetadata,
+        tags: ['시맨틱 검색', '하이브리드 검색', 'RAG'],
+      };
+
+      // Mock: 제목, excerpt, 본문, 태그 번역 순서로 호출됨
+      vi.spyOn(claudeModule, 'executeClaude')
+        .mockResolvedValueOnce({ success: true, content: 'SEO Title', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'SEO Excerpt', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'Semantic Search\nHybrid Search', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'Translated content', executionTime: 1000 });
+
+      const result = await translatePost(mockContent, metadataWithKoreanTags);
+
+      // 영어 태그가 포함되어 있어야 함
+      expect(result.translatedMetadata.tags).toContain('RAG'); // 영어는 그대로
+      expect(result.translatedMetadata.tags).toContain('Semantic Search');
+      expect(result.translatedMetadata.tags).toContain('Hybrid Search');
+
+      vi.restoreAllMocks();
+    });
+
+    it('should keep English tags unchanged', async () => {
+      // 영어 태그는 그대로 유지
+      const metadataWithEnglishTags: PostMetadata = {
+        ...mockMetadata,
+        tags: ['RAG', 'TypeScript', 'Node.js', 'REST API'],
+      };
+
+      vi.spyOn(claudeModule, 'executeClaude')
+        .mockResolvedValueOnce({ success: true, content: 'SEO Title', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'SEO Excerpt', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'Translated content', executionTime: 1000 });
+
+      const result = await translatePost(mockContent, metadataWithEnglishTags);
+
+      // 모든 영어 태그가 보존되어야 함
+      expect(result.translatedMetadata.tags).toContain('RAG');
+      expect(result.translatedMetadata.tags).toContain('TypeScript');
+      expect(result.translatedMetadata.tags).toContain('Node.js');
+      expect(result.translatedMetadata.tags).toContain('REST API');
+
+      vi.restoreAllMocks();
+    });
+
+    it('should handle empty tags array', async () => {
+      // 빈 태그 배열 처리
+      const metadataWithNoTags: PostMetadata = {
+        ...mockMetadata,
+        tags: [],
+      };
+
+      vi.spyOn(claudeModule, 'executeClaude')
+        .mockResolvedValueOnce({ success: true, content: 'SEO Title', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'SEO Excerpt', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'Translated content', executionTime: 1000 });
+
+      const result = await translatePost(mockContent, metadataWithNoTags);
+
+      expect(result.translatedMetadata.tags).toEqual([]);
+
+      vi.restoreAllMocks();
+    });
+
+    it('should limit tags to maximum 10', async () => {
+      // 최대 10개 태그 제한
+      const metadataWithManyTags: PostMetadata = {
+        ...mockMetadata,
+        tags: Array.from({ length: 15 }, (_, i) => `Tag${i + 1}`),
+      };
+
+      vi.spyOn(claudeModule, 'executeClaude')
+        .mockResolvedValueOnce({ success: true, content: 'SEO Title', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'SEO Excerpt', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'Translated content', executionTime: 1000 });
+
+      const result = await translatePost(mockContent, metadataWithManyTags);
+
+      expect(result.translatedMetadata.tags!.length).toBeLessThanOrEqual(10);
+
+      vi.restoreAllMocks();
+    });
+
+    it('should fallback to original tags on translation failure', async () => {
+      // 번역 실패 시 원본 태그 사용
+      const metadataWithKoreanTags: PostMetadata = {
+        ...mockMetadata,
+        tags: ['시맨틱 검색', 'RAG'],
+      };
+
+      vi.spyOn(claudeModule, 'executeClaude')
+        .mockResolvedValueOnce({ success: true, content: 'SEO Title', executionTime: 100 })
+        .mockResolvedValueOnce({ success: true, content: 'SEO Excerpt', executionTime: 100 })
+        .mockResolvedValueOnce({ success: false, content: '', error: 'Tag translation failed', executionTime: 0 })
+        .mockResolvedValueOnce({ success: true, content: 'Translated content', executionTime: 1000 });
+
+      const result = await translatePost(mockContent, metadataWithKoreanTags);
+
+      // 원본 태그가 반환되어야 함 (최대 10개)
+      expect(result.translatedMetadata.tags).toBeDefined();
+      expect(result.translatedMetadata.tags!.length).toBeLessThanOrEqual(10);
+
+      vi.restoreAllMocks();
     });
   });
 

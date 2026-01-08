@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-01-08
+
+### Added
+
+#### AI Tag Translation System
+- **태그 AI 번역**: 한국어 태그를 SEO 최적화된 영어 태그로 자동 번역
+  - Claude AI 기반 번역으로 정확한 기술 용어 처리
+  - 영어 태그는 그대로 유지, 한국어 태그만 번역
+  - 최대 10개 태그 제한 유지
+  - 번역 실패 시 원본 태그 폴백
+
+#### Translation Quality Improvements
+- **중복 Frontmatter 방지**: 번역 결과에서 중복 frontmatter 자동 제거
+  - `removeDuplicateFrontmatter()` 함수 추가
+  - Claude가 번역 시 frontmatter를 포함하는 케이스 처리
+
+### Removed
+
+- **번역 배너 제거**: 영문 포스트의 "🌐 Translation: Translated from Korean" 배너 삭제
+  - `generateTranslationDisclaimer()` 함수 제거
+  - 클린한 영문 포스트 본문 제공
+
+### Changed
+
+- **translator.ts**: `optimizeTags()` → `translateTags()` (AI 기반 번역으로 전환)
+- **translate.ts**: 번역 결과 저장 시 중복 frontmatter 제거 로직 추가
+
+### Tests
+
+- translator.test.ts: 배너 미포함 테스트 추가, 태그 번역 테스트 5개 추가
+- translate.test.ts: 중복 frontmatter 제거 테스트 8개 추가
+
 ## [0.1.1] - 2025-10-29
 
 ### Added
