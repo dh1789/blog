@@ -214,6 +214,9 @@ async function saveTranslatedFile(
   const dir = path.dirname(outputPath);
   await fs.mkdir(dir, { recursive: true });
 
+  // 번역된 content에 frontmatter가 포함되어 있으면 제거 (중복 방지)
+  const cleanedContent = removeDuplicateFrontmatter(content);
+
   // Frontmatter + 본문 조합
   const frontmatter = {
     title: metadata.title,
@@ -225,8 +228,24 @@ async function saveTranslatedFile(
     language: metadata.language
   };
 
-  const fileContent = matter.stringify(content, frontmatter);
+  const fileContent = matter.stringify(cleanedContent, frontmatter);
 
   // 파일 쓰기
   await fs.writeFile(outputPath, fileContent, 'utf-8');
+}
+
+/**
+ * 번역 결과에서 중복 frontmatter 제거
+ * Claude가 번역 시 frontmatter를 포함할 수 있으므로 제거
+ */
+function removeDuplicateFrontmatter(content: string): string {
+  // frontmatter 패턴: ---로 시작하고 ---로 끝나는 YAML 블록
+  const frontmatterRegex = /^---\n[\s\S]*?\n---\n*/;
+
+  // content가 frontmatter로 시작하면 제거
+  if (content.trim().startsWith('---')) {
+    return content.replace(frontmatterRegex, '').trim();
+  }
+
+  return content;
 }

@@ -1,93 +1,99 @@
 ---
-title: "RAG Day 4: 검색 최적화와 리랭킹 - 관련 문서 정확히 찾기"
-slug: "rag-day4-search-optimization"
-excerpt: "RAG 시스템의 검색 품질을 높이는 방법을 알아봅니다. 시맨틱 검색, 키워드 검색, 하이브리드 검색을 비교하고 리랭킹으로 검색 결과를 개선합니다."
-status: "publish"
+title: 'RAG Day 4: Search Optimization and Reranking Guide'
+slug: rag-day4-search-optimization-en
+excerpt: >-
+  Boost your RAG system's search accuracy with hybrid retrieval strategies.
+  Compare semantic, keyword, and hybrid search methods, then apply reranking
+  techniques to surface the most relevant documents every time.
+status: publish
 categories:
-  - "RAG"
-  - "AI Development"
+  - RAG
+  - AI Development
 tags:
-  - "RAG"
-  - "시맨틱 검색"
-  - "하이브리드 검색"
-  - "리랭킹"
-  - "검색 최적화"
-  - "BM25"
-language: "ko"
+  - RAG
+  - 시맨틱 검색
+  - 하이브리드 검색
+  - 리랭킹
+  - 검색 최적화
+  - BM25
+language: en
+---
+> **🌐 Translation**: Translated from [Korean](/ko/rag-day4-search-optimization).
+
 ---
 
 ## TL;DR
 
-- **시맨틱 검색**은 의미 기반으로 문서를 찾지만, 정확한 키워드 매칭에 약함
-- **키워드 검색(BM25)**은 정확한 용어 매칭에 강하지만, 동의어나 문맥 이해 불가
-- **하이브리드 검색**은 두 방식을 결합해 검색 품질을 크게 향상
-- **리랭킹**은 검색 결과를 재정렬해 가장 관련성 높은 문서를 상위로
-- 검색 파라미터 튜닝으로 RAG 시스템 성능 최적화
+- **Semantic search** finds documents based on meaning but struggles with exact keyword matching
+- **Keyword search (BM25)** excels at precise term matching but can't understand synonyms or context
+- **Hybrid search** combines both approaches to significantly improve search quality
+- **Reranking** reorders search results to surface the most relevant documents
+- Search parameter tuning optimizes RAG system performance
 - GitHub: [my-first-rag](https://github.com/dh1789/my-first-rag)
 
 ---
 
-> 💡 **왜 이 글을 쓰게 되었나요?**
+> 💡 **Why I wrote this article**
 >
-> 새로운 환경에 적응하면서 필요한 문서나 가이드가 없는 상황에 많은 어려움을 겪었습니다. 같은 문제를 반복해서 해결하고, 이미 누군가 알고 있는 정보를 다시 찾아 헤매는 시간이 아까웠죠. 이 시리즈는 다음 사람들이 동일한 문제를 반복하지 않도록, 그리고 저 스스로도 정리하면서 더 깊이 이해하기 위해 작성하고 있습니다.
+> Adapting to a new environment without proper documentation or guides was challenging. I wasted time repeatedly solving the same problems and searching for information that someone already knew. I'm writing this series to help others avoid these repetitive struggles and to deepen my own understanding through the process of organizing this knowledge.
 
 ---
 
-## 1. RAG 검색의 핵심 과제
+## 1. The Core Challenge of RAG Search
 
-### 1.1 검색이 왜 중요한가?
+### 1.1 Why Search Matters
 
-RAG 시스템에서 **검색 최적화**는 답변 품질을 결정하는 핵심 요소입니다. 아무리 좋은 LLM을 사용해도 잘못된 문서를 검색하면 잘못된 답변이 나옵니다.
+In RAG systems, **search optimization** is the key factor that determines answer quality. No matter how powerful your LLM is, retrieving the wrong documents leads to wrong answers.
 
 ```typescript
-// 검색 품질이 RAG 품질을 결정
-const query = "TypeScript에서 타입 가드 사용법";
+// Search quality determines RAG quality
+const query = "How to use type guards in TypeScript";
 
-// 나쁜 검색 결과 -> 나쁜 답변
-const badResults = ["JavaScript 기초", "Python 타입 힌트"];
+// Poor search results -> Poor answers
+const badResults = ["JavaScript basics", "Python type hints"];
 
-// 좋은 검색 결과 -> 좋은 답변
+// Good search results -> Good answers
 const goodResults = [
-  "TypeScript 타입 가드 패턴",
-  "사용자 정의 타입 가드 구현"
+  "TypeScript type guard patterns",
+  "Implementing custom type guards"
 ];
 ```
 
-### 1.2 시맨틱 검색의 한계
+### 1.2 Limitations of Semantic Search
 
-Day 3에서 구현한 **시맨틱 검색**은 의미 기반으로 문서를 찾습니다. 하지만 몇 가지 한계가 있습니다:
+The **semantic search** we implemented in Day 3 finds documents based on meaning. However, it has several limitations:
 
 ```typescript
-// 시맨틱 검색의 한계 예시
-const query = "RFC 2119 MUST 키워드";
+// Example of semantic search limitations
+const query = "RFC 2119 MUST keyword";
 
-// 시맨틱 검색 결과 - 의미적으로 유사한 문서
+// Semantic search results - semantically similar documents
 const semanticResults = [
-  "표준 문서 작성 가이드라인",  // 관련성: 중간
-  "필수 요구사항 정의 방법",    // 관련성: 중간
-  "문서화 모범 사례"           // 관련성: 낮음
+  "Standard document writing guidelines",  // Relevance: Medium
+  "How to define mandatory requirements",   // Relevance: Medium
+  "Documentation best practices"            // Relevance: Low
 ];
 
-// 실제로 원하는 문서
-const expectedResult = "RFC 2119 표준 키워드 정의 - MUST, SHOULD, MAY";
+// The document we actually want
+const expectedResult = "RFC 2119 Standard Keyword Definitions - MUST, SHOULD, MAY";
 ```
 
-**시맨틱 검색**의 문제점:
-- 정확한 키워드(RFC 2119)를 놓칠 수 있음
-- 고유명사, 약어에 취약
-- 최신 용어나 도메인 특수 용어 인식 어려움
+Problems with **semantic search**:
+- May miss exact keywords (RFC 2119)
+- Vulnerable to proper nouns and abbreviations
+- Difficulty recognizing new terms or domain-specific terminology
 
 ---
 
-## 2. 검색 방식 비교
+## 2. Comparing Search Approaches
 
-> 💪 **솔직히 말하면...**
+> 💪 **To be honest...**
 >
-> 처음 검색 최적화를 공부할 때 개념 정리가 제대로 되지 않아 많이 헤맸습니다. BM25, TF-IDF, 시맨틱 검색, 리랭킹... 용어는 많은데 각각이 어떻게 다르고 언제 써야 하는지 감이 안 잡혔죠. 결국 직접 코드를 작성하고 결과를 비교해보면서 하나씩 이해해 나갔습니다. 이 글에서는 제가 헤맸던 부분들을 정리해서 공유합니다.
+> When I first studied search optimization, I struggled because the concepts weren't clear in my mind. BM25, TF-IDF, semantic search, reranking... There were many terms, but I couldn't grasp how they differed or when to use each one. Eventually, I understood them one by one by writing code and comparing results. In this article, I'll share the areas where I struggled.
 
-### 2.1 키워드 검색 (BM25)
+### 2.1 Keyword Search (BM25)
 
-**BM25**는 전통적인 키워드 기반 검색 알고리즘입니다. **검색 최적화**의 기본이 되는 방식입니다.
+**BM25** is a traditional keyword-based search algorithm. It forms the foundation of **search optimization**.
 
 ```typescript
 // src/rag/retrievers/bm25-retriever.ts
@@ -105,7 +111,7 @@ export class BM25Retriever {
   async index(documents: Document[]): Promise<void> {
     this.documents = documents;
 
-    // 문서를 토큰화하여 인덱싱
+    // Tokenize and index documents
     const tokenizedDocs = documents.map(doc =>
       this.tokenize(doc.content)
     );
@@ -128,7 +134,7 @@ export class BM25Retriever {
   }
 
   private tokenize(text: string): string[] {
-    // 한국어 + 영어 토큰화
+    // Tokenization for Korean + English
     return text
       .toLowerCase()
       .replace(/[^\w\s가-힣]/g, ' ')
@@ -138,14 +144,14 @@ export class BM25Retriever {
 }
 ```
 
-**BM25**의 장점:
-- 정확한 키워드 매칭
-- 빠른 검색 속도
-- 희귀 용어에 높은 가중치
+Advantages of **BM25**:
+- Precise keyword matching
+- Fast search speed
+- Higher weight for rare terms
 
-### 2.2 시맨틱 검색 구현
+### 2.2 Semantic Search Implementation
 
-**시맨틱 검색**은 벡터 유사도를 기반으로 의미적으로 관련된 문서를 찾습니다.
+**Semantic search** finds semantically related documents based on vector similarity.
 
 ```typescript
 // src/rag/retrievers/semantic-retriever.ts
@@ -159,10 +165,10 @@ export class SemanticRetriever {
   ) {}
 
   async search(query: string, topK: number = 5): Promise<SearchResult[]> {
-    // 쿼리를 벡터로 변환
+    // Convert query to vector
     const queryVector = await this.embedder.embed(query, 'query');
 
-    // 벡터 유사도 검색
+    // Vector similarity search
     const results = await this.vectorStore.search(queryVector, topK);
 
     return results.map(result => ({
@@ -174,15 +180,15 @@ export class SemanticRetriever {
 }
 ```
 
-### 2.3 하이브리드 검색
+### 2.3 Hybrid Search
 
-**하이브리드 검색**은 **BM25**와 **시맨틱 검색**을 결합합니다. 두 방식의 장점을 모두 활용해 **검색 최적화**를 달성합니다.
+**Hybrid search** combines **BM25** and **semantic search**. It leverages the strengths of both approaches to achieve **search optimization**.
 
 ```typescript
 // src/rag/retrievers/hybrid-retriever.ts
 export interface HybridConfig {
-  semanticWeight: number;  // 시맨틱 검색 가중치 (0-1)
-  bm25Weight: number;      // BM25 가중치 (0-1)
+  semanticWeight: number;  // Semantic search weight (0-1)
+  bm25Weight: number;      // BM25 weight (0-1)
   topK: number;
   fusionMethod: 'rrf' | 'weighted';
 }
@@ -195,13 +201,13 @@ export class HybridRetriever {
   ) {}
 
   async search(query: string): Promise<SearchResult[]> {
-    // 두 검색을 병렬로 실행
+    // Run both searches in parallel
     const [semanticResults, bm25Results] = await Promise.all([
       this.semanticRetriever.search(query, this.config.topK * 2),
       this.bm25Retriever.search(query, this.config.topK * 2)
     ]);
 
-    // 결과 융합
+    // Fuse results
     if (this.config.fusionMethod === 'rrf') {
       return this.reciprocalRankFusion(semanticResults, bm25Results);
     }
@@ -209,29 +215,29 @@ export class HybridRetriever {
     return this.weightedFusion(semanticResults, bm25Results);
   }
 
-  // Reciprocal Rank Fusion - 순위 기반 융합
+  // Reciprocal Rank Fusion - rank-based fusion
   private reciprocalRankFusion(
     semanticResults: SearchResult[],
     bm25Results: SearchResult[]
   ): SearchResult[] {
-    const k = 60; // RRF 상수
+    const k = 60; // RRF constant
     const scores = new Map<string, number>();
 
-    // 시맨틱 검색 결과 점수 계산
+    // Calculate scores for semantic search results
     semanticResults.forEach((result, rank) => {
       const docId = result.document.id;
       const rrfScore = 1 / (k + rank + 1);
       scores.set(docId, (scores.get(docId) || 0) + rrfScore * this.config.semanticWeight);
     });
 
-    // BM25 결과 점수 추가
+    // Add BM25 result scores
     bm25Results.forEach((result, rank) => {
       const docId = result.document.id;
       const rrfScore = 1 / (k + rank + 1);
       scores.set(docId, (scores.get(docId) || 0) + rrfScore * this.config.bm25Weight);
     });
 
-    // 점수순 정렬
+    // Sort by score
     const allDocs = new Map([
       ...semanticResults.map(r => [r.document.id, r.document]),
       ...bm25Results.map(r => [r.document.id, r.document])
@@ -247,14 +253,14 @@ export class HybridRetriever {
       }));
   }
 
-  // 가중치 기반 융합
+  // Weighted fusion
   private weightedFusion(
     semanticResults: SearchResult[],
     bm25Results: SearchResult[]
   ): SearchResult[] {
     const scores = new Map<string, { score: number; document: Document }>();
 
-    // 점수 정규화 및 가중치 적용
+    // Normalize scores and apply weights
     const maxSemantic = Math.max(...semanticResults.map(r => r.score));
     const maxBm25 = Math.max(...bm25Results.map(r => r.score));
 
@@ -296,29 +302,29 @@ export class HybridRetriever {
 
 ---
 
-## 3. 검색 파라미터 튜닝
+## 3. Search Parameter Tuning
 
-### 3.1 Top-K 설정
+### 3.1 Top-K Configuration
 
-**검색 최적화**에서 top-k 값은 검색 결과 수를 결정합니다.
+In **search optimization**, the top-k value determines the number of search results.
 
 ```typescript
-// top-k 설정 가이드
+// Top-k configuration guide
 interface TopKConfig {
-  // 일반적인 Q&A
+  // General Q&A
   simple: 3,
 
-  // 복잡한 질문
+  // Complex questions
   complex: 5,
 
-  // 종합적인 분석
+  // Comprehensive analysis
   comprehensive: 10,
 
-  // 리랭킹 사용 시 (더 많이 검색 후 필터링)
+  // With reranking (search more, then filter)
   withReranking: 20
 }
 
-// 동적 top-k 결정
+// Dynamic top-k determination
 function determineTopK(query: string): number {
   const complexity = analyzeQueryComplexity(query);
 
@@ -326,13 +332,13 @@ function determineTopK(query: string): number {
   if (complexity.requiresComparison) return 8;
   if (complexity.isFactual) return 3;
 
-  return 5; // 기본값
+  return 5; // Default
 }
 ```
 
-### 3.2 유사도 임계값
+### 3.2 Similarity Threshold
 
-낮은 유사도의 결과를 필터링합니다:
+Filter out results with low similarity:
 
 ```typescript
 // src/rag/retrievers/filtered-retriever.ts
@@ -345,10 +351,10 @@ export class FilteredRetriever {
   async search(query: string, topK: number): Promise<SearchResult[]> {
     const results = await this.retriever.search(query);
 
-    // 임계값 이상의 결과만 반환
+    // Return only results above threshold
     const filtered = results.filter(r => r.score >= this.minScore);
 
-    // 결과가 너무 적으면 최소 개수 보장
+    // Ensure minimum number of results
     if (filtered.length < 2 && results.length >= 2) {
       return results.slice(0, 2);
     }
@@ -358,19 +364,19 @@ export class FilteredRetriever {
 }
 ```
 
-### 3.3 메타데이터 필터링
+### 3.3 Metadata Filtering
 
-**검색 최적화**를 위해 메타데이터 기반 필터링을 적용합니다:
+Apply metadata-based filtering for **search optimization**:
 
 ```typescript
-// 메타데이터 필터 정의
+// Metadata filter definition
 interface MetadataFilter {
   field: string;
   operator: 'eq' | 'ne' | 'gt' | 'lt' | 'in' | 'contains';
   value: any;
 }
 
-// Supabase에서 메타데이터 필터 적용
+// Apply metadata filter in Supabase
 async function searchWithFilter(
   queryVector: number[],
   filters: MetadataFilter[],
@@ -382,7 +388,7 @@ async function searchWithFilter(
       match_count: topK
     });
 
-  // 필터 적용
+  // Apply filters
   filters.forEach(filter => {
     switch (filter.operator) {
       case 'eq':
@@ -401,7 +407,7 @@ async function searchWithFilter(
   return data || [];
 }
 
-// 사용 예시
+// Usage example
 const results = await searchWithFilter(
   queryVector,
   [
@@ -414,36 +420,36 @@ const results = await searchWithFilter(
 
 ---
 
-## 4. 리랭킹으로 검색 품질 향상
+## 4. Improving Search Quality with Reranking
 
-### 4.1 리랭킹이 필요한 이유
+### 4.1 Why Reranking is Needed
 
-초기 검색 결과를 더 정교한 모델로 재정렬합니다. **리랭킹**은 검색 품질을 크게 향상시킵니다.
+Reorder initial search results with a more sophisticated model. **Reranking** significantly improves search quality.
 
 ```typescript
-// 리랭킹 전후 비교
-const query = "TypeScript 제네릭 타입 추론";
+// Comparison before and after reranking
+const query = "TypeScript generic type inference";
 
-// 초기 검색 결과 (시맨틱 검색)
+// Initial search results (semantic search)
 const initialResults = [
-  { title: "TypeScript 기초 타입", score: 0.85 },
-  { title: "제네릭 프로그래밍 개념", score: 0.83 },
-  { title: "TypeScript 제네릭 타입 추론 심화", score: 0.81 },  // 가장 관련성 높음
-  { title: "타입 시스템 비교", score: 0.80 }
+  { title: "TypeScript basic types", score: 0.85 },
+  { title: "Generic programming concepts", score: 0.83 },
+  { title: "Advanced TypeScript generic type inference", score: 0.81 },  // Most relevant
+  { title: "Type system comparison", score: 0.80 }
 ];
 
-// 리랭킹 후 결과
+// Results after reranking
 const rerankedResults = [
-  { title: "TypeScript 제네릭 타입 추론 심화", score: 0.95 },  // 1위로 상승
-  { title: "제네릭 프로그래밍 개념", score: 0.78 },
-  { title: "TypeScript 기초 타입", score: 0.65 },
-  { title: "타입 시스템 비교", score: 0.45 }
+  { title: "Advanced TypeScript generic type inference", score: 0.95 },  // Moved to #1
+  { title: "Generic programming concepts", score: 0.78 },
+  { title: "TypeScript basic types", score: 0.65 },
+  { title: "Type system comparison", score: 0.45 }
 ];
 ```
 
-### 4.2 Cohere Rerank 구현
+### 4.2 Cohere Rerank Implementation
 
-**리랭킹**을 위해 Cohere Rerank API를 사용합니다:
+Use the Cohere Rerank API for **reranking**:
 
 ```typescript
 // src/rag/rerankers/cohere-reranker.ts
@@ -480,9 +486,9 @@ export class CohereReranker {
 }
 ```
 
-### 4.3 Cross-Encoder 리랭킹
+### 4.3 Cross-Encoder Reranking
 
-로컬에서 실행 가능한 Cross-Encoder 모델을 사용한 **리랭킹**:
+**Reranking** using a Cross-Encoder model that runs locally:
 
 ```typescript
 // src/rag/rerankers/cross-encoder-reranker.ts
@@ -504,13 +510,13 @@ export class CrossEncoderReranker {
     documents: SearchResult[],
     topK: number = 5
   ): Promise<SearchResult[]> {
-    // 쿼리-문서 쌍 생성
+    // Create query-document pairs
     const pairs = documents.map(doc => ({
       text: query,
-      text_pair: doc.document.content.slice(0, 512) // 토큰 제한
+      text_pair: doc.document.content.slice(0, 512) // Token limit
     }));
 
-    // 관련성 점수 계산
+    // Calculate relevance scores
     const scores = await Promise.all(
       pairs.map(async pair => {
         const result = await this.model(pair.text, { text_pair: pair.text_pair });
@@ -518,7 +524,7 @@ export class CrossEncoderReranker {
       })
     );
 
-    // 점수순 정렬
+    // Sort by score
     return documents
       .map((doc, idx) => ({
         ...doc,
@@ -531,9 +537,9 @@ export class CrossEncoderReranker {
 }
 ```
 
-### 4.4 리랭킹 파이프라인 통합
+### 4.4 Integrating Reranking Pipeline
 
-전체 검색 파이프라인에 **리랭킹**을 통합합니다:
+Integrate **reranking** into the complete search pipeline:
 
 ```typescript
 // src/rag/retrievers/reranking-pipeline.ts
@@ -549,19 +555,19 @@ export class RerankingPipeline {
   ) {}
 
   async search(query: string): Promise<SearchResult[]> {
-    // 1단계: 하이브리드 검색으로 후보 추출
+    // Step 1: Extract candidates with hybrid search
     const candidates = await this.retriever.search(query);
-    console.log(`[검색] ${candidates.length}개 후보 문서 검색됨`);
+    console.log(`[Search] ${candidates.length} candidate documents retrieved`);
 
-    // 2단계: 리랭킹으로 재정렬
+    // Step 2: Reorder with reranking
     const reranked = await this.reranker.rerank(
       query,
       candidates,
       this.config.finalTopK * 2
     );
-    console.log(`[리랭킹] 상위 ${reranked.length}개 문서 재정렬됨`);
+    console.log(`[Reranking] Top ${reranked.length} documents reordered`);
 
-    // 3단계: 임계값 필터링
+    // Step 3: Threshold filtering
     const filtered = reranked.filter(
       r => r.score >= this.config.minScoreThreshold
     );
@@ -570,13 +576,13 @@ export class RerankingPipeline {
   }
 }
 
-// 사용 예시
+// Usage example
 const pipeline = new RerankingPipeline(
   hybridRetriever,
   cohereReranker,
   {
-    initialTopK: 20,    // 초기 검색: 20개
-    finalTopK: 5,       // 최종 결과: 5개
+    initialTopK: 20,    // Initial search: 20
+    finalTopK: 5,       // Final results: 5
     minScoreThreshold: 0.5
   }
 );
@@ -584,25 +590,25 @@ const pipeline = new RerankingPipeline(
 
 ---
 
-## 5. 검색 성능 평가
+## 5. Evaluating Search Performance
 
-### 5.1 평가 지표
+### 5.1 Evaluation Metrics
 
-**검색 최적화** 결과를 측정하기 위한 지표들:
+Metrics for measuring **search optimization** results:
 
 ```typescript
 // src/rag/evaluation/metrics.ts
 export interface EvaluationMetrics {
-  // Precision@K: 상위 K개 중 관련 문서 비율
+  // Precision@K: Ratio of relevant documents in top K
   precisionAtK: number;
 
-  // Recall@K: 전체 관련 문서 중 상위 K개에 포함된 비율
+  // Recall@K: Ratio of relevant documents included in top K
   recallAtK: number;
 
-  // MRR: 첫 번째 관련 문서의 순위 역수 평균
+  // MRR: Mean reciprocal rank of first relevant document
   mrr: number;
 
-  // NDCG: 순위를 고려한 관련성 점수
+  // NDCG: Relevance score considering ranking
   ndcg: number;
 }
 
@@ -628,16 +634,16 @@ export function calculateMetrics(
   );
   const mrr = firstRelevantRank >= 0 ? 1 / (firstRelevantRank + 1) : 0;
 
-  // NDCG 계산
+  // NDCG calculation
   const ndcg = calculateNDCG(results, relevantDocIds, k);
 
   return { precisionAtK, recallAtK, mrr, ndcg };
 }
 ```
 
-### 5.2 A/B 테스트
+### 5.2 A/B Testing
 
-**하이브리드 검색**과 **리랭킹** 효과를 비교합니다:
+Compare the effectiveness of **hybrid search** and **reranking**:
 
 ```typescript
 // src/rag/evaluation/ab-test.ts
@@ -656,12 +662,12 @@ export async function runABTest(
   };
 
   for (const { query, relevantDocs } of queries) {
-    // 각 방식으로 검색
+    // Search with each method
     const semanticResults = await retrievers.semantic.search(query, 5);
     const hybridResults = await retrievers.hybrid.search(query);
     const rerankingResults = await retrievers.reranking.search(query);
 
-    // 메트릭 계산
+    // Calculate metrics
     const relevantSet = new Set(relevantDocs);
 
     const semanticMetrics = calculateMetrics(semanticResults, relevantSet, 5);
@@ -694,66 +700,66 @@ export async function runABTest(
 }
 ```
 
-### 5.3 성능 비교 결과
+### 5.3 Performance Comparison Results
 
-실제 테스트 결과 예시:
+Example of actual test results:
 
-| 방식 | Precision@5 | MRR | 응답 시간 |
-|------|-------------|-----|-----------|
-| 시맨틱 검색 | 0.65 | 0.72 | 120ms |
-| **하이브리드 검색** | 0.78 | 0.85 | 180ms |
-| **하이브리드 + 리랭킹** | 0.89 | 0.94 | 350ms |
+| Method | Precision@5 | MRR | Response Time |
+|--------|-------------|-----|---------------|
+| Semantic Search | 0.65 | 0.72 | 120ms |
+| **Hybrid Search** | 0.78 | 0.85 | 180ms |
+| **Hybrid + Reranking** | 0.89 | 0.94 | 350ms |
 
-**하이브리드 검색**과 **리랭킹**을 결합하면 검색 품질이 크게 향상됩니다.
+Combining **hybrid search** with **reranking** significantly improves search quality.
 
 ---
 
-## 6. 실전 적용 팁
+## 6. Practical Application Tips
 
-> 🛠️ **저는 이렇게 적용할 계획입니다**
+> 🛠️ **How I plan to apply this**
 >
-> 팀에서 쌓여온 이슈 히스토리, 주의사항, 그 외 기억해야 하는 정보들이 여기저기 흩어져 있습니다. Slack, Notion, Confluence, 심지어 개인 메모까지... 이런 정보들에 대해 RAG 시스템을 구축해서 "이 에러 전에 본 것 같은데?"라는 질문에 빠르게 관련 문서를 찾아주는 도구를 만들 예정입니다. 특히 하이브리드 검색은 에러 코드(정확한 매칭)와 에러 상황 설명(의미 기반 매칭)을 동시에 처리해야 해서 꼭 필요한 기능이었습니다.
+> Our team has accumulated issue histories, cautions, and other information that needs to be remembered scattered across various places—Slack, Notion, Confluence, even personal notes. I plan to build a RAG system for this information to create a tool that quickly finds relevant documents when someone asks, "I think I've seen this error before." Hybrid search was essential because it needs to handle both error codes (exact matching) and error situation descriptions (semantic matching) simultaneously.
 
-### 6.1 검색 방식 선택 가이드
+### 6.1 Search Method Selection Guide
 
 ```typescript
-// 상황별 검색 방식 선택
+// Select search method based on context
 function selectRetriever(context: QueryContext): Retriever {
-  // 정확한 용어 검색 (코드명, API 이름 등)
+  // Exact term search (code names, API names, etc.)
   if (context.hasExactTerms) {
     return bm25Retriever;
   }
 
-  // 개념적 질문
+  // Conceptual questions
   if (context.isConceptual) {
     return semanticRetriever;
   }
 
-  // 복합적 질문 - 하이브리드 + 리랭킹
+  // Complex questions - hybrid + reranking
   return rerankingPipeline;
 }
 ```
 
-### 6.2 비용 최적화
+### 6.2 Cost Optimization
 
-**리랭킹** API 비용을 고려한 최적화:
+Optimization considering **reranking** API costs:
 
 ```typescript
-// 조건부 리랭킹
+// Conditional reranking
 async function smartRerank(
   query: string,
   results: SearchResult[]
 ): Promise<SearchResult[]> {
-  // 상위 결과 점수가 충분히 높으면 리랭킹 스킵
+  // Skip reranking if top result score is high enough
   if (results[0]?.score > 0.9 && results[1]?.score < 0.7) {
-    console.log('[최적화] 명확한 결과, 리랭킹 스킵');
+    console.log('[Optimization] Clear result, skipping reranking');
     return results;
   }
 
-  // 상위 결과들의 점수가 비슷하면 리랭킹 수행
+  // Perform reranking if top results have similar scores
   const topScoreGap = results[0]?.score - results[4]?.score;
   if (topScoreGap < 0.1) {
-    console.log('[최적화] 점수 차이 작음, 리랭킹 수행');
+    console.log('[Optimization] Small score difference, performing reranking');
     return await reranker.rerank(query, results, 5);
   }
 
@@ -763,9 +769,9 @@ async function smartRerank(
 
 ---
 
-## 7. 전체 코드 통합
+## 7. Complete Code Integration
 
-### 7.1 최종 검색 시스템
+### 7.1 Final Search System
 
 ```typescript
 // src/rag/search-system.ts
@@ -804,15 +810,15 @@ export class RAGSearchSystem {
       filters = []
     } = options;
 
-    // 하이브리드 검색
+    // Hybrid search
     let results = await this.hybridRetriever.search(query);
 
-    // 메타데이터 필터 적용
+    // Apply metadata filters
     if (filters.length > 0) {
       results = this.applyFilters(results, filters);
     }
 
-    // 리랭킹
+    // Reranking
     if (useReranking && results.length > topK) {
       results = await this.reranker.rerank(query, results, topK);
     }
@@ -846,24 +852,24 @@ export class RAGSearchSystem {
 
 ---
 
-## 마무리
+## Conclusion
 
-Day 4에서는 RAG 시스템의 **검색 최적화**를 다뤘습니다:
+In Day 4, we covered **search optimization** for RAG systems:
 
-1. **시맨틱 검색**의 한계와 **BM25** 키워드 검색의 필요성
-2. **하이브리드 검색**으로 두 방식의 장점 결합
-3. **리랭킹**으로 검색 결과 품질 향상
-4. 검색 파라미터 튜닝과 성능 평가
+1. Limitations of **semantic search** and the need for **BM25** keyword search
+2. Combining the strengths of both approaches with **hybrid search**
+3. Improving search result quality with **reranking**
+4. Search parameter tuning and performance evaluation
 
-Day 5에서는 검색된 문서를 Claude에게 전달하여 답변을 생성하는 방법을 알아봅니다.
+In Day 5, we'll explore how to pass retrieved documents to Claude to generate answers.
 
 ---
 
-## 시리즈 네비게이션
+## Series Navigation
 
-- [Day 1: RAG 개념과 아키텍처](/ko/rag-day1-introduction)
-- [Day 2: 문서 처리와 청킹 전략](/ko/rag-day2-document-processing)
-- [Day 3: 임베딩과 벡터 데이터베이스](/ko/rag-day3-embedding-vectordb)
-- **Day 4: 검색 최적화와 리랭킹** (현재 글)
-- [Day 5: Claude 통합과 답변 생성](/ko/rag-day5-claude-integration)
-- [Day 6: 프로덕션 배포와 최적화](/ko/rag-day6-production)
+- [Day 1: RAG Concepts and Architecture](/en/rag-day1-introduction)
+- [Day 2: Document Processing and Chunking Strategies](/en/rag-day2-document-processing)
+- [Day 3: Embeddings and Vector Databases](/en/rag-day3-embedding-vectordb)
+- **Day 4: Search Optimization and Reranking** (Current)
+- [Day 5: Claude Integration and Answer Generation](/en/rag-day5-claude-integration)
+- [Day 6: Production Deployment and Optimization](/en/rag-day6-production)
