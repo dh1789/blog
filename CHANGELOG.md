@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-01-12
+
+### Added
+
+#### RAG Module (TDD Implementation)
+- **RAG 모듈 구현**: Claude 통합 및 답변 생성을 위한 핵심 모듈
+  - `estimateTokens()`: 텍스트 토큰 수 추정 (4자 = 1토큰)
+  - `manageContextWindow()`: 토큰 제한에 맞게 문서 선택
+  - `injectContext()`: 검색 문서를 프롬프트에 주입
+  - `buildRAGPrompt()`: 환각 방지 지시 포함 RAG 프롬프트 생성
+  - `extractCitations()`: 답변에서 출처 정보 추출
+  - `formatAnswer()`: 출처 포함 최종 답변 포맷팅
+  - `RAGGenerator` 클래스: 전체 RAG 파이프라인 관리
+
+### Tests
+
+- rag.test.ts: TDD 방식으로 30개 테스트 구현
+  - estimateTokens: 4개 테스트
+  - manageContextWindow: 4개 테스트
+  - injectContext: 3개 테스트
+  - buildRAGPrompt: 5개 테스트
+  - extractCitations: 6개 테스트
+  - formatAnswer: 5개 테스트
+  - RAGGenerator: 3개 테스트
+
 ## [0.1.2] - 2025-01-08
 
 ### Added
