@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-01-14
+
+### Added
+
+#### RAG Production Module (TDD Implementation)
+- **RAG 평가 시스템** (`rag-evaluation.ts`): RAG 시스템 품질 측정
+  - `RAGEvaluationMetrics` 인터페이스: 정확도, 관련성, 충실도 지표
+  - `calculateRAGScore()`: 가중치 기반 종합 점수 계산
+  - `RAGEvaluator` 클래스: 테스트 케이스 기반 평가 실행
+
+- **임베딩 캐시 시스템** (`embedding-cache.ts`): 비용 최적화
+  - `EmbeddingCache` 클래스: TTL 기반 LRU 캐시
+  - `CachedEmbedder` 클래스: 캐시 적용 임베딩 래퍼
+  - `estimateMonthlyCost()`: 월간 비용 예측
+  - `selectModel()`: 용도별 모델 선택 (Haiku/Sonnet/Opus)
+
+- **메트릭 및 알림 시스템** (`rag-metrics.ts`): 프로덕션 모니터링
+  - `MetricsCollector` 클래스: 요청/지연시간/캐시 메트릭 수집
+  - `AlertManager` 클래스: 임계값 기반 알림 발생
+  - `RAGError` 클래스: 커스텀 에러 및 재시도 지원
+  - `withRetry()`: 지수 백오프 재시도 래퍼
+
+### Tests
+
+- rag-evaluation.test.ts: TDD 방식 9개 테스트
+- embedding-cache.test.ts: TDD 방식 15개 테스트
+- rag-metrics.test.ts: TDD 방식 16개 테스트
+
+### Content
+
+- RAG Day 6 블로그 포스트 작성: 프로덕션 배포와 최적화
+  - RAG 평가 지표 및 구현
+  - 비용 최적화 전략 (임베딩 캐싱, 모델 선택)
+  - 프로덕션 배포 (API 서버, 에러 처리)
+  - 모니터링 시스템
+
 ## [0.1.3] - 2025-01-12
 
 ### Added

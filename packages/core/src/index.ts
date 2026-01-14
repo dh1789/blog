@@ -26,3 +26,6 @@ export * from './link-converter';
 export * from './content-enhancer';
 export * from './humanizer';
 export * from './rag';
+export * from './rag-evaluation';
+export * from './embedding-cache';
+export * from './rag-metrics';
